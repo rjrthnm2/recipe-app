@@ -21,7 +21,7 @@ export default function AddRecipe() {
     directions: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Process the "one per line" text into arrays like the JSON format
@@ -38,8 +38,10 @@ export default function AddRecipe() {
         .filter((line) => line.trim() !== ""),
     };
 
-    const newId = addRecipe(newRecipe);
-    navigate(`/recipe/${newId}`); // Redirect to the new recipe page immediately
+    const newId = await addRecipe(newRecipe);
+    if (newId) {
+      navigate(`/recipe/${newId}`); // Redirect to the new recipe page immediately
+    }
   };
 
   return (

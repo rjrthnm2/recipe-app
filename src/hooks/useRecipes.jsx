@@ -1,11 +1,13 @@
 // src/hooks/useRecipes.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { collection, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
 import defaultRecipes from "../data/jewel_recipes.json";
 
-export function useRecipes() {
+export const RecipesContext = createContext();
+
+export function RecipesProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedIds, setSavedIds] = useState([]);
@@ -101,5 +103,15 @@ export function useRecipes() {
     }
   };
 
-  return { recipes, savedIds, toggleSave, addRecipe, loading };
+  return (
+    <RecipesContext.Provider
+      value={{ recipes, savedIds, toggleSave, addRecipe, loading }}
+    >
+      {children}
+    </RecipesContext.Provider>
+  );
+}
+
+export function useRecipes() {
+  return useContext(RecipesContext);
 }

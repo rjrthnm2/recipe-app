@@ -69,6 +69,16 @@ function tokenize(value = "") {
     .filter(Boolean);
 }
 
+function formatTagLabel(value = "") {
+  const normalized = normalizeText(value.replace(/[()]/g, ""));
+  if (!normalized) return "";
+
+  return normalized
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function computeRecipeScore(recipe, queryTokens, normalizedQuery) {
   const titleText = normalizeText(recipe.title || "");
   const ingredientText = normalizeText((recipe.ingredients || []).join(" "));
@@ -158,19 +168,25 @@ export default function Home() {
 
   const popularTags = useMemo(() => {
     const tagCounts = new Map();
+    const tagLabels = new Map();
 
     recipes.forEach((recipe) => {
       (recipe.tags || []).forEach((tag) => {
-        const cleanTag = tag.replace(/[()]/g, "").trim();
-        if (!cleanTag) return;
-        tagCounts.set(cleanTag, (tagCounts.get(cleanTag) || 0) + 1);
+        const canonicalTag = normalizeText(tag.replace(/[()]/g, ""));
+        if (!canonicalTag) return;
+
+        if (!tagLabels.has(canonicalTag)) {
+          tagLabels.set(canonicalTag, formatTagLabel(tag));
+        }
+
+        tagCounts.set(canonicalTag, (tagCounts.get(canonicalTag) || 0) + 1);
       });
     });
 
     return [...tagCounts.entries()]
-      .sort((a, b) => b[1] - a[1])
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .slice(0, 8)
-      .map(([tag]) => tag);
+      .map(([tag]) => tagLabels.get(tag) || formatTagLabel(tag));
   }, [recipes]);
 
   const filteredRecipes = recipes
