@@ -1,6 +1,14 @@
 // src/hooks/useRecipes.jsx
 import { useState, useEffect, createContext, useContext } from "react";
-import { collection, getDocs, setDoc, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
 import defaultRecipes from "../data/jewel_recipes.json";
@@ -103,9 +111,85 @@ export function RecipesProvider({ children }) {
     }
   };
 
+  const updateRecipe = async (id, updatedData) => {
+    if (
+      !user ||
+      !["robinzjephthah@gmail.com", "maureenpeck1412@gmail.com"].includes(
+        user.email,
+      )
+    ) {
+      alert("Only a superuser can edit recipes.");
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "recipes", id);
+      await updateDoc(docRef, updatedData);
+
+      // Update local state
+      setRecipes((prev) =>
+        prev.map((recipe) =>
+          recipe.url === id ? { ...recipe, ...updatedData } : recipe,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating document: ", error);
+      alert("Failed to update recipe.");
+    }
+  };
+
+  const deleteRecipe = async (id) => {
+    if (
+      !user ||
+      !["robinzjephthah@gmail.com", "maureenpeck1412@gmail.com"].includes(
+        user.email,
+      )
+    ) {
+      alert("Only a superuser can delete recipes.");
+      return;
+    }
+
+    try {
+      // Find the recipe data before deleting it
+      const recipeToArchive = recipes.find((r) => r.url === id);
+
+      if (recipeToArchive) {
+        // Save the deleted recipe to a "deleted_recipes" collection (our cloud JSON database for deleted items)
+        const deletedDocRef = doc(db, "deleted_recipes", id);
+        await setDoc(deletedDocRef, {
+          ...recipeToArchive,
+          deletedAt: new Date().toISOString(),
+          deletedBy: user.email,
+        });
+      }
+
+      const docRef = doc(db, "recipes", id);
+      await deleteDoc(docRef);
+
+      // Update local state
+      setRecipes((prev) => prev.filter((recipe) => recipe.url !== id));
+
+      // We could also remove from savedIds if it's there
+      if (savedIds.includes(id)) {
+        await toggleSave(id);
+      }
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+      alert("Failed to delete recipe.");
+    }
+  };
+
   return (
     <RecipesContext.Provider
-      value={{ recipes, savedIds, toggleSave, addRecipe, loading }}
+      value={{
+        recipes,
+        savedIds,
+        toggleSave,
+        addRecipe,
+        updateRecipe,
+        deleteRecipe,
+        loading,
+      }}
     >
       {children}
     </RecipesContext.Provider>
