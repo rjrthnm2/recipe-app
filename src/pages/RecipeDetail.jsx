@@ -29,6 +29,26 @@ function TrashIcon(props) {
   );
 }
 
+// Simple Pencil Icon SVG
+function PencilIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+    </svg>
+  );
+}
+
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -158,73 +178,89 @@ export default function RecipeDetail() {
         ← Back to Browse
       </Link>
 
-      {/* Superuser controls */}
-      {isSuperuser && (
-        <div className="flex flex-wrap gap-3 p-4 bg-zinc-100 rounded-lg shadow-sm border border-zinc-200">
-          <div className="w-full text-sm font-semibold text-zinc-600 mb-2">
-            Superuser Controls
-          </div>
-          {!isEditing ? (
-            <Button onClick={handleEditClick} variant="default">
-              Edit Recipe
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleSaveEdit} variant="default">
-                Save Edits
-              </Button>
-              <Button onClick={handleCancelEdit} variant="secondary">
-                Cancel
-              </Button>
-            </>
-          )}
-
-          <div className="ml-auto flex items-center gap-2">
-            {deleteStep > 0 && (
-              <Button onClick={handleDeleteCancel} variant="outline" size="sm">
-                Cancel Delete
-              </Button>
-            )}
-            <Button
-              onClick={handleDeleteClick}
-              variant={deleteStep > 0 ? "destructive" : "outline"}
-              className={
-                deleteStep === 0
-                  ? "text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
-                  : "flex items-center text-lg py-6 font-bold"
-              }
-              aria-label="Delete recipe"
-            >
-              <TrashIcon
-                className={deleteStep > 0 ? "w-6 h-6 mr-2" : "w-4 h-4 mr-2"}
-              />
-              {deleteStep === 0
-                ? "Delete Recipe"
-                : deleteStep === 1
-                  ? "Are you sure?"
-                  : "Are you sure sure?"}
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Title block */}
-      <div className="space-y-4">
-        {isEditing ? (
-          <Input
-            value={currentData.title}
-            onChange={(e) =>
-              setEditForm({ ...editForm, title: e.target.value })
-            }
-            className="text-4xl font-bold p-6 font-sans border-zinc-300 bg-white"
-            placeholder="Recipe Title"
-          />
-        ) : (
-          <h1 className="text-4xl font-bold tracking-tight">
-            {currentData.title}
-          </h1>
-        )}
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+        <div className="space-y-4 flex-1">
+          {isEditing ? (
+            <Input
+              value={currentData.title}
+              onChange={(e) =>
+                setEditForm({ ...editForm, title: e.target.value })
+              }
+              className="text-4xl font-bold p-6 font-sans border-zinc-300 bg-white"
+              placeholder="Recipe Title"
+            />
+          ) : (
+            <h1 className="text-4xl font-bold tracking-tight mt-2">
+              {currentData.title}
+            </h1>
+          )}
+        </div>
 
+        {/* Superuser actions */}
+        {isSuperuser && (
+          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-0 border-zinc-200">
+            {!isEditing ? (
+              <Button
+                onClick={handleEditClick}
+                variant="outline"
+                className="flex items-center text-lg py-6 px-4 font-bold border-zinc-300 hover:bg-zinc-100"
+              >
+                <PencilIcon className="w-6 h-6 mr-2" />
+                Edit Recipe
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={handleSaveEdit}
+                  variant="default"
+                  className="flex items-center text-lg py-6 px-4 font-bold"
+                >
+                  Save Edits
+                </Button>
+                <Button
+                  onClick={handleCancelEdit}
+                  variant="secondary"
+                  className="flex items-center text-lg py-6 px-4 font-bold"
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+
+            <div className="flex items-center gap-2">
+              {deleteStep > 0 && (
+                <Button
+                  onClick={handleDeleteCancel}
+                  variant="outline"
+                  className="text-lg py-6 px-4 font-bold"
+                >
+                  Cancel Delete
+                </Button>
+              )}
+              <Button
+                onClick={handleDeleteClick}
+                variant={deleteStep > 0 ? "destructive" : "outline"}
+                className={
+                  deleteStep === 0
+                    ? "flex items-center text-lg py-6 px-4 text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300 font-bold"
+                    : "flex items-center text-lg py-6 px-4 font-bold"
+                }
+                aria-label="Delete recipe"
+              >
+                <TrashIcon className="w-6 h-6 mr-2" />
+                {deleteStep === 0
+                  ? "Delete Recipe"
+                  : deleteStep === 1
+                    ? "Are you sure?"
+                    : "Are you sure sure?"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
         {isEditing ? (
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-zinc-600">Tags</label>
