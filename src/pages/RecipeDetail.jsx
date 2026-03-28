@@ -127,9 +127,10 @@ export default function RecipeDetail() {
     if (updateRecipe) {
       const updated = {
         ...editForm,
-        tags: editForm.tags.map((t) =>
-          t.trim().startsWith("(") ? t.trim() : `(${t.trim()})`,
-        ),
+        tags: editForm.tags
+          .map((t) => t.trim())
+          .filter((t) => t !== "")
+          .map((t) => (t.startsWith("(") ? t : `(${t})`)),
       };
       await updateRecipe(recipe.url, updated);
     }

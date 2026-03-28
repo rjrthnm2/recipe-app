@@ -29,7 +29,9 @@ export default function AddRecipe() {
       ...formData,
       tags: formData.tags
         .split(",")
-        .map((t) => (t.trim().startsWith("(") ? t.trim() : `(${t.trim()})`)),
+        .map((t) => t.trim())
+        .filter((t) => t !== "")
+        .map((t) => (t.startsWith("(") ? t : `(${t})`)),
       ingredients: formData.ingredients
         .split("\n")
         .filter((line) => line.trim() !== ""),
@@ -40,7 +42,8 @@ export default function AddRecipe() {
 
     const newId = await addRecipe(newRecipe);
     if (newId) {
-      navigate(`/recipe/${newId}`); // Redirect to the new recipe page immediately
+      // Need to use replace: true so going "back" goes to home screen instead of form
+      navigate(`/recipe/${newId}`, { replace: true });
     }
   };
 
