@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import MyList from "./pages/MyList";
 import RecipeDetail from "./pages/RecipeDetail";
 import AddRecipe from "./pages/AddRecipe";
+import ShoppingList from "./pages/ShoppingList";
 import { RecipesProvider } from "./hooks/useRecipes";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/my-list" element={<MyList />} />
+              <Route path="/shopping-list" element={<ShoppingList />} />
               <Route path="/add" element={<AddRecipe />} />
               <Route path="/recipe/:id" element={<RecipeDetail />} />
             </Routes>

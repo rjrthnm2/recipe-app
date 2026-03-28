@@ -48,12 +48,14 @@ export default function Navbar() {
               <Button variant="ghost" asChild>
                 <Link to="/my-list">My List</Link>
               </Button>
+              <Button variant="ghost" asChild>
+                <Link to="/shopping-list">Shopping List</Link>
+              </Button>
               <Button variant="outline" asChild>
                 <Link to="/add">Add Recipe</Link>
               </Button>
             </>
           )}
-
           {/* Login / Logout Button logic */}
           {user ? (
             <div className="ml-4 flex items-center gap-3 border-l border-zinc-300 pl-4">
