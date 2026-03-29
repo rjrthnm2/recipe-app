@@ -27,7 +27,7 @@ export default function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 p-4 shadow-sm backdrop-blur"
+      className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 p-4 shadow-sm backdrop-blur print:hidden"
     >
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
         <Link

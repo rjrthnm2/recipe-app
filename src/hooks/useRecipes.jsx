@@ -13,7 +13,7 @@ import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
 import defaultRecipes from "../data/jewel_recipes.json";
 
-export const RecipesContext = createContext();
+const RecipesContext = createContext();
 
 export function RecipesProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
@@ -196,6 +196,7 @@ export function RecipesProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRecipes() {
   return useContext(RecipesContext);
 }
