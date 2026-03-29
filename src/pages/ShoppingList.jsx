@@ -323,10 +323,10 @@ export default function ShoppingList() {
   return (
     <div className="space-y-10 pb-20 print:space-y-4 print:pb-0">
       <div className="space-y-4 print:hidden">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
+        <h1 className="font-heading text-4xl font-bold tracking-tight text-[#0F172A]">
           Build a Shopping List
         </h1>
-        <p className="text-lg text-zinc-700 max-w-2xl">
+        <p className="font-sans text-[18px] text-[#0F172A]/80 max-w-2xl">
           Select the recipes you want to make, and we'll compile all the
           ingredients you need into one list.
         </p>
@@ -336,32 +336,32 @@ export default function ShoppingList() {
         {/* Left Column: Recipe Selection */}
         <div className="lg:col-span-7 space-y-6 print:hidden">
           {!selectingFor && (
-            <div className="flex p-1 bg-zinc-100/80 rounded-lg w-full sm:w-auto max-w-md border border-zinc-200 shadow-sm mb-6">
+            <div className="flex p-1 bg-[#F8FAFC] rounded-[8px] w-full sm:w-auto max-w-md border border-[#e2e8f0] shadow-sm mb-6">
               <button
-                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
                   activeTab === "quick"
-                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
-                    : "text-zinc-600 hover:text-zinc-900"
+                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
+                    : "text-[#64748b] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("quick")}
               >
                 Quick Select
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
                   activeTab === "day"
-                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
-                    : "text-zinc-600 hover:text-zinc-900"
+                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
+                    : "text-[#64748b] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("day")}
               >
                 1-Day Plan
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
                   activeTab === "planner"
-                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
-                    : "text-zinc-600 hover:text-zinc-900"
+                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
+                    : "text-[#64748b] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("planner")}
               >
@@ -372,12 +372,14 @@ export default function ShoppingList() {
 
           {selectingFor ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-teal-50 border border-teal-200 p-4 rounded-xl">
+              <div className="flex items-center justify-between bg-teal-50/50 border border-teal-200 p-4 rounded-[12px]">
                 <div>
-                  <h2 className="text-xl font-bold text-teal-900">
+                  <h2 className="font-heading text-2xl font-bold text-[#0D9488]">
                     Selecting {selectingFor.meal}
                   </h2>
-                  <p className="text-teal-700">for {selectingFor.day}</p>
+                  <p className="font-sans text-[16px] text-teal-700">
+                    for {selectingFor.day}
+                  </p>
                 </div>
                 <Button
                   variant="outline"
@@ -385,7 +387,7 @@ export default function ShoppingList() {
                     setSelectingFor(null);
                     setSearchQuery("");
                   }}
-                  className="bg-white font-bold"
+                  className="bg-white font-ui font-bold text-[#0F172A]"
                 >
                   Cancel
                 </Button>
@@ -394,29 +396,29 @@ export default function ShoppingList() {
                 placeholder="Search recipes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white h-12 text-lg"
+                className="w-full bg-white h-12 text-[18px] border-[#e2e8f0] font-sans"
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 pb-4">
                 {filteredRecipes.length === 0 ? (
-                  <div className="col-span-1 md:col-span-2 text-center py-10 text-zinc-500">
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-[#64748b] font-sans">
                     No recipes found matching "{searchQuery}"
                   </div>
                 ) : (
                   filteredRecipes.map((recipe) => (
                     <Card
                       key={recipe.url}
-                      className="cursor-pointer transition-all duration-200 border-2 border-zinc-200 hover:border-teal-500 hover:shadow-md"
+                      className="cursor-pointer transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#0D9488] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
                       onClick={() => handlePlannerSelect(recipe.url)}
                     >
                       <CardContent className="p-4 flex items-center justify-between h-full">
                         <div>
-                          <h3 className="font-bold text-lg leading-tight text-zinc-900">
+                          <h3 className="font-heading font-bold text-[18px] leading-tight text-[#0F172A]">
                             {recipe.title}
                           </h3>
                         </div>
                         <Button
                           variant="ghost"
-                          className="text-teal-700 font-bold ml-2"
+                          className="text-[#0D9488] hover:bg-[#F8FAFC] font-ui font-bold ml-2"
                         >
                           Add
                         </Button>
@@ -429,8 +431,15 @@ export default function ShoppingList() {
           ) : activeTab === "planner" ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Plan Your Week</h2>
-                <Button variant="outline" size="sm" onClick={clearSelection}>
+                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                  Plan Your Week
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="font-ui text-[#0F172A] border-[#e2e8f0]"
+                  onClick={clearSelection}
+                >
                   Clear Week
                 </Button>
               </div>
@@ -438,9 +447,9 @@ export default function ShoppingList() {
                 {DAYS.map((day) => (
                   <div
                     key={day}
-                    className="bg-white border-2 border-zinc-200 rounded-lg shadow-sm overflow-hidden flex flex-col"
+                    className="bg-white border-2 border-[#e2e8f0] rounded-[8px] shadow-sm overflow-hidden flex flex-col"
                   >
-                    <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-2 font-semibold text-zinc-800">
+                    <div className="bg-[#F8FAFC] border-b border-[#e2e8f0] px-4 py-2 font-ui font-semibold text-[#0F172A]">
                       {day}
                     </div>
                     <div className="p-3 space-y-3 flex-1 flex flex-col justify-center">
@@ -453,10 +462,10 @@ export default function ShoppingList() {
                         return (
                           <div
                             key={meal}
-                            className="flex items-center justify-between text-sm group"
+                            className="flex items-center justify-between text-[16px] group font-sans"
                           >
                             <div className="flex items-center gap-3 overflow-hidden mr-2">
-                              <span className="w-20 shrink-0 font-medium text-zinc-500 uppercase tracking-wide text-xs">
+                              <span className="w-20 shrink-0 font-ui font-medium text-[#64748b] uppercase tracking-wide text-[12px]">
                                 {meal}
                               </span>
                               {recipe ? (
@@ -569,19 +578,21 @@ export default function ShoppingList() {
           ) : (
             <>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-2xl font-bold">Quick Select</h2>
+                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                  Quick Select
+                </h2>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <Input
                     placeholder="Search recipes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:max-w-xs bg-white h-10"
+                    className="w-full sm:max-w-xs bg-white h-10 border-[#e2e8f0] font-sans text-[16px]"
                   />
                   {selectedRecipeUrls.size > 0 && (
                     <Button
                       variant="outline"
                       onClick={clearSelection}
-                      className="whitespace-nowrap h-10"
+                      className="whitespace-nowrap h-10 font-ui text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"
                     >
                       Clear All
                     </Button>
@@ -591,7 +602,7 @@ export default function ShoppingList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[800px] overflow-y-auto pr-2 pb-4">
                 {filteredRecipes.length === 0 ? (
-                  <div className="col-span-1 md:col-span-2 text-center py-10 text-zinc-500">
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-[#64748b] font-sans">
                     No recipes found matching "{searchQuery}"
                   </div>
                 ) : (
@@ -600,10 +611,10 @@ export default function ShoppingList() {
                     return (
                       <Card
                         key={recipe.url}
-                        className={`cursor-pointer transition-all duration-200 border-2 ${
+                        className={`cursor-pointer transition-all duration-200 border-x border-b border-t-[6px] border-t-[#0D9488] hover:shadow-md rounded-[8px] overflow-hidden ${
                           isSelected
-                            ? "border-teal-600 bg-teal-50"
-                            : "border-zinc-200 hover:border-zinc-300"
+                            ? "border-x-[#0D9488] border-b-[#0D9488] bg-[#0D9488]/5"
+                            : "border-x-[#e2e8f0] border-b-[#e2e8f0] bg-[#FAFAFA]"
                         }`}
                         onClick={() => toggleRecipeSelection(recipe.url)}
                       >
@@ -614,23 +625,23 @@ export default function ShoppingList() {
                               onCheckedChange={() =>
                                 toggleRecipeSelection(recipe.url)
                               }
-                              className={
+                              className={`h-5 w-5 border-[#e2e8f0] ${
                                 isSelected
-                                  ? "data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 shadow-sm"
+                                  ? "data-[state=checked]:bg-[#0D9488] data-[state=checked]:border-[#0D9488] text-white"
                                   : ""
-                              }
+                              }`}
                             />
                           </div>
                           <div>
                             <h3
-                              className={`font-bold text-lg leading-tight ${
-                                isSelected ? "text-teal-900" : "text-zinc-900"
+                              className={`font-heading font-bold text-[18px] leading-tight ${
+                                isSelected ? "text-[#0D9488]" : "text-[#0F172A]"
                               }`}
                             >
                               {recipe.title}
                             </h3>
                             {recipe.ingredients && (
-                              <p className="text-sm text-zinc-500 mt-1">
+                              <p className="font-sans text-[14px] text-[#64748b] mt-1">
                                 {recipe.ingredients.length} ingredients
                               </p>
                             )}

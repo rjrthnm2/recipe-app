@@ -27,43 +27,59 @@ export default function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 p-4 shadow-sm backdrop-blur print:hidden"
+      className="sticky top-0 z-10 border-b border-[#e2e8f0] bg-white/95 p-4 shadow-sm backdrop-blur print:hidden"
     >
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
         <Link
           to="/"
-          className="text-2xl font-bold tracking-tight text-foreground focus-visible:outline-none"
+          className="font-heading text-2xl font-bold tracking-tight text-[#0F172A] focus-visible:outline-none"
         >
           Jewel's Recipes
         </Link>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" asChild>
+          <Button
+            variant="ghost"
+            className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+            asChild
+          >
             <Link to="/">Browse</Link>
           </Button>
 
           {/* Only show "My List" and "Add" if the user is logged in */}
           {user && (
             <>
-              <Button variant="ghost" asChild>
+              <Button
+                variant="ghost"
+                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                asChild
+              >
                 <Link to="/my-list">My List</Link>
               </Button>
-              <Button variant="ghost" asChild>
+              <Button
+                variant="ghost"
+                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                asChild
+              >
                 <Link to="/shopping-list">Shopping List</Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button
+                variant="outline"
+                className="font-ui text-[16px] border-[#0D9488]/30 text-[#0D9488] bg-[#0D9488]/5 hover:bg-[#0D9488]/10 hover:border-[#0D9488]/50"
+                asChild
+              >
                 <Link to="/add">Add Recipe</Link>
               </Button>
             </>
           )}
           {/* Login / Logout Button logic */}
           {user ? (
-            <div className="ml-4 flex items-center gap-3 border-l border-zinc-300 pl-4">
+            <div className="ml-4 flex items-center gap-3 border-l border-[#e2e8f0] pl-4">
               {shouldShowPhoto ? (
                 <img
                   src={profilePhoto}
                   alt="Profile"
-                  className="h-9 w-9 rounded-full border border-zinc-300 object-cover"
+                  className="h-10 w-10 rounded-full border border-[#e2e8f0] object-cover"
                   loading="lazy"
                   referrerPolicy="no-referrer"
                   onError={() => setFailedPhoto(profilePhoto)}
@@ -71,17 +87,25 @@ export default function Navbar() {
               ) : (
                 <span
                   aria-label="Profile avatar"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 text-xs font-semibold text-zinc-700"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#F8FAFC] text-[14px] font-semibold text-[#0F172A]"
                 >
                   {profileInitials}
                 </span>
               )}
-              <Button onClick={logout} variant="ghost" size="sm">
+              <Button
+                onClick={logout}
+                variant="ghost"
+                size="sm"
+                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+              >
                 Log Out
               </Button>
             </div>
           ) : (
-            <Button onClick={login} className="ml-4">
+            <Button
+              onClick={login}
+              className="ml-4 font-ui text-[16px] bg-[#0F172A] text-white hover:bg-[#0F172A]/90"
+            >
               Log In
             </Button>
           )}

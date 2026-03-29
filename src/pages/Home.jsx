@@ -210,16 +210,13 @@ export default function Home() {
 
   return (
     <div className="space-y-10">
-      <section className="reveal-up relative overflow-hidden rounded-2xl border border-zinc-300/70 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100 p-6 shadow-sm md:p-8">
-        <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-amber-200/35 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-16 left-6 h-36 w-36 rounded-full bg-orange-200/30 blur-2xl" />
-
-        <div className="relative flex flex-col gap-5">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">
+      <section className="reveal-up relative overflow-hidden rounded-[16px] bg-[#F8FAFC] border border-[#e2e8f0] p-8 shadow-sm md:p-12 text-[#0F172A]">
+        <div className="relative flex flex-col gap-6">
+          <div className="space-y-3">
+            <h1 className="font-heading text-4xl font-bold tracking-tight text-[#0F172A] md:text-5xl">
               Find The Right Recipe Faster
             </h1>
-            <p className="max-w-2xl text-base text-zinc-700 md:text-lg">
+            <p className="font-sans max-w-2xl text-[18px] text-[#0F172A]/80 md:text-[20px]">
               Search by tags first, then titles, then ingredients to surface the
               best matches.
             </p>
@@ -230,12 +227,12 @@ export default function Home() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search recipes by title, ingredient, or tag"
-            className="max-w-2xl bg-white/85 shadow-sm"
+            className="max-w-2xl bg-white shadow-sm border-[#e2e8f0] h-12 text-[18px] px-4 font-sans"
           />
 
           {popularTags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="mr-1 text-sm font-medium text-zinc-700">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <span className="mr-2 font-ui text-[16px] font-medium text-[#0F172A]/70">
                 Popular tags:
               </span>
               {popularTags.map((tag) => {
@@ -247,7 +244,7 @@ export default function Home() {
                     variant={isActive ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSearch(tag)}
-                    className="rounded-full"
+                    className={`rounded-full px-4 py-2 font-ui text-[16px] h-auto transition-transform active:scale-95 hover:scale-105 duration-200 ${isActive ? "bg-[#0D9488] text-white hover:bg-[#0D9488]/90 border-[#0D9488]" : "bg-white border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"}`}
                     aria-pressed={isActive}
                   >
                     {tag}
@@ -259,11 +256,11 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
+      <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+        <h2 className="font-heading text-3xl font-semibold tracking-tight text-[#0F172A]">
           All Recipes
         </h2>
-        <p className="rounded-full bg-white/70 px-3 py-1 text-sm text-zinc-700 ring-1 ring-zinc-200">
+        <p className="font-ui rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
           {filteredRecipes.length} result
           {filteredRecipes.length === 1 ? "" : "s"}
         </p>
@@ -278,7 +275,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {filteredRecipes.map(({ recipe }, index) => {
           // Extract a clean ID from the URL to use for routing
           const recipeId = recipe.url.split("/").pop();
@@ -286,28 +283,51 @@ export default function Home() {
           return (
             <Card
               key={recipe.url || index}
-              className="reveal-card flex h-full flex-col border-zinc-200 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+              className="reveal-card flex h-full flex-col bg-[#FAFAFA] border-t-[6px] border-t-[#0D9488] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
               style={{ animationDelay: `${index * 45}ms` }}
             >
-              <CardHeader>
-                <CardTitle className="line-clamp-2 text-xl">
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="font-heading line-clamp-2 text-[20px] font-bold text-[#0F172A] leading-tight mb-1">
                   {recipe.title}
                 </CardTitle>
-                <p className="text-base text-zinc-700">
-                  Prep: {recipe.prep_time || "N/A"}
-                </p>
+                <div className="flex items-center text-[14px] text-[#64748b] font-sans">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinelinejoin="round"
+                    className="mr-1.5"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>Prep: {recipe.prep_time || "N/A"}</span>
+                </div>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="flex flex-wrap gap-2">
+              <CardContent className="flex-grow p-4 pt-0">
+                <div className="border-t border-dashed border-[#cbd5e1] w-full my-2"></div>
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   {recipe.tags?.map((tag, i) => (
-                    <Badge key={i} variant="secondary">
+                    <Badge
+                      key={i}
+                      variant="secondary"
+                      className="bg-white text-[#0F172A]/70 border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
+                    >
                       {tag.replace(/[()]/g, "")}
                     </Badge>
                   ))}
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button className="w-full" asChild>
+              <CardFooter className="p-4 pt-0">
+                <Button
+                  className="w-full bg-[#0F172A] hover:bg-[#0D9488] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
+                  asChild
+                >
                   <Link to={`/recipe/${recipeId}`}>View Recipe</Link>
                 </Button>
               </CardFooter>

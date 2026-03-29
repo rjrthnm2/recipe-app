@@ -49,11 +49,18 @@ export default function AddRecipe() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 pb-20">
-      <h1 className="text-3xl font-bold tracking-tight">Add New Recipe</h1>
+      <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A]">
+        Add New Recipe
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="title">Recipe Title</Label>
+          <Label
+            htmlFor="title"
+            className="font-sans text-[16px] text-[#0F172A]"
+          >
+            Recipe Title
+          </Label>
           <Input
             id="title"
             required
@@ -61,13 +68,19 @@ export default function AddRecipe() {
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
+            className="border-[#e2e8f0] font-sans text-[16px] h-12"
             placeholder="e.g. Grandma's Famous Chili"
           />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="prep">Prep Time</Label>
+            <Label
+              htmlFor="prep"
+              className="font-sans text-[16px] text-[#0F172A]"
+            >
+              Prep Time
+            </Label>
             <Input
               id="prep"
               placeholder="10 minutes"
@@ -75,10 +88,16 @@ export default function AddRecipe() {
               onChange={(e) =>
                 setFormData({ ...formData, prep_time: e.target.value })
               }
+              className="border-[#e2e8f0] font-sans text-[16px] h-12"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cook">Cook Time</Label>
+            <Label
+              htmlFor="cook"
+              className="font-sans text-[16px] text-[#0F172A]"
+            >
+              Cook Time
+            </Label>
             <Input
               id="cook"
               placeholder="30 minutes"
@@ -86,26 +105,38 @@ export default function AddRecipe() {
               onChange={(e) =>
                 setFormData({ ...formData, cook_time: e.target.value })
               }
+              className="border-[#e2e8f0] font-sans text-[16px] h-12"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="tags">Tags (comma separated)</Label>
+          <Label
+            htmlFor="tags"
+            className="font-sans text-[16px] text-[#0F172A]"
+          >
+            Tags (comma separated)
+          </Label>
           <Input
             id="tags"
             placeholder="Ground beef, Quick, Dinner"
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+            className="border-[#e2e8f0] font-sans text-[16px] h-12"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="ingredients">Ingredients (one per line)</Label>
+          <Label
+            htmlFor="ingredients"
+            className="font-sans text-[16px] text-[#0F172A]"
+          >
+            Ingredients (one per line)
+          </Label>
           <Textarea
             id="ingredients"
             required
-            className="min-h-[180px]"
+            className="min-h-[180px] border-[#e2e8f0] font-sans text-[16px]"
             placeholder="1 lb ground beef&#10;1 can tomato sauce"
             value={formData.ingredients}
             onChange={(e) =>
@@ -115,11 +146,16 @@ export default function AddRecipe() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="directions">Directions (one per line)</Label>
+          <Label
+            htmlFor="directions"
+            className="font-sans text-[16px] text-[#0F172A]"
+          >
+            Directions (one per line)
+          </Label>
           <Textarea
             id="directions"
             required
-            className="min-h-[180px]"
+            className="min-h-[180px] border-[#e2e8f0] font-sans text-[16px]"
             placeholder="Brown the beef&#10;Add the sauce and simmer"
             value={formData.directions}
             onChange={(e) =>
@@ -129,17 +165,26 @@ export default function AddRecipe() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="note">Author Note (Optional)</Label>
+          <Label
+            htmlFor="note"
+            className="font-sans text-[16px] text-[#0F172A]"
+          >
+            Author Note (Optional)
+          </Label>
           <Input
             id="note"
             value={formData.author_note}
             onChange={(e) =>
               setFormData({ ...formData, author_note: e.target.value })
             }
+            className="border-[#e2e8f0] font-sans text-[16px] h-12"
           />
         </div>
 
-        <Button type="submit" className="w-full text-lg h-12">
+        <Button
+          type="submit"
+          className="w-full text-[18px] bg-[#0D9488] hover:bg-[#0D9488]/90 text-white font-ui font-bold h-14 rounded-[8px] transition-colors mt-6"
+        >
           Save Recipe
         </Button>
       </form>
