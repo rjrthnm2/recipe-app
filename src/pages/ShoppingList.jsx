@@ -89,6 +89,17 @@ function parseIngredient(rawText) {
   return { amount: amount || 0, unit, name, original: rawText };
 }
 
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+const MEALS = ["Breakfast", "Lunch", "Dinner"];
+
 export default function ShoppingList() {
   const { recipes } = useRecipes();
   // Set of recipe URLs that are currently selected for the shopping list
@@ -96,14 +107,76 @@ export default function ShoppingList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const [activeTab, setActiveTab] = useState("quick");
+  const [planner, setPlanner] = useState(() => {
+    const init = {};
+    DAYS.forEach((d) => {
+      init[d] = { Breakfast: null, Lunch: null, Dinner: null };
+    });
+    return init;
+  });
+  const [dayPlanner, setDayPlanner] = useState({
+    Breakfast: null,
+    Lunch: null,
+    Dinner: null,
+  });
+  const [selectingFor, setSelectingFor] = useState(null);
+
+  const totalItemsSelectedCount = useMemo(() => {
+    let count = selectedRecipeUrls.size;
+    Object.values(planner).forEach((day) => {
+      Object.values(day).forEach((url) => {
+        if (url) count++;
+      });
+    });
+    Object.values(dayPlanner).forEach((url) => {
+      if (url) count++;
+    });
+    return count;
+  }, [selectedRecipeUrls, planner, dayPlanner]);
+
+  const handleTabSwitch = (newTab) => {
+    if (activeTab === newTab) return;
+
+    if (totalItemsSelectedCount > 0) {
+      if (
+        window.confirm(
+          "Switching planners will clear your currently selected recipes. Continue?",
+        )
+      ) {
+        setSelectedRecipeUrls(new Set());
+        const initPlanner = {};
+        DAYS.forEach((d) => {
+          initPlanner[d] = { Breakfast: null, Lunch: null, Dinner: null };
+        });
+        setPlanner(initPlanner);
+        setDayPlanner({ Breakfast: null, Lunch: null, Dinner: null });
+        setSelectingFor(null);
+        setActiveTab(newTab);
+      }
+    } else {
+      setActiveTab(newTab);
+    }
+  };
+
   // Aggregate ingredients from selected recipes
   const shoppingList = useMemo(() => {
-    if (selectedRecipeUrls.size === 0) return [];
+    const allUrls = Array.from(selectedRecipeUrls);
+    Object.values(planner).forEach((day) => {
+      Object.values(day).forEach((url) => {
+        if (url) allUrls.push(url);
+      });
+    });
+    Object.values(dayPlanner).forEach((url) => {
+      if (url) allUrls.push(url);
+    });
+
+    if (allUrls.length === 0) return [];
 
     const grouped = new Map();
-    const selectedRecipes = recipes.filter((r) =>
-      selectedRecipeUrls.has(r.url),
-    );
+    const selectedRecipes = allUrls
+      .map((url) => recipes.find((r) => r.url === url))
+      .filter(Boolean);
 
     selectedRecipes.forEach((recipe) => {
       if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
@@ -150,7 +223,59 @@ export default function ShoppingList() {
         };
       })
       .sort((a, b) => a.text.localeCompare(b.text));
-  }, [recipes, selectedRecipeUrls]);
+  }, [recipes, selectedRecipeUrls, planner, dayPlanner]);
+
+  const removeMeal = (type, day, meal) => {
+    if (type === "week") {
+      setPlanner((prev) => ({
+        ...prev,
+        [day]: { ...prev[day], [meal]: null },
+      }));
+    } else {
+      setDayPlanner((prev) => ({ ...prev, [meal]: null }));
+    }
+  };
+
+  const clearSelection = () => {
+    if (
+      activeTab === "quick" ||
+      (selectingFor && selectingFor.type === "quick")
+    ) {
+      setSelectedRecipeUrls(new Set());
+    } else if (
+      activeTab === "planner" ||
+      (selectingFor && selectingFor.type === "week")
+    ) {
+      const init = {};
+      DAYS.forEach((d) => {
+        init[d] = { Breakfast: null, Lunch: null, Dinner: null };
+      });
+      setPlanner(init);
+    } else if (
+      activeTab === "day" ||
+      (selectingFor && selectingFor.type === "day")
+    ) {
+      setDayPlanner({ Breakfast: null, Lunch: null, Dinner: null });
+    }
+  };
+
+  const handlePlannerSelect = (url) => {
+    if (selectingFor) {
+      if (selectingFor.type === "week") {
+        setPlanner((prev) => ({
+          ...prev,
+          [selectingFor.day]: {
+            ...prev[selectingFor.day],
+            [selectingFor.meal]: url,
+          },
+        }));
+      } else {
+        setDayPlanner((prev) => ({ ...prev, [selectingFor.meal]: url }));
+      }
+      setSelectingFor(null);
+      setSearchQuery("");
+    }
+  };
 
   const toggleRecipeSelection = (url) => {
     setSelectedRecipeUrls((prev) => {
@@ -162,10 +287,6 @@ export default function ShoppingList() {
       }
       return next;
     });
-  };
-
-  const clearSelection = () => {
-    setSelectedRecipeUrls(new Set());
   };
 
   const copyToClipboard = async () => {
@@ -214,77 +335,314 @@ export default function ShoppingList() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block print:w-full">
         {/* Left Column: Recipe Selection */}
         <div className="lg:col-span-7 space-y-6 print:hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold">Available Recipes</h2>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+          {!selectingFor && (
+            <div className="flex p-1 bg-zinc-100/80 rounded-lg w-full sm:w-auto max-w-md border border-zinc-200 shadow-sm mb-6">
+              <button
+                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                  activeTab === "quick"
+                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
+                    : "text-zinc-600 hover:text-zinc-900"
+                }`}
+                onClick={() => handleTabSwitch("quick")}
+              >
+                Quick Select
+              </button>
+              <button
+                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                  activeTab === "day"
+                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
+                    : "text-zinc-600 hover:text-zinc-900"
+                }`}
+                onClick={() => handleTabSwitch("day")}
+              >
+                1-Day Plan
+              </button>
+              <button
+                className={`flex-1 py-2 px-2 rounded-md font-semibold sm:text-lg text-sm transition-colors ${
+                  activeTab === "planner"
+                    ? "bg-white shadow-sm text-zinc-900 border border-zinc-200"
+                    : "text-zinc-600 hover:text-zinc-900"
+                }`}
+                onClick={() => handleTabSwitch("planner")}
+              >
+                Week Plan
+              </button>
+            </div>
+          )}
+
+          {selectingFor ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between bg-teal-50 border border-teal-200 p-4 rounded-xl">
+                <div>
+                  <h2 className="text-xl font-bold text-teal-900">
+                    Selecting {selectingFor.meal}
+                  </h2>
+                  <p className="text-teal-700">for {selectingFor.day}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectingFor(null);
+                    setSearchQuery("");
+                  }}
+                  className="bg-white font-bold"
+                >
+                  Cancel
+                </Button>
+              </div>
               <Input
                 placeholder="Search recipes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:max-w-xs bg-white"
+                className="w-full bg-white h-12 text-lg"
               />
-              {selectedRecipeUrls.size > 0 && (
-                <Button
-                  variant="outline"
-                  onClick={clearSelection}
-                  className="whitespace-nowrap h-10"
-                >
-                  Clear All
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[800px] overflow-y-auto pr-2 pb-4">
-            {filteredRecipes.length === 0 ? (
-              <div className="col-span-1 md:col-span-2 text-center py-10 text-zinc-500">
-                No recipes found matching "{searchQuery}"
-              </div>
-            ) : (
-              filteredRecipes.map((recipe) => {
-                const isSelected = selectedRecipeUrls.has(recipe.url);
-                return (
-                  <Card
-                    key={recipe.url}
-                    className={`cursor-pointer transition-all duration-200 border-2 ${
-                      isSelected
-                        ? "border-teal-600 bg-teal-50"
-                        : "border-zinc-200 hover:border-zinc-300"
-                    }`}
-                    onClick={() => toggleRecipeSelection(recipe.url)}
-                  >
-                    <CardContent className="p-4 flex items-start gap-4">
-                      <div className="mt-1">
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() =>
-                            toggleRecipeSelection(recipe.url)
-                          }
-                          className={
-                            isSelected
-                              ? "data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                              : ""
-                          }
-                        />
-                      </div>
-                      <div>
-                        <h3
-                          className={`font-bold text-lg leading-tight ${isSelected ? "text-teal-900" : "text-zinc-900"}`}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 pb-4">
+                {filteredRecipes.length === 0 ? (
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-zinc-500">
+                    No recipes found matching "{searchQuery}"
+                  </div>
+                ) : (
+                  filteredRecipes.map((recipe) => (
+                    <Card
+                      key={recipe.url}
+                      className="cursor-pointer transition-all duration-200 border-2 border-zinc-200 hover:border-teal-500 hover:shadow-md"
+                      onClick={() => handlePlannerSelect(recipe.url)}
+                    >
+                      <CardContent className="p-4 flex items-center justify-between h-full">
+                        <div>
+                          <h3 className="font-bold text-lg leading-tight text-zinc-900">
+                            {recipe.title}
+                          </h3>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          className="text-teal-700 font-bold ml-2"
                         >
-                          {recipe.title}
-                        </h3>
-                        {recipe.ingredients && (
-                          <p className="text-sm text-zinc-500 mt-1">
-                            {recipe.ingredients.length} ingredients
+                          Add
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : activeTab === "planner" ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">Plan Your Week</h2>
+                <Button variant="outline" size="sm" onClick={clearSelection}>
+                  Clear Week
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {DAYS.map((day) => (
+                  <div
+                    key={day}
+                    className="bg-white border-2 border-zinc-200 rounded-lg shadow-sm overflow-hidden flex flex-col"
+                  >
+                    <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-2 font-semibold text-zinc-800">
+                      {day}
+                    </div>
+                    <div className="p-3 space-y-3 flex-1 flex flex-col justify-center">
+                      {MEALS.map((meal) => {
+                        const recipeUrl = planner[day][meal];
+                        const recipe = recipeUrl
+                          ? recipes.find((r) => r.url === recipeUrl)
+                          : null;
+
+                        return (
+                          <div
+                            key={meal}
+                            className="flex items-center justify-between text-sm group"
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden mr-2">
+                              <span className="w-20 shrink-0 font-medium text-zinc-500 uppercase tracking-wide text-xs">
+                                {meal}
+                              </span>
+                              {recipe ? (
+                                <span className="font-bold text-teal-900 truncate">
+                                  {recipe.title}
+                                </span>
+                              ) : (
+                                <span className="text-zinc-400 italic">
+                                  None
+                                </span>
+                              )}
+                            </div>
+
+                            {recipe ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-red-500 hover:text-white hover:bg-red-500 transition-colors"
+                                onClick={() => removeMeal("week", day, meal)}
+                                title="Remove meal"
+                              >
+                                &times;
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 px-2 py-0 border-teal-200 text-teal-700 hover:bg-teal-50 text-xs"
+                                onClick={() => {
+                                  setSelectingFor({ type: "week", day, meal });
+                                  setSearchQuery("");
+                                }}
+                              >
+                                + Add
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : activeTab === "day" ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">1-Day Plan</h2>
+                <Button variant="outline" size="sm" onClick={clearSelection}>
+                  Clear Day
+                </Button>
+              </div>
+              <Card className="border-2 border-zinc-200 shadow-sm overflow-hidden">
+                <CardContent className="p-0 divide-y divide-zinc-100">
+                  {MEALS.map((meal) => {
+                    const recipeUrl = dayPlanner[meal];
+                    const recipe = recipeUrl
+                      ? recipes.find((r) => r.url === recipeUrl)
+                      : null;
+
+                    return (
+                      <div
+                        key={meal}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-zinc-50 group"
+                      >
+                        <div>
+                          <p className="font-semibold text-zinc-500 text-sm uppercase tracking-wider mb-1">
+                            {meal}
                           </p>
+                          {recipe ? (
+                            <p className="text-lg text-teal-900 font-bold leading-tight">
+                              {recipe.title}
+                            </p>
+                          ) : (
+                            <p className="text-base text-zinc-400 italic">
+                              No recipe selected
+                            </p>
+                          )}
+                        </div>
+                        {recipe ? (
+                          <Button
+                            variant="ghost"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 bg-white border border-red-100 shadow-sm transition-opacity"
+                            onClick={() => removeMeal("day", null, meal)}
+                          >
+                            Remove
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            className="border-teal-200 text-teal-700 hover:bg-teal-50 bg-white"
+                            onClick={() => {
+                              setSelectingFor({
+                                type: "day",
+                                day: "today",
+                                meal,
+                              });
+                              setSearchQuery("");
+                            }}
+                          >
+                            + Add Recipe
+                          </Button>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-          </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="text-2xl font-bold">Quick Select</h2>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <Input
+                    placeholder="Search recipes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full sm:max-w-xs bg-white h-10"
+                  />
+                  {selectedRecipeUrls.size > 0 && (
+                    <Button
+                      variant="outline"
+                      onClick={clearSelection}
+                      className="whitespace-nowrap h-10"
+                    >
+                      Clear All
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[800px] overflow-y-auto pr-2 pb-4">
+                {filteredRecipes.length === 0 ? (
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-zinc-500">
+                    No recipes found matching "{searchQuery}"
+                  </div>
+                ) : (
+                  filteredRecipes.map((recipe) => {
+                    const isSelected = selectedRecipeUrls.has(recipe.url);
+                    return (
+                      <Card
+                        key={recipe.url}
+                        className={`cursor-pointer transition-all duration-200 border-2 ${
+                          isSelected
+                            ? "border-teal-600 bg-teal-50"
+                            : "border-zinc-200 hover:border-zinc-300"
+                        }`}
+                        onClick={() => toggleRecipeSelection(recipe.url)}
+                      >
+                        <CardContent className="p-4 flex items-start gap-4 h-full">
+                          <div className="mt-1">
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={() =>
+                                toggleRecipeSelection(recipe.url)
+                              }
+                              className={
+                                isSelected
+                                  ? "data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 shadow-sm"
+                                  : ""
+                              }
+                            />
+                          </div>
+                          <div>
+                            <h3
+                              className={`font-bold text-lg leading-tight ${
+                                isSelected ? "text-teal-900" : "text-zinc-900"
+                              }`}
+                            >
+                              {recipe.title}
+                            </h3>
+                            {recipe.ingredients && (
+                              <p className="text-sm text-zinc-500 mt-1">
+                                {recipe.ingredients.length} ingredients
+                              </p>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Right Column: The List */}
@@ -294,9 +652,9 @@ export default function ShoppingList() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
                 <h2 className="text-2xl font-bold flex items-center gap-3">
                   <span>Your List</span>
-                  {selectedRecipeUrls.size > 0 && (
+                  {totalItemsSelectedCount > 0 && (
                     <span className="bg-teal-100 text-teal-800 text-sm py-1 px-3 rounded-full print:hidden">
-                      {selectedRecipeUrls.size} recipes
+                      {totalItemsSelectedCount} recipes
                     </span>
                   )}
                 </h2>
