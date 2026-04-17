@@ -30,7 +30,7 @@ export default function MyList() {
           <Button
             asChild
             variant="link"
-            className="font-ui text-[#0D9488] hover:text-[#0F172A]"
+            className="font-ui text-[#2596be] hover:text-[#0F172A]"
           >
             <Link to="/">Go browse some recipes</Link>
           </Button>
@@ -43,7 +43,7 @@ export default function MyList() {
             return (
               <Card
                 key={recipe.url || index}
-                className="reveal-card flex h-full flex-col bg-[#FAFAFA] border-t-[6px] border-t-[#0D9488] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
+                className="reveal-card flex h-full flex-col bg-[#FAFAFA] border-t-[6px] border-t-[#2596be] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
                 style={{ animationDelay: `${index * 45}ms` }}
               >
                 <CardHeader className="p-4 pb-2">
@@ -85,7 +85,7 @@ export default function MyList() {
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
                   <Button
-                    className="w-full bg-[#0F172A] hover:bg-[#0D9488] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
+                    className="w-full bg-[#0F172A] hover:bg-[#2596be] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
                     asChild
                   >
                     <Link to={`/recipe/${recipeId}`}>View Recipe</Link>

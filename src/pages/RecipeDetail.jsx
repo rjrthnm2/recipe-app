@@ -177,7 +177,7 @@ export default function RecipeDetail() {
     <article className="mx-auto max-w-4xl space-y-8 pb-20">
       <Link
         to="/"
-        className="font-ui text-[16px] text-[#0F172A]/70 hover:text-[#0D9488]"
+        className="font-ui text-[16px] text-[#0F172A]/70 hover:text-[#2596be]"
       >
         ← Back to Browse
       </Link>
@@ -218,7 +218,7 @@ export default function RecipeDetail() {
                 <Button
                   onClick={handleSaveEdit}
                   variant="default"
-                  className="flex items-center text-[18px] py-6 px-4 font-ui font-bold bg-[#0D9488] hover:bg-[#0D9488]/90 text-white"
+                  className="flex items-center text-[18px] py-6 px-4 font-ui font-bold bg-[#2596be] hover:bg-[#2596be]/90 text-white"
                 >
                   Save Edits
                 </Button>
@@ -372,7 +372,7 @@ export default function RecipeDetail() {
             className={
               isSaved
                 ? "font-ui text-[16px] font-bold bg-[#e2e8f0]/40 text-[#0F172A] hover:bg-[#e2e8f0]"
-                : "font-ui text-[16px] font-bold bg-[#0D9488] text-white hover:bg-[#0D9488]/90"
+                : "font-ui text-[16px] font-bold bg-[#2596be] text-white hover:bg-[#2596be]/90"
             }
             aria-label={
               isSaved
@@ -415,13 +415,13 @@ export default function RecipeDetail() {
       )}
 
       {shareMessage && (
-        <p role="status" className="font-sans text-[18px] text-[#0D9488]">
+        <p role="status" className="font-sans text-[18px] text-[#2596be]">
           {shareMessage}
         </p>
       )}
 
       {(currentData.author_note || isEditing) && (
-        <div className="rounded-[8px] border-l-4 border-l-[#0D9488] bg-[#F8FAFC] p-6 italic font-sans text-[20px] text-[#0F172A]/80 shadow-sm">
+        <div className="rounded-[8px] border-l-4 border-l-[#2596be] bg-[#F8FAFC] p-6 italic font-sans text-[20px] text-[#0F172A]/80 shadow-sm">
           {isEditing ? (
             <Textarea
               value={currentData.author_note || ""}
@@ -484,7 +484,7 @@ export default function RecipeDetail() {
                     checked={Boolean(checkedIngredients[ing])}
                     onCheckedChange={() => toggleIngredientCheck(ing)}
                     aria-label={`Mark ingredient as prepared: ${ing}`}
-                    className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#0D9488] data-[state=checked]:border-[#0D9488]"
+                    className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be]"
                   />
                   <label
                     htmlFor={`ingredient-${i}`}
@@ -544,7 +544,7 @@ export default function RecipeDetail() {
                   key={i}
                   className="flex gap-5 border-b border-[#e2e8f0] pb-6 last:border-b-0"
                 >
-                  <span className="font-heading text-4xl font-bold leading-none text-[#0D9488] opacity-80 mt-1">
+                  <span className="font-heading text-4xl font-bold leading-none text-[#2596be] opacity-80 mt-1">
                     {i + 1}
                   </span>
                   <p className="font-sans text-[20px] leading-[1.7] text-[#0F172A]">

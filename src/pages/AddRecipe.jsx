@@ -183,7 +183,7 @@ export default function AddRecipe() {
 
         <Button
           type="submit"
-          className="w-full text-[18px] bg-[#0D9488] hover:bg-[#0D9488]/90 text-white font-ui font-bold h-14 rounded-[8px] transition-colors mt-6"
+          className="w-full text-[18px] bg-[#2596be] hover:bg-[#2596be]/90 text-white font-ui font-bold h-14 rounded-[8px] transition-colors mt-6"
         >
           Save Recipe
         </Button>

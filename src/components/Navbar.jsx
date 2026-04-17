@@ -65,7 +65,7 @@ export default function Navbar() {
               </Button>
               <Button
                 variant="outline"
-                className="font-ui text-[16px] border-[#0D9488]/30 text-[#0D9488] bg-[#0D9488]/5 hover:bg-[#0D9488]/10 hover:border-[#0D9488]/50"
+                className="font-ui text-[16px] border-[#2596be]/30 text-[#2596be] bg-[#2596be]/5 hover:bg-[#2596be]/10 hover:border-[#2596be]/50"
                 asChild
               >
                 <Link to="/add">Add Recipe</Link>

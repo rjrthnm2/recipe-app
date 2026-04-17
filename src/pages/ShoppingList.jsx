@@ -487,12 +487,12 @@ export default function ShoppingList() {
 
           {selectingFor ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-teal-50/50 border border-teal-200 p-4 rounded-[12px]">
+              <div className="flex items-center justify-between bg-[#2596be]/10 border border-[#2596be]/30 p-4 rounded-[12px]">
                 <div>
-                  <h2 className="font-heading text-2xl font-bold text-[#0D9488]">
+                  <h2 className="font-heading text-2xl font-bold text-[#2596be]">
                     Selecting {selectingFor.meal}
                   </h2>
-                  <p className="font-sans text-[16px] text-teal-700">
+                  <p className="font-sans text-[16px] text-[#1f7ea0]">
                     for {selectingFor.day}
                   </p>
                 </div>
@@ -522,7 +522,7 @@ export default function ShoppingList() {
                   filteredRecipes.map((recipe) => (
                     <Card
                       key={recipe.url}
-                      className="cursor-pointer transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#0D9488] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
+                      className="cursor-pointer transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#2596be] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
                       onClick={() => handlePlannerSelect(recipe.url)}
                     >
                       <CardContent className="p-4 flex items-center justify-between h-full">
@@ -533,7 +533,7 @@ export default function ShoppingList() {
                         </div>
                         <Button
                           variant="ghost"
-                          className="text-[#0D9488] hover:bg-[#F8FAFC] font-ui font-bold ml-2"
+                          className="text-[#2596be] hover:bg-[#F8FAFC] font-ui font-bold ml-2"
                         >
                           Add
                         </Button>
@@ -584,7 +584,7 @@ export default function ShoppingList() {
                                 {meal}
                               </span>
                               {recipe ? (
-                                <span className="font-bold text-teal-900 truncate">
+                                <span className="font-bold text-[#155e78] truncate">
                                   {recipe.title}
                                 </span>
                               ) : (
@@ -608,7 +608,7 @@ export default function ShoppingList() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-6 px-2 py-0 border-teal-200 text-teal-700 hover:bg-teal-50 text-xs"
+                                className="h-6 px-2 py-0 border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10 text-xs"
                                 onClick={() => {
                                   setSelectingFor({ type: "week", day, meal });
                                   setSearchQuery("");
@@ -651,7 +651,7 @@ export default function ShoppingList() {
                             {meal}
                           </p>
                           {recipe ? (
-                            <p className="text-lg text-teal-900 font-bold leading-tight">
+                            <p className="text-lg text-[#155e78] font-bold leading-tight">
                               {recipe.title}
                             </p>
                           ) : (
@@ -671,7 +671,7 @@ export default function ShoppingList() {
                         ) : (
                           <Button
                             variant="outline"
-                            className="border-teal-200 text-teal-700 hover:bg-teal-50 bg-white"
+                            className="border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10 bg-white"
                             onClick={() => {
                               setSelectingFor({
                                 type: "day",
@@ -726,9 +726,9 @@ export default function ShoppingList() {
                     return (
                       <Card
                         key={recipe.url}
-                        className={`cursor-pointer transition-all duration-200 border-x border-b border-t-[6px] border-t-[#0D9488] hover:shadow-md rounded-[8px] overflow-hidden ${
+                        className={`cursor-pointer transition-all duration-200 border-x border-b border-t-[6px] border-t-[#2596be] hover:shadow-md rounded-[8px] overflow-hidden ${
                           isSelected
-                            ? "border-x-[#0D9488] border-b-[#0D9488] bg-[#0D9488]/5"
+                            ? "border-x-[#2596be] border-b-[#2596be] bg-[#2596be]/5"
                             : "border-x-[#e2e8f0] border-b-[#e2e8f0] bg-[#FAFAFA]"
                         }`}
                         onClick={() => toggleRecipeSelection(recipe.url)}
@@ -742,7 +742,7 @@ export default function ShoppingList() {
                               }
                               className={`h-5 w-5 border-[#e2e8f0] ${
                                 isSelected
-                                  ? "data-[state=checked]:bg-[#0D9488] data-[state=checked]:border-[#0D9488] text-white"
+                                  ? "data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] text-white"
                                   : ""
                               }`}
                             />
@@ -750,7 +750,7 @@ export default function ShoppingList() {
                           <div>
                             <h3
                               className={`font-heading font-bold text-[18px] leading-tight ${
-                                isSelected ? "text-[#0D9488]" : "text-[#0F172A]"
+                                isSelected ? "text-[#2596be]" : "text-[#0F172A]"
                               }`}
                             >
                               {recipe.title}
@@ -779,7 +779,7 @@ export default function ShoppingList() {
                 <h2 className="text-2xl font-bold flex items-center gap-3">
                   <span>Combined ingredients</span>
                   {selectedRecipeCount > 0 && (
-                    <span className="bg-teal-100 text-teal-800 text-sm py-1 px-3 rounded-full print:hidden">
+                    <span className="bg-[#2596be]/15 text-[#155e78] text-sm py-1 px-3 rounded-full print:hidden">
                       {selectedRecipeCount} recipes
                     </span>
                   )}
@@ -792,7 +792,7 @@ export default function ShoppingList() {
                       size="sm"
                       onClick={createShoppingList}
                       disabled={selectedIngredientCount === 0}
-                      className="bg-teal-600 hover:bg-teal-700 text-white"
+                      className="bg-[#2596be] hover:bg-[#1f86ad] text-white"
                     >
                       Create shopping list
                     </Button>
@@ -806,10 +806,10 @@ export default function ShoppingList() {
                 {shoppingListCreated && (
                   <section className="sticky top-0 z-20 print:static">
                     {finalListMinimized ? (
-                      <div className="mb-4 rounded-xl border border-[#0D9488]/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
+                      <div className="mb-4 rounded-xl border border-[#2596be]/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <p className="font-ui text-[13px] uppercase tracking-wide text-[#0D9488]">
+                            <p className="font-ui text-[13px] uppercase tracking-wide text-[#2596be]">
                               Shopping list ready
                             </p>
                             <p className="font-sans text-sm text-[#0F172A]">
@@ -820,14 +820,14 @@ export default function ShoppingList() {
                             variant="outline"
                             size="sm"
                             onClick={() => setFinalListMinimized(false)}
-                            className="border-[#0D9488]/40 text-[#0D9488] hover:bg-[#0D9488]/10"
+                            className="border-[#2596be]/40 text-[#2596be] hover:bg-[#2596be]/10"
                           >
                             Open
                           </Button>
                         </div>
                       </div>
                     ) : (
-                      <div className="mb-4 rounded-2xl border border-[#0D9488]/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
+                      <div className="mb-4 rounded-2xl border border-[#2596be]/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
                         <div className="flex flex-col gap-3 border-b border-zinc-200 pb-4 print:border-black print:pb-2">
                           <div className="flex items-start justify-between gap-3">
                             <div>
@@ -857,7 +857,7 @@ export default function ShoppingList() {
                               variant="default"
                               size="sm"
                               onClick={handlePrint}
-                              className="bg-teal-600 text-white hover:bg-teal-700"
+                              className="bg-[#2596be] text-white hover:bg-[#1f86ad]"
                               disabled={finalShoppingList.length === 0}
                             >
                               Print
@@ -892,7 +892,7 @@ export default function ShoppingList() {
                             <Button
                               type="button"
                               variant="outline"
-                              className="h-11 shrink-0 border-teal-200 text-teal-700 hover:bg-teal-50"
+                              className="h-11 shrink-0 border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10"
                               onClick={addCustomItem}
                             >
                               Add
@@ -956,7 +956,7 @@ export default function ShoppingList() {
                       {!shoppingListCreated &&
                         selectedIngredientCount === 0 &&
                         shoppingList.length > 0 && (
-                          <p className="mt-1 text-xs font-medium text-[#0D9488]">
+                          <p className="mt-1 text-xs font-medium text-[#2596be]">
                             Select at least one ingredient to enable "Create
                             shopping list".
                           </p>
@@ -1004,7 +1004,7 @@ export default function ShoppingList() {
                       </div>
                       <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#e2e8f0]">
                         <div
-                          className="h-full rounded-full bg-[#0D9488] transition-all duration-300"
+                          className="h-full rounded-full bg-[#2596be] transition-all duration-300"
                           style={{ width: `${selectionProgress}%` }}
                         />
                       </div>
@@ -1026,7 +1026,7 @@ export default function ShoppingList() {
                             key={`${item.text}-${id}`}
                             className={`flex items-start gap-3 rounded-xl border p-3 transition-colors ${
                               isChecked
-                                ? "border-teal-200 bg-teal-50/60"
+                                ? "border-[#2596be]/30 bg-[#2596be]/10"
                                 : "border-zinc-200 hover:bg-zinc-50"
                             }`}
                           >
