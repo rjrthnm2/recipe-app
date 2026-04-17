@@ -104,6 +104,13 @@ export default function ShoppingList() {
   const { recipes } = useRecipes();
   // Set of recipe URLs that are currently selected for the shopping list
   const [selectedRecipeUrls, setSelectedRecipeUrls] = useState(new Set());
+  const [selectedIngredientKeys, setSelectedIngredientKeys] = useState(
+    () => new Set(),
+  );
+  const [customItemText, setCustomItemText] = useState("");
+  const [customItems, setCustomItems] = useState([]);
+  const [shoppingListCreated, setShoppingListCreated] = useState(false);
+  const [finalListMinimized, setFinalListMinimized] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -145,6 +152,11 @@ export default function ShoppingList() {
         )
       ) {
         setSelectedRecipeUrls(new Set());
+        setSelectedIngredientKeys(new Set());
+        setCustomItems([]);
+        setCustomItemText("");
+        setShoppingListCreated(false);
+        setFinalListMinimized(false);
         const initPlanner = {};
         DAYS.forEach((d) => {
           initPlanner[d] = { Breakfast: null, Lunch: null, Dinner: null };
@@ -225,6 +237,37 @@ export default function ShoppingList() {
       .sort((a, b) => a.text.localeCompare(b.text));
   }, [recipes, selectedRecipeUrls, planner, dayPlanner]);
 
+  const selectedShoppingItems = useMemo(() => {
+    return shoppingList.filter((item) => selectedIngredientKeys.has(item.text));
+  }, [shoppingList, selectedIngredientKeys]);
+
+  const finalShoppingList = useMemo(() => {
+    return [...selectedShoppingItems, ...customItems].sort((a, b) => {
+      if (a.type !== b.type) return a.type === "custom" ? 1 : -1;
+      return a.text.localeCompare(b.text);
+    });
+  }, [selectedShoppingItems, customItems]);
+
+  const selectedIngredientCount = selectedShoppingItems.length;
+  const totalIngredientCount = shoppingList.length;
+  const selectionProgress =
+    totalIngredientCount > 0
+      ? Math.round((selectedIngredientCount / totalIngredientCount) * 100)
+      : 0;
+
+  const selectedRecipeCount = useMemo(() => {
+    const recipeUrls = new Set(selectedRecipeUrls);
+    Object.values(planner).forEach((day) => {
+      Object.values(day).forEach((url) => {
+        if (url) recipeUrls.add(url);
+      });
+    });
+    Object.values(dayPlanner).forEach((url) => {
+      if (url) recipeUrls.add(url);
+    });
+    return recipeUrls.size;
+  }, [selectedRecipeUrls, planner, dayPlanner]);
+
   const removeMeal = (type, day, meal) => {
     if (type === "week") {
       setPlanner((prev) => ({
@@ -242,6 +285,11 @@ export default function ShoppingList() {
       (selectingFor && selectingFor.type === "quick")
     ) {
       setSelectedRecipeUrls(new Set());
+      setSelectedIngredientKeys(new Set());
+      setCustomItems([]);
+      setCustomItemText("");
+      setShoppingListCreated(false);
+      setFinalListMinimized(false);
     } else if (
       activeTab === "planner" ||
       (selectingFor && selectingFor.type === "week")
@@ -251,12 +299,35 @@ export default function ShoppingList() {
         init[d] = { Breakfast: null, Lunch: null, Dinner: null };
       });
       setPlanner(init);
+      setSelectedIngredientKeys(new Set());
+      setCustomItems([]);
+      setCustomItemText("");
+      setShoppingListCreated(false);
+      setFinalListMinimized(false);
     } else if (
       activeTab === "day" ||
       (selectingFor && selectingFor.type === "day")
     ) {
       setDayPlanner({ Breakfast: null, Lunch: null, Dinner: null });
+      setSelectedIngredientKeys(new Set());
+      setCustomItems([]);
+      setCustomItemText("");
+      setShoppingListCreated(false);
+      setFinalListMinimized(false);
     }
+  };
+
+  const createShoppingList = () => {
+    setShoppingListCreated(true);
+    setFinalListMinimized(false);
+  };
+
+  const selectAllIngredients = () => {
+    setSelectedIngredientKeys(new Set(shoppingList.map((item) => item.text)));
+  };
+
+  const clearIngredientSelection = () => {
+    setSelectedIngredientKeys(new Set());
   };
 
   const handlePlannerSelect = (url) => {
@@ -289,16 +360,60 @@ export default function ShoppingList() {
     });
   };
 
+  const toggleIngredientSelection = (itemText) => {
+    setSelectedIngredientKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemText)) {
+        next.delete(itemText);
+      } else {
+        next.add(itemText);
+      }
+      return next;
+    });
+  };
+
+  const addCustomItem = () => {
+    const trimmed = customItemText.trim();
+    if (!trimmed) return;
+
+    setCustomItems((prev) => [
+      ...prev,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        text: trimmed,
+        type: "custom",
+      },
+    ]);
+    setCustomItemText("");
+  };
+
+  const removeShoppingItem = (item) => {
+    if (item.type === "custom") {
+      setCustomItems((prev) => prev.filter((entry) => entry.id !== item.id));
+      return;
+    }
+
+    setSelectedIngredientKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(item.text);
+      return next;
+    });
+  };
+
   const copyToClipboard = async () => {
-    if (shoppingList.length === 0) return;
+    if (finalShoppingList.length === 0) return;
 
     // Format a nice readable text string for notes apps
     const textToCopy = [
       "🛒 Shopping List",
       "-------------------",
-      ...shoppingList.map((item) => `[ ] ${item.text}`),
+      ...finalShoppingList.map((item) => `[ ] ${item.text}`),
       "-------------------",
-      `From: ${Array.from(new Set(shoppingList.flatMap((item) => item.recipeTitle.split(", ")))).join(", ")}`,
+      `From: ${Array.from(
+        new Set(
+          selectedShoppingItems.flatMap((item) => item.recipeTitle.split(", ")),
+        ),
+      ).join(", ")}`,
     ].join("\n");
 
     try {
@@ -662,31 +777,24 @@ export default function ShoppingList() {
             <div className="bg-zinc-100 p-6 border-b border-zinc-200 print:bg-white print:p-0 print:border-b-2 print:border-black print:pb-4 print:mb-4">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
                 <h2 className="text-2xl font-bold flex items-center gap-3">
-                  <span>Your List</span>
-                  {totalItemsSelectedCount > 0 && (
+                  <span>Combined ingredients</span>
+                  {selectedRecipeCount > 0 && (
                     <span className="bg-teal-100 text-teal-800 text-sm py-1 px-3 rounded-full print:hidden">
-                      {totalItemsSelectedCount} recipes
+                      {selectedRecipeCount} recipes
                     </span>
                   )}
                 </h2>
 
-                {shoppingList.length > 0 && (
-                  <div className="flex items-center gap-2 print:hidden">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={copyToClipboard}
-                      className="bg-white"
-                    >
-                      {copied ? "Copied!" : "Copy"}
-                    </Button>
+                {!shoppingListCreated && shoppingList.length > 0 && (
+                  <div className="print:hidden">
                     <Button
                       variant="default"
                       size="sm"
-                      onClick={handlePrint}
+                      onClick={createShoppingList}
+                      disabled={selectedIngredientCount === 0}
                       className="bg-teal-600 hover:bg-teal-700 text-white"
                     >
-                      Print
+                      Create shopping list
                     </Button>
                   </div>
                 )}
@@ -694,50 +802,270 @@ export default function ShoppingList() {
             </div>
 
             <div className="p-6 overflow-y-auto flex-grow print:p-0 print:overflow-visible">
-              {shoppingList.length === 0 ? (
-                <div className="text-center py-12 text-zinc-500 space-y-4 print:hidden">
-                  <div className="text-4xl">🛒</div>
-                  <p className="text-lg">
-                    Select recipes from the left to build your list.
-                  </p>
-                </div>
-              ) : (
-                <ul className="space-y-4 print:space-y-3">
-                  {shoppingList.map((item, id) => (
-                    <li
-                      key={id}
-                      className="flex items-start gap-3 p-2 rounded hover:bg-zinc-50 transition-colors print:p-0"
-                    >
-                      <Checkbox
-                        id={`item-${id}`}
-                        className="mt-1 w-5 h-5 print:hidden"
-                      />
-                      <div className="hidden print:block w-5 h-5 border-2 border-black rounded-sm mt-1"></div>
-                      <div className="grid gap-1.5 flex-1">
-                        <label
-                          htmlFor={`item-${id}`}
-                          className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer print:text-black print:text-xl"
-                        >
-                          {item.text}
-                        </label>
-                        <p className="text-sm text-zinc-500 print:text-zinc-800">
-                          Used in: {item.recipeTitle}
-                        </p>
-                        {item.originals && item.originals.length > 0 && (
-                          <p className="text-xs text-zinc-400 mt-1 print:hidden">
-                            Matches: {item.originals.join(" & ")}
+              <div className="space-y-6 print:space-y-4">
+                {shoppingListCreated && (
+                  <section className="sticky top-0 z-20 print:static">
+                    {finalListMinimized ? (
+                      <div className="mb-4 rounded-xl border border-[#0D9488]/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="font-ui text-[13px] uppercase tracking-wide text-[#0D9488]">
+                              Shopping list ready
+                            </p>
+                            <p className="font-sans text-sm text-[#0F172A]">
+                              {finalShoppingList.length} items selected
+                            </p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setFinalListMinimized(false)}
+                            className="border-[#0D9488]/40 text-[#0D9488] hover:bg-[#0D9488]/10"
+                          >
+                            Open
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mb-4 rounded-2xl border border-[#0D9488]/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
+                        <div className="flex flex-col gap-3 border-b border-zinc-200 pb-4 print:border-black print:pb-2">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h3 className="text-lg font-bold text-[#0F172A]">
+                                Final shopping list
+                              </h3>
+                              <p className="text-sm text-zinc-500 print:hidden">
+                                Always visible while you pick ingredients.
+                              </p>
+                            </div>
+                            <span className="text-sm font-medium text-zinc-500 print:hidden">
+                              {finalShoppingList.length} items
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 print:hidden">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={copyToClipboard}
+                              className="bg-white"
+                              disabled={finalShoppingList.length === 0}
+                            >
+                              {copied ? "Copied!" : "Copy"}
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={handlePrint}
+                              className="bg-teal-600 text-white hover:bg-teal-700"
+                              disabled={finalShoppingList.length === 0}
+                            >
+                              Print
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setFinalListMinimized(true)}
+                              className="text-zinc-600 hover:bg-zinc-100"
+                            >
+                              Minimize
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="pt-4 print:pt-2">
+                          <div className="flex gap-2 print:hidden">
+                            <Input
+                              value={customItemText}
+                              onChange={(e) =>
+                                setCustomItemText(e.target.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  addCustomItem();
+                                }
+                              }}
+                              placeholder="Add extra item, like milk or foil..."
+                              className="h-11 bg-white text-[16px] border-[#e2e8f0] font-sans"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-11 shrink-0 border-teal-200 text-teal-700 hover:bg-teal-50"
+                              onClick={addCustomItem}
+                            >
+                              Add
+                            </Button>
+                          </div>
+
+                          {finalShoppingList.length === 0 ? (
+                            <div className="mt-3 rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 print:border-black print:text-black">
+                              Select ingredients below or add custom items here.
+                            </div>
+                          ) : (
+                            <ul className="mt-3 max-h-[320px] space-y-3 overflow-y-auto pr-1 print:mt-2 print:max-h-max print:space-y-2 print:overflow-visible print:pr-0">
+                              {finalShoppingList.map((item, id) => (
+                                <li
+                                  key={item.id || `${item.text}-${id}`}
+                                  className="flex items-start gap-3 rounded-xl border border-zinc-200 p-3 print:border-black print:rounded-none print:p-0 print:border-0"
+                                >
+                                  <Checkbox
+                                    id={`cart-${id}`}
+                                    checked
+                                    onCheckedChange={() =>
+                                      removeShoppingItem(item)
+                                    }
+                                    className="mt-1 h-5 w-5 shrink-0 print:hidden"
+                                  />
+                                  <div className="hidden print:block w-5 h-5 border-2 border-black rounded-sm mt-1 shrink-0"></div>
+                                  <label
+                                    htmlFor={`cart-${id}`}
+                                    className="grid flex-1 cursor-pointer gap-1.5"
+                                  >
+                                    <span className="text-base font-medium leading-snug text-[#0F172A] print:text-black print:text-xl">
+                                      {item.text}
+                                    </span>
+                                    {item.type === "custom" ? (
+                                      <span className="text-xs uppercase tracking-wide text-zinc-400 print:text-zinc-700">
+                                        Added manually
+                                      </span>
+                                    ) : (
+                                      <span className="text-sm text-zinc-500 print:text-zinc-800">
+                                        From recipes: {item.recipeTitle}
+                                      </span>
+                                    )}
+                                  </label>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                <section className="space-y-3 print:hidden">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm text-zinc-500">
+                        Select ingredients Mou needs, then create the shopping
+                        list.
+                      </p>
+                      {!shoppingListCreated &&
+                        selectedIngredientCount === 0 &&
+                        shoppingList.length > 0 && (
+                          <p className="mt-1 text-xs font-medium text-[#0D9488]">
+                            Select at least one ingredient to enable "Create
+                            shopping list".
                           </p>
                         )}
+                    </div>
+                    <span className="text-sm font-medium text-zinc-500">
+                      {shoppingList.length} items
+                    </span>
+                  </div>
+
+                  {shoppingList.length > 0 && (
+                    <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <p className="font-ui text-[13px] uppercase tracking-wide text-[#64748b]">
+                            Selection progress
+                          </p>
+                          <p className="font-sans text-sm text-[#0F172A]">
+                            {selectedIngredientCount} of {totalIngredientCount}{" "}
+                            selected
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={selectAllIngredients}
+                            disabled={totalIngredientCount === 0}
+                            className="border-[#cbd5e1] bg-white"
+                          >
+                            Select all
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={clearIngredientSelection}
+                            disabled={selectedIngredientCount === 0}
+                            className="border-[#cbd5e1] bg-white"
+                          >
+                            Clear
+                          </Button>
+                        </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#e2e8f0]">
+                        <div
+                          className="h-full rounded-full bg-[#0D9488] transition-all duration-300"
+                          style={{ width: `${selectionProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {shoppingList.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500">
+                      Select recipes on the left to build the combined
+                      ingredient list.
+                    </div>
+                  ) : (
+                    <ul className="space-y-3">
+                      {shoppingList.map((item, id) => {
+                        const isChecked = selectedIngredientKeys.has(item.text);
+
+                        return (
+                          <li
+                            key={`${item.text}-${id}`}
+                            className={`flex items-start gap-3 rounded-xl border p-3 transition-colors ${
+                              isChecked
+                                ? "border-teal-200 bg-teal-50/60"
+                                : "border-zinc-200 hover:bg-zinc-50"
+                            }`}
+                          >
+                            <Checkbox
+                              id={`ingredient-${id}`}
+                              checked={isChecked}
+                              onCheckedChange={() =>
+                                toggleIngredientSelection(item.text)
+                              }
+                              className="mt-1 h-5 w-5 shrink-0"
+                            />
+                            <label
+                              htmlFor={`ingredient-${id}`}
+                              className="grid flex-1 cursor-pointer gap-1.5"
+                            >
+                              <span className="text-base font-medium leading-snug text-[#0F172A]">
+                                {item.text}
+                              </span>
+                              <span className="text-sm text-zinc-500">
+                                Used in: {item.recipeTitle}
+                              </span>
+                              {item.originals && item.originals.length > 0 && (
+                                <span className="text-xs text-zinc-400">
+                                  Matches: {item.originals.join(" & ")}
+                                </span>
+                              )}
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              </div>
             </div>
-            {shoppingList.length > 0 && (
+            {shoppingListCreated && finalShoppingList.length > 0 && (
               <div className="p-4 border-t border-zinc-200 bg-zinc-50 text-center print:hidden">
                 <p className="text-sm text-zinc-500">
-                  {shoppingList.length} total items
+                  {finalShoppingList.length} total items
                 </p>
               </div>
             )}
