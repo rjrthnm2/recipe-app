@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
+import { isAdminEmail } from "../lib/admins";
 import defaultRecipes from "../data/jewel_recipes.json";
 
 const RecipesContext = createContext();
@@ -112,12 +113,7 @@ export function RecipesProvider({ children }) {
   };
 
   const updateRecipe = async (id, updatedData) => {
-    if (
-      !user ||
-      !["robinzjephthah@gmail.com", "maureenpeck1412@gmail.com"].includes(
-        user.email,
-      )
-    ) {
+    if (!user || !isAdminEmail(user.email)) {
       alert("Only a superuser can edit recipes.");
       return;
     }
@@ -139,12 +135,7 @@ export function RecipesProvider({ children }) {
   };
 
   const deleteRecipe = async (id) => {
-    if (
-      !user ||
-      !["robinzjephthah@gmail.com", "maureenpeck1412@gmail.com"].includes(
-        user.email,
-      )
-    ) {
+    if (!user || !isAdminEmail(user.email)) {
       alert("Only a superuser can delete recipes.");
       return;
     }

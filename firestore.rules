@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The two accounts allowed to edit and delete recipes.
+    // To add/remove an admin: update this list AND src/lib/admins.js, then redeploy.
+    function isSuperuser() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'robinzjephthah@gmail.com',
+          'maureenpeck1412@gmail.com'
+        ];
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Master recipe list.
+    match /recipes/{recipeId} {
+      allow read: if true;                 // anyone can browse, no login needed
+      allow create: if isSignedIn();       // any signed-in user can add a recipe
+      allow update, delete: if isSuperuser(); // only the two owners can edit/delete
+    }
+
+    // Each user's personal saved ("My List") document.
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Archive written automatically when a superuser deletes a recipe.
+    match /deleted_recipes/{recipeId} {
+      allow read, write: if isSuperuser();
+    }
+
+    // Deny anything not matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

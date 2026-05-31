@@ -1,16 +1,69 @@
-# React + Vite
+# Jewel's Recipes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A digital recipe box for Maureen and her friends — browse, save, plan meals, and
+build shopping lists. Designed for legibility and ease of use (large text, big
+tap targets, high contrast). Live and hosted on Firebase.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **Vite** — UI and build tooling
+- **Tailwind CSS v4** + **shadcn/ui** — styling and components (`src/components/ui`)
+- **Firebase** — Firestore (database), Google sign-in (auth), Hosting
+- **React Router 7** — page routing
 
-## React Compiler
+## Project structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+  firebase.js          Firebase connection + config
+  hooks/
+    useAuth.jsx        Auth context: current user, login, logout (single listener)
+    useRecipes.jsx     Recipes context: fetch / add / edit / delete / save
+  lib/
+    admins.js          Single source of truth for superuser emails (UI only)
+  pages/
+    Home.jsx           Browse + ranked search
+    RecipeDetail.jsx   View a recipe (+ edit/delete for superusers)
+    AddRecipe.jsx      Add-a-recipe form
+    MyList.jsx         Personal saved recipes
+    ShoppingList.jsx   Meal planner + shopping-list builder
+  components/
+    Navbar.jsx
+    ui/                shadcn/ui primitives
+  data/
+    jewel_recipes.json Seed data (used once if the database is empty)
+firestore.rules        Server-side security rules (source of truth)
+```
 
-## Expanding the ESLint configuration
+## Permissions model
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Who | Browse | Add | Edit / Delete |
+| --- | :---: | :---: | :---: |
+| Not logged in | ✅ | ❌ | ❌ |
+| Any logged-in user | ✅ | ✅ | ❌ |
+| Superusers (see `src/lib/admins.js`) | ✅ | ✅ | ✅ |
+
+Enforcement lives in **`firestore.rules`** (server-side). `src/lib/admins.js`
+only controls which buttons appear in the UI — the two lists must be kept in
+sync. Saved-recipe lists are private per user.
+
+## Local development
+
+```bash
+npm install
+npm run dev      # start the dev server
+npm run lint     # run ESLint
+npm run build    # production build to dist/
+npm run preview  # preview the production build
+```
+
+## Deploying
+
+Requires the Firebase CLI (`npm i -g firebase-tools`) and access to the
+`recipe-app-f8fd3` project.
+
+```bash
+npm run build
+firebase deploy --only hosting          # deploy the site
+firebase deploy --only firestore:rules  # deploy security rules
+```

@@ -950,8 +950,8 @@ export default function ShoppingList() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm text-zinc-500">
-                        Select ingredients Mou needs, then create the shopping
-                        list.
+                        Select the ingredients you need, then create the
+                        shopping list.
                       </p>
                       {!shoppingListCreated &&
                         selectedIngredientCount === 0 &&
