@@ -11,7 +11,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
-import { isAdminEmail } from "../lib/admins";
 import defaultRecipes from "../data/jewel_recipes.json";
 
 const RecipesContext = createContext();
@@ -21,7 +20,7 @@ export function RecipesProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [savedIds, setSavedIds] = useState([]);
 
-  const { user } = useAuth(); // <-- Get the currently logged-in user
+  const { user, isAdmin } = useAuth(); // <-- Get the currently logged-in user
 
   // 1. Fetch the master recipe list (Same as before)
   useEffect(() => {
@@ -113,7 +112,7 @@ export function RecipesProvider({ children }) {
   };
 
   const updateRecipe = async (id, updatedData) => {
-    if (!user || !isAdminEmail(user.email)) {
+    if (!user || !isAdmin) {
       alert("Only a superuser can edit recipes.");
       return;
     }
@@ -135,7 +134,7 @@ export function RecipesProvider({ children }) {
   };
 
   const deleteRecipe = async (id) => {
-    if (!user || !isAdminEmail(user.email)) {
+    if (!user || !isAdmin) {
       alert("Only a superuser can delete recipes.");
       return;
     }

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAuth } from "../hooks/useAuth";
-import { isAdminEmail } from "../lib/admins";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Checkbox } from "../components/ui/checkbox";
@@ -53,8 +52,7 @@ function PencilIcon(props) {
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const isSuperuser = isAdminEmail(user?.email);
+  const { isAdmin: isSuperuser } = useAuth();
 
   const { recipes, toggleSave, savedIds, loading, updateRecipe, deleteRecipe } =
     useRecipes();

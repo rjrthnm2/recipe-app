@@ -3,15 +3,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // The two accounts allowed to edit and delete recipes.
-    // To add/remove an admin: update this list AND src/lib/admins.js, then redeploy.
+    // Superusers carry a custom "admin" claim on their auth token, granted
+    // out-of-band via scripts/setAdmins.js. No emails are stored here.
     function isSuperuser() {
-      return request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email in [
-          'robinzjephthah@gmail.com',
-          'maureenpeck1412@gmail.com'
-        ];
+      return request.auth != null && request.auth.token.admin == true;
     }
 
     function isSignedIn() {
