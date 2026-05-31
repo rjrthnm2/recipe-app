@@ -60,7 +60,7 @@ export default function MyList() {
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
-                      strokeLinelinejoin="round"
+                      strokeLinejoin="round"
                       className="mr-1.5"
                     >
                       <circle cx="12" cy="12" r="10" />
