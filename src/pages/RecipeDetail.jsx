@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAuth } from "../hooks/useAuth";
@@ -7,6 +7,12 @@ import { Badge } from "../components/ui/badge";
 import { Checkbox } from "../components/ui/checkbox";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
+import IngredientsEditor from "../components/IngredientsEditor";
+import {
+  formatIngredient,
+  normalizeIngredient,
+  collectIngredientNames,
+} from "../lib/units";
 
 // Simple Trash Icon SVG
 function TrashIcon(props) {
@@ -56,6 +62,10 @@ export default function RecipeDetail() {
 
   const { recipes, toggleSave, savedIds, loading, updateRecipe, deleteRecipe } =
     useRecipes();
+  const ingredientNames = useMemo(
+    () => collectIngredientNames(recipes),
+    [recipes],
+  );
 
   // Recipe states
   const [copied, setCopied] = useState(false);
@@ -110,6 +120,8 @@ export default function RecipeDetail() {
     setEditForm({
       ...recipe,
       tags: recipe.tags ? recipe.tags.map((t) => t.replace(/[()]/g, "")) : [],
+      // Convert ingredients (legacy strings or structured) to editable rows.
+      ingredients: (recipe.ingredients || []).map(normalizeIngredient),
     });
   };
 
@@ -126,6 +138,15 @@ export default function RecipeDetail() {
           .map((t) => t.trim())
           .filter((t) => t !== "")
           .map((t) => (t.startsWith("(") ? t : `(${t})`)),
+        // Drop empty ingredient rows and tidy the rest.
+        ingredients: (editForm.ingredients || [])
+          .filter((ing) => (ing.name || "").trim() !== "")
+          .map((ing) => ({
+            quantity: (ing.quantity || "").trim(),
+            unit: ing.unit || "",
+            name: ing.name.trim(),
+            note: (ing.note || "").trim(),
+          })),
       };
       await updateRecipe(recipe.url, updated);
     }
@@ -437,60 +458,41 @@ export default function RecipeDetail() {
           <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
             Ingredients
           </h2>
-          <ul className="space-y-4">
-            {isEditing ? (
-              <div className="space-y-3">
-                {currentData.ingredients.map((ing, i) => (
-                  <div key={i} className="flex gap-2">
-                    <Textarea
-                      value={ing}
-                      onChange={(e) =>
-                        handleArrayChange("ingredients", i, e.target.value)
-                      }
-                      className="bg-white min-h-[60px] border-[#e2e8f0] font-sans text-[18px]"
-                      placeholder="Ingredient"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-[#dc2626] h-10 w-10 shrink-0 hover:bg-red-50"
-                      onClick={() => handleRemoveArrayItem("ingredients", i)}
-                    >
-                      &times;
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  variant="outline"
-                  className="w-full font-ui text-[#0F172A] border-[#e2e8f0]"
-                  onClick={() => handleAddArrayItem("ingredients")}
-                >
-                  + Add Ingredient
-                </Button>
-              </div>
-            ) : (
-              currentData.ingredients.map((ing, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-4 font-sans text-[18px] text-[#0F172A] p-2 hover:bg-[#F8FAFC] rounded-[8px] transition-colors"
-                >
-                  <Checkbox
-                    id={`ingredient-${i}`}
-                    checked={Boolean(checkedIngredients[ing])}
-                    onCheckedChange={() => toggleIngredientCheck(ing)}
-                    aria-label={`Mark ingredient as prepared: ${ing}`}
-                    className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be]"
-                  />
-                  <label
-                    htmlFor={`ingredient-${i}`}
-                    className={`cursor-pointer leading-relaxed ${checkedIngredients[ing] ? "line-through text-[#64748b]" : ""}`}
+          {isEditing ? (
+            <IngredientsEditor
+              value={currentData.ingredients}
+              onChange={(ingredients) =>
+                setEditForm({ ...editForm, ingredients })
+              }
+              suggestions={ingredientNames}
+            />
+          ) : (
+            <ul className="space-y-4">
+              {currentData.ingredients.map((ing, i) => {
+                const text = formatIngredient(ing);
+                return (
+                  <li
+                    key={i}
+                    className="flex items-start gap-4 font-sans text-[18px] text-[#0F172A] p-2 hover:bg-[#F8FAFC] rounded-[8px] transition-colors"
                   >
-                    {ing}
-                  </label>
-                </li>
-              ))
-            )}
-          </ul>
+                    <Checkbox
+                      id={`ingredient-${i}`}
+                      checked={Boolean(checkedIngredients[i])}
+                      onCheckedChange={() => toggleIngredientCheck(i)}
+                      aria-label={`Mark ingredient as prepared: ${text}`}
+                      className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be]"
+                    />
+                    <label
+                      htmlFor={`ingredient-${i}`}
+                      className={`cursor-pointer leading-relaxed ${checkedIngredients[i] ? "line-through text-[#64748b]" : ""}`}
+                    >
+                      {text}
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         <div className="md:col-span-2 space-y-6">
