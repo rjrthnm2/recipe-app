@@ -17,10 +17,8 @@ tap targets, high contrast). Live and hosted on Firebase.
 src/
   firebase.js          Firebase connection + config
   hooks/
-    useAuth.jsx        Auth context: current user, login, logout (single listener)
+    useAuth.jsx        Auth context: current user, isAdmin, login, logout
     useRecipes.jsx     Recipes context: fetch / add / edit / delete / save
-  lib/
-    admins.js          Single source of truth for superuser emails (UI only)
   pages/
     Home.jsx           Browse + ranked search
     RecipeDetail.jsx   View a recipe (+ edit/delete for superusers)
@@ -32,6 +30,8 @@ src/
     ui/                shadcn/ui primitives
   data/
     jewel_recipes.json Seed data (used once if the database is empty)
+scripts/
+  setAdmins.js         One-time script to grant/revoke the admin claim
 firestore.rules        Server-side security rules (source of truth)
 ```
 
@@ -41,11 +41,25 @@ firestore.rules        Server-side security rules (source of truth)
 | --- | :---: | :---: | :---: |
 | Not logged in | ✅ | ❌ | ❌ |
 | Any logged-in user | ✅ | ✅ | ❌ |
-| Superusers (see `src/lib/admins.js`) | ✅ | ✅ | ✅ |
+| Superusers (admin claim) | ✅ | ✅ | ✅ |
 
-Enforcement lives in **`firestore.rules`** (server-side). `src/lib/admins.js`
-only controls which buttons appear in the UI — the two lists must be kept in
-sync. Saved-recipe lists are private per user.
+Superusers are identified by a Firebase **custom claim** (`admin: true`) on
+their auth token — no emails are stored in the codebase. Both `firestore.rules`
+(server-side enforcement) and the app UI check this claim. Saved-recipe lists
+are private per user.
+
+### Granting admin access
+
+```bash
+# 1. Download a service account key from the Firebase Console
+#    (Project settings -> Service accounts -> Generate new private key)
+#    and save it as serviceAccountKey.json in the project root (git-ignored).
+# 2. Run:
+node scripts/setAdmins.js person@example.com
+# Revoke with:  node scripts/setAdmins.js --remove person@example.com
+```
+
+The affected user must sign out and back in for the change to take effect.
 
 ## Local development
 

@@ -10,9 +10,27 @@ import {
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { Input } from "../components/ui/input";
+import {
+  parseQuantity,
+  getUnitLabel,
+  formatIngredient,
+  isStructuredIngredient,
+} from "../lib/units";
 
 // A heuristic parser for recipe ingredients
 function parseIngredient(rawText) {
+  // Structured ingredients (new format) need no guessing — use the fields.
+  if (isStructuredIngredient(rawText)) {
+    const amount = parseQuantity(rawText.quantity);
+    const name = (rawText.name || "").trim().toLowerCase() || "unknown";
+    // Use the singular canonical form so it groups with legacy parsed units.
+    const unit =
+      rawText.unit && rawText.unit !== "to_taste"
+        ? getUnitLabel(rawText.unit, 1).toLowerCase()
+        : "";
+    return { amount: amount || 0, unit, name, original: formatIngredient(rawText) };
+  }
+
   const text = String(rawText).trim();
   // 1. Extract quantity (e.g. "1", "1.5", "1 1/2", "1/2")
   const qtyMatch = text.match(/^(\d+(?:[\s-]\d+\/\d+|\/\d+|\.\d+)?)\s*(.*)/);

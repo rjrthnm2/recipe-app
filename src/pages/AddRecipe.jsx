@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
+import IngredientsEditor from "../components/IngredientsEditor";
+import { emptyIngredient, collectIngredientNames } from "../lib/units";
 
 export default function AddRecipe() {
-  const { addRecipe } = useRecipes();
+  const { addRecipe, recipes } = useRecipes();
   const navigate = useNavigate();
+  const ingredientNames = useMemo(
+    () => collectIngredientNames(recipes),
+    [recipes],
+  );
 
   const [formData, setFormData] = useState({
     title: "",
@@ -17,14 +23,28 @@ export default function AddRecipe() {
     cook_time: "",
     servings: "",
     tags: "",
-    ingredients: "",
+    ingredients: [emptyIngredient()],
     directions: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Process the "one per line" text into arrays like the JSON format
+    // Keep only ingredient rows that actually have a name, and tidy each field.
+    const cleanedIngredients = formData.ingredients
+      .filter((ing) => ing.name.trim() !== "")
+      .map((ing) => ({
+        quantity: ing.quantity.trim(),
+        unit: ing.unit,
+        name: ing.name.trim(),
+        note: ing.note.trim(),
+      }));
+
+    if (cleanedIngredients.length === 0) {
+      alert("Please add at least one ingredient (with a name).");
+      return;
+    }
+
     const newRecipe = {
       ...formData,
       tags: formData.tags
@@ -32,9 +52,7 @@ export default function AddRecipe() {
         .map((t) => t.trim())
         .filter((t) => t !== "")
         .map((t) => (t.startsWith("(") ? t : `(${t})`)),
-      ingredients: formData.ingredients
-        .split("\n")
-        .filter((line) => line.trim() !== ""),
+      ingredients: cleanedIngredients,
       directions: formData.directions
         .split("\n")
         .filter((line) => line.trim() !== ""),
@@ -127,21 +145,19 @@ export default function AddRecipe() {
         </div>
 
         <div className="space-y-2">
-          <Label
-            htmlFor="ingredients"
-            className="font-sans text-[16px] text-[#0F172A]"
-          >
-            Ingredients (one per line)
+          <Label className="font-sans text-[16px] text-[#0F172A]">
+            Ingredients
           </Label>
-          <Textarea
-            id="ingredients"
-            required
-            className="min-h-[180px] border-[#e2e8f0] font-sans text-[16px]"
-            placeholder="1 lb ground beef&#10;1 can tomato sauce"
+          <p className="font-sans text-[14px] text-[#64748b]">
+            Enter an amount, pick a unit, and name the ingredient. The unit list
+            keeps everything consistent across recipes.
+          </p>
+          <IngredientsEditor
             value={formData.ingredients}
-            onChange={(e) =>
-              setFormData({ ...formData, ingredients: e.target.value })
+            onChange={(ingredients) =>
+              setFormData({ ...formData, ingredients })
             }
+            suggestions={ingredientNames}
           />
         </div>
 
