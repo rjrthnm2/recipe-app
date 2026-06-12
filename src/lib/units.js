@@ -107,6 +107,21 @@ export function emptyIngredient() {
   return { quantity: "", unit: "", name: "", note: "" };
 }
 
+// Normalize messy legacy ingredient text: strip leading bullets/dashes and
+// convert unicode fractions to ASCII. Shared by the editor and shopping list.
+export function cleanIngredientText(raw) {
+  return String(raw ?? "")
+    .replace(/^[\s*•◦‣⁃·‐-―-]+/, "") // leading bullets / dashes (incl. unicode)
+    .replace(/⁄/g, "/") // unicode fraction slash ⁄ -> /
+    .replace(/½/g, " 1/2")
+    .replace(/¼/g, " 1/4")
+    .replace(/¾/g, " 3/4")
+    .replace(/⅓/g, " 1/3")
+    .replace(/⅔/g, " 2/3")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function isStructuredIngredient(ing) {
   return Boolean(ing) && typeof ing === "object";
 }
@@ -179,16 +194,7 @@ export function normalizeIngredient(raw) {
     };
   }
 
-  const text = String(raw ?? "")
-    .replace(/^[\s*•◦‣⁃·‐-―-]+/, "") // strip leading bullets / dashes (incl. unicode)
-    .replace(/⁄/g, "/") // unicode fraction slash ⁄ -> /
-    .replace(/½/g, " 1/2")
-    .replace(/¼/g, " 1/4")
-    .replace(/¾/g, " 3/4")
-    .replace(/⅓/g, " 1/3")
-    .replace(/⅔/g, " 2/3")
-    .replace(/\s+/g, " ")
-    .trim();
+  const text = cleanIngredientText(raw);
   if (!text) return emptyIngredient();
 
   let rest = text;

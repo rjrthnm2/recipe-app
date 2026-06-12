@@ -211,9 +211,43 @@ export default function RecipeDetail() {
               placeholder="Recipe Title"
             />
           ) : (
-            <h1 className="font-heading text-4xl md:text-5xl font-bold tracking-tight mt-2 text-[#0F172A]">
-              {currentData.title}
-            </h1>
+            <div className="flex items-start gap-3">
+              <h1 className="font-heading text-4xl md:text-5xl font-bold tracking-tight mt-2 text-[#0F172A]">
+                {currentData.title}
+              </h1>
+              <button
+                type="button"
+                onClick={() => toggleSave(recipe.url)}
+                aria-label={
+                  isSaved ? "Remove from My List" : "Save to My List"
+                }
+                aria-pressed={isSaved}
+                title={isSaved ? "Remove from My List" : "Save to My List"}
+                className="relative mt-3 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+              >
+                {isSaved && (
+                  <span
+                    key="glow"
+                    aria-hidden="true"
+                    className="heart-glow pointer-events-none absolute inset-0 rounded-full bg-[#2596be]/40"
+                  />
+                )}
+                <svg
+                  key={isSaved ? "saved" : "unsaved"}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill={isSaved ? "#2596be" : "none"}
+                  stroke="#2596be"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className={`h-9 w-9 ${isSaved ? "heart-pop" : ""}`}
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
 

@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "./useAuth"; // <-- Import our new auth hook
+import { useToast } from "../components/Toast";
 import defaultRecipes from "../data/jewel_recipes.json";
 
 const RecipesContext = createContext();
@@ -21,6 +22,7 @@ export function RecipesProvider({ children }) {
   const [savedIds, setSavedIds] = useState([]);
 
   const { user, isAdmin } = useAuth(); // <-- Get the currently logged-in user
+  const showToast = useToast();
 
   // 1. Fetch the master recipe list (Same as before)
   useEffect(() => {
@@ -70,7 +72,7 @@ export function RecipesProvider({ children }) {
   // 3. Update toggleSave to sync with Firestore instead of local storage
   const toggleSave = async (recipeUrl) => {
     if (!user) {
-      alert("Please log in to save recipes to your list!");
+      showToast("Please log in to save recipes to your list.", "info");
       return;
     }
 
@@ -91,7 +93,7 @@ export function RecipesProvider({ children }) {
 
   const addRecipe = async (newRecipeData) => {
     if (!user) {
-      alert("Please log in to add new recipes!");
+      showToast("Please log in to add new recipes.", "info");
       return;
     }
 
@@ -113,7 +115,7 @@ export function RecipesProvider({ children }) {
 
   const updateRecipe = async (id, updatedData) => {
     if (!user || !isAdmin) {
-      alert("Only a superuser can edit recipes.");
+      showToast("Only a superuser can edit recipes.", "error");
       return;
     }
 
@@ -127,15 +129,16 @@ export function RecipesProvider({ children }) {
           recipe.url === id ? { ...recipe, ...updatedData } : recipe,
         ),
       );
+      showToast("Changes saved.", "success");
     } catch (error) {
       console.error("Error updating document: ", error);
-      alert("Failed to update recipe.");
+      showToast("Failed to update the recipe. Please try again.", "error");
     }
   };
 
   const deleteRecipe = async (id) => {
     if (!user || !isAdmin) {
-      alert("Only a superuser can delete recipes.");
+      showToast("Only a superuser can delete recipes.", "error");
       return;
     }
 
@@ -163,9 +166,10 @@ export function RecipesProvider({ children }) {
       if (savedIds.includes(id)) {
         await toggleSave(id);
       }
+      showToast("Recipe deleted.", "success");
     } catch (error) {
       console.error("Error deleting document: ", error);
-      alert("Failed to delete recipe.");
+      showToast("Failed to delete the recipe. Please try again.", "error");
     }
   };
 

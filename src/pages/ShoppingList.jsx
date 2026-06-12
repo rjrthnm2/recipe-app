@@ -15,6 +15,7 @@ import {
   getUnitLabel,
   formatIngredient,
   isStructuredIngredient,
+  cleanIngredientText,
 } from "../lib/units";
 
 // A heuristic parser for recipe ingredients
@@ -31,7 +32,7 @@ function parseIngredient(rawText) {
     return { amount: amount || 0, unit, name, original: formatIngredient(rawText) };
   }
 
-  const text = String(rawText).trim();
+  const text = cleanIngredientText(rawText);
   // 1. Extract quantity (e.g. "1", "1.5", "1 1/2", "1/2")
   const qtyMatch = text.match(/^(\d+(?:[\s-]\d+\/\d+|\/\d+|\.\d+)?)\s*(.*)/);
 
@@ -40,7 +41,8 @@ function parseIngredient(rawText) {
 
   if (qtyMatch) {
     const qtyStr = qtyMatch[1].trim();
-    remainder = qtyMatch[2].trim();
+    // Strip a stray dash/bullet left on the remainder, e.g. "1-can" -> "can".
+    remainder = qtyMatch[2].replace(/^[\s*•◦‣⁃·‐-―-]+/, "").trim();
 
     // Convert fraction to decimal
     if (qtyStr.includes("/")) {
@@ -131,8 +133,11 @@ export default function ShoppingList() {
   const [finalListMinimized, setFinalListMinimized] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [copied, setCopied] = useState(false);
+  const [condensedExport, setCondensedExport] = useState(false);
 
   const [activeTab, setActiveTab] = useState("quick");
+  // Mobile-only: show the ingredients/list panel as its own screen.
+  const [mobileListView, setMobileListView] = useState(false);
   const [planner, setPlanner] = useState(() => {
     const init = {};
     DAYS.forEach((d) => {
@@ -248,6 +253,7 @@ export default function ShoppingList() {
 
         return {
           text: displayText,
+          name: g.name.charAt(0).toUpperCase() + g.name.slice(1),
           recipeTitle: recipeList,
           originals: Array.from(g.originals),
         };
@@ -265,6 +271,39 @@ export default function ShoppingList() {
       return a.text.localeCompare(b.text);
     });
   }, [selectedShoppingItems, customItems]);
+
+  // What the final list shows / copies / prints. "Condensed" = names only,
+  // deduped (e.g. milk in cups + ml collapses to one "Milk").
+  const finalDisplayList = useMemo(() => {
+    if (!condensedExport) {
+      return finalShoppingList.map((item, i) => ({
+        key: item.id || `${item.text}-${i}`,
+        label: item.text,
+        custom: item.type === "custom",
+        recipeTitle: item.recipeTitle,
+        items: [item],
+      }));
+    }
+
+    const map = new Map();
+    finalShoppingList.forEach((item) => {
+      const label =
+        item.type === "custom" ? item.text : item.name || item.text;
+      const dedupeKey = label.toLowerCase();
+      if (!map.has(dedupeKey)) {
+        map.set(dedupeKey, {
+          key: dedupeKey,
+          label,
+          custom: item.type === "custom",
+          recipeTitle: item.recipeTitle,
+          items: [item],
+        });
+      } else {
+        map.get(dedupeKey).items.push(item);
+      }
+    });
+    return [...map.values()].sort((a, b) => a.label.localeCompare(b.label));
+  }, [finalShoppingList, condensedExport]);
 
   const selectedIngredientCount = selectedShoppingItems.length;
   const totalIngredientCount = shoppingList.length;
@@ -338,6 +377,15 @@ export default function ShoppingList() {
   const createShoppingList = () => {
     setShoppingListCreated(true);
     setFinalListMinimized(false);
+  };
+
+  // Discard the final list and go back to picking ingredients.
+  // Keeps recipe + ingredient selections so nothing has to be re-ticked.
+  const cancelShoppingList = () => {
+    setShoppingListCreated(false);
+    setFinalListMinimized(false);
+    setCustomItems([]);
+    setCustomItemText("");
   };
 
   const selectAllIngredients = () => {
@@ -418,6 +466,11 @@ export default function ShoppingList() {
     });
   };
 
+  // Remove a display entry (in condensed mode it may cover several raw items).
+  const removeDisplayEntry = (entry) => {
+    entry.items.forEach((item) => removeShoppingItem(item));
+  };
+
   const copyToClipboard = async () => {
     if (finalShoppingList.length === 0) return;
 
@@ -425,7 +478,7 @@ export default function ShoppingList() {
     const textToCopy = [
       "🛒 Shopping List",
       "-------------------",
-      ...finalShoppingList.map((item) => `[ ] ${item.text}`),
+      ...finalDisplayList.map((entry) => `[ ] ${entry.label}`),
       "-------------------",
       `From: ${Array.from(
         new Set(
@@ -467,11 +520,15 @@ export default function ShoppingList() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block print:w-full">
         {/* Left Column: Recipe Selection */}
-        <div className="lg:col-span-7 space-y-6 print:hidden">
+        <div
+          className={`lg:col-span-7 space-y-6 print:hidden ${
+            mobileListView ? "hidden lg:block" : ""
+          }`}
+        >
           {!selectingFor && (
             <div className="flex p-1 bg-[#F8FAFC] rounded-[8px] w-full sm:w-auto max-w-md border border-[#e2e8f0] shadow-sm mb-6">
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "quick"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
                     : "text-[#64748b] hover:text-[#0F172A]"
@@ -481,7 +538,7 @@ export default function ShoppingList() {
                 Quick Select
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "day"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
                     : "text-[#64748b] hover:text-[#0F172A]"
@@ -491,7 +548,7 @@ export default function ShoppingList() {
                 1-Day Plan
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "planner"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
                     : "text-[#64748b] hover:text-[#0F172A]"
@@ -540,7 +597,7 @@ export default function ShoppingList() {
                   filteredRecipes.map((recipe) => (
                     <Card
                       key={recipe.url}
-                      className="cursor-pointer transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#2596be] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
+                      className="cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#2596be] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
                       onClick={() => handlePlannerSelect(recipe.url)}
                     >
                       <CardContent className="p-4 flex items-center justify-between h-full">
@@ -570,7 +627,7 @@ export default function ShoppingList() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="font-ui text-[#0F172A] border-[#e2e8f0]"
+                  className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
                   onClick={clearSelection}
                 >
                   Clear Week
@@ -606,7 +663,7 @@ export default function ShoppingList() {
                                   {recipe.title}
                                 </span>
                               ) : (
-                                <span className="text-zinc-400 italic">
+                                <span className="text-zinc-600 italic">
                                   None
                                 </span>
                               )}
@@ -616,7 +673,7 @@ export default function ShoppingList() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 w-6 p-0 text-red-500 hover:text-white hover:bg-red-500 transition-colors"
+                                className="h-10 w-10 p-0 text-red-500 hover:text-white hover:bg-red-500 transition-colors text-[18px]"
                                 onClick={() => removeMeal("week", day, meal)}
                                 title="Remove meal"
                               >
@@ -646,13 +703,20 @@ export default function ShoppingList() {
           ) : activeTab === "day" ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">1-Day Plan</h2>
-                <Button variant="outline" size="sm" onClick={clearSelection}>
+                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                  1-Day Plan
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearSelection}
+                  className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
+                >
                   Clear Day
                 </Button>
               </div>
-              <Card className="border-2 border-zinc-200 shadow-sm overflow-hidden">
-                <CardContent className="p-0 divide-y divide-zinc-100">
+              <Card className="border-2 border-[#e2e8f0] py-0 gap-0 shadow-sm overflow-hidden">
+                <CardContent className="p-0 divide-y divide-[#e2e8f0]">
                   {MEALS.map((meal) => {
                     const recipeUrl = dayPlanner[meal];
                     const recipe = recipeUrl
@@ -662,7 +726,7 @@ export default function ShoppingList() {
                     return (
                       <div
                         key={meal}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-zinc-50 group"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-[#F8FAFC] group"
                       >
                         <div>
                           <p className="font-semibold text-zinc-500 text-sm uppercase tracking-wider mb-1">
@@ -673,7 +737,7 @@ export default function ShoppingList() {
                               {recipe.title}
                             </p>
                           ) : (
-                            <p className="text-base text-zinc-400 italic">
+                            <p className="text-base text-zinc-600 italic">
                               No recipe selected
                             </p>
                           )}
@@ -725,7 +789,7 @@ export default function ShoppingList() {
                     <Button
                       variant="outline"
                       onClick={clearSelection}
-                      className="whitespace-nowrap h-10 font-ui text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"
+                      className="whitespace-nowrap h-10 font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
                     >
                       Clear All
                     </Button>
@@ -744,7 +808,7 @@ export default function ShoppingList() {
                     return (
                       <Card
                         key={recipe.url}
-                        className={`cursor-pointer transition-all duration-200 border-x border-b border-t-[6px] border-t-[#2596be] hover:shadow-md rounded-[8px] overflow-hidden ${
+                        className={`cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-t-[6px] border-t-[#2596be] hover:shadow-md rounded-[8px] overflow-hidden ${
                           isSelected
                             ? "border-x-[#2596be] border-b-[#2596be] bg-[#2596be]/5"
                             : "border-x-[#e2e8f0] border-b-[#e2e8f0] bg-[#FAFAFA]"
@@ -790,12 +854,27 @@ export default function ShoppingList() {
         </div>
 
         {/* Right Column: The List */}
-        <div className="lg:col-span-5 print:w-full print:block">
-          <div className="sticky top-24 bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden flex flex-col max-h-[80vh] print:max-h-max print:border-none print:shadow-none print:rounded-none">
-            <div className="bg-zinc-100 p-6 border-b border-zinc-200 print:bg-white print:p-0 print:border-b-2 print:border-black print:pb-4 print:mb-4">
+        <div
+          className={`lg:col-span-5 print:w-full print:block ${
+            !mobileListView ? "hidden lg:block" : ""
+          }`}
+        >
+          <div className="sticky top-24 bg-white rounded-2xl border border-[#e2e8f0] shadow-sm overflow-hidden flex flex-col max-h-[80vh] print:max-h-max print:border-none print:shadow-none print:rounded-none">
+            <button
+              type="button"
+              onClick={() => setMobileListView(false)}
+              className="flex items-center gap-1 border-b border-[#e2e8f0] bg-white px-6 py-3 text-left font-ui text-[16px] font-medium text-[#2596be] hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2596be] lg:hidden print:hidden"
+            >
+              ← Back to recipes
+            </button>
+            <div className="bg-[#F8FAFC] p-6 border-b border-[#e2e8f0] print:bg-white print:p-0 print:border-b-2 print:border-black print:pb-4 print:mb-4">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
-                <h2 className="text-2xl font-bold flex items-center gap-3">
-                  <span>Combined ingredients</span>
+                <h2 className="font-heading text-2xl font-bold text-[#0F172A] flex items-center gap-3">
+                  <span>
+                    {shoppingListCreated && !finalListMinimized
+                      ? "Your shopping list"
+                      : "Combined ingredients"}
+                  </span>
                   {selectedRecipeCount > 0 && (
                     <span className="bg-[#2596be]/15 text-[#155e78] text-sm py-1 px-3 rounded-full print:hidden">
                       {selectedRecipeCount} recipes
@@ -846,14 +925,15 @@ export default function ShoppingList() {
                       </div>
                     ) : (
                       <div className="mb-4 rounded-2xl border border-[#2596be]/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
-                        <div className="flex flex-col gap-3 border-b border-zinc-200 pb-4 print:border-black print:pb-2">
+                        <div className="flex flex-col gap-3 border-b border-[#e2e8f0] pb-4 print:border-black print:pb-2">
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <h3 className="text-lg font-bold text-[#0F172A]">
+                              <h3 className="font-heading text-lg font-bold text-[#0F172A]">
                                 Final shopping list
                               </h3>
                               <p className="text-sm text-zinc-500 print:hidden">
-                                Always visible while you pick ingredients.
+                                Minimize to pick more ingredients, or cancel to
+                                start over.
                               </p>
                             </div>
                             <span className="text-sm font-medium text-zinc-500 print:hidden">
@@ -862,6 +942,32 @@ export default function ShoppingList() {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 print:hidden">
+                            <div className="mr-auto flex items-center rounded-md border border-[#e2e8f0] bg-[#F8FAFC] p-0.5 font-ui text-[13px]">
+                              <button
+                                type="button"
+                                onClick={() => setCondensedExport(false)}
+                                aria-pressed={!condensedExport}
+                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                                  !condensedExport
+                                    ? "bg-white text-[#0F172A] shadow-sm"
+                                    : "text-[#64748b]"
+                                }`}
+                              >
+                                With amounts
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setCondensedExport(true)}
+                                aria-pressed={condensedExport}
+                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                                  condensedExport
+                                    ? "bg-white text-[#0F172A] shadow-sm"
+                                    : "text-[#64748b]"
+                                }`}
+                              >
+                                Just items
+                              </button>
+                            </div>
                             <Button
                               variant="outline"
                               size="sm"
@@ -887,6 +993,14 @@ export default function ShoppingList() {
                               className="text-zinc-600 hover:bg-zinc-100"
                             >
                               Minimize
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={cancelShoppingList}
+                              className="text-[#dc2626] hover:bg-red-50 hover:text-[#dc2626]"
+                            >
+                              Cancel list
                             </Button>
                           </div>
                         </div>
@@ -918,21 +1032,21 @@ export default function ShoppingList() {
                           </div>
 
                           {finalShoppingList.length === 0 ? (
-                            <div className="mt-3 rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 print:border-black print:text-black">
+                            <div className="mt-3 rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-zinc-500 print:border-black print:text-black">
                               Select ingredients below or add custom items here.
                             </div>
                           ) : (
                             <ul className="mt-3 max-h-[320px] space-y-3 overflow-y-auto pr-1 print:mt-2 print:max-h-max print:space-y-2 print:overflow-visible print:pr-0">
-                              {finalShoppingList.map((item, id) => (
+                              {finalDisplayList.map((entry, id) => (
                                 <li
-                                  key={item.id || `${item.text}-${id}`}
-                                  className="flex items-start gap-3 rounded-xl border border-zinc-200 p-3 print:border-black print:rounded-none print:p-0 print:border-0"
+                                  key={entry.key}
+                                  className="flex items-start gap-3 rounded-xl border border-[#e2e8f0] p-3 print:border-black print:rounded-none print:p-0 print:border-0"
                                 >
                                   <Checkbox
                                     id={`cart-${id}`}
                                     checked
                                     onCheckedChange={() =>
-                                      removeShoppingItem(item)
+                                      removeDisplayEntry(entry)
                                     }
                                     className="mt-1 h-5 w-5 shrink-0 print:hidden"
                                   />
@@ -942,17 +1056,18 @@ export default function ShoppingList() {
                                     className="grid flex-1 cursor-pointer gap-1.5"
                                   >
                                     <span className="text-base font-medium leading-snug text-[#0F172A] print:text-black print:text-xl">
-                                      {item.text}
+                                      {entry.label}
                                     </span>
-                                    {item.type === "custom" ? (
-                                      <span className="text-xs uppercase tracking-wide text-zinc-400 print:text-zinc-700">
-                                        Added manually
-                                      </span>
-                                    ) : (
-                                      <span className="text-sm text-zinc-500 print:text-zinc-800">
-                                        From recipes: {item.recipeTitle}
-                                      </span>
-                                    )}
+                                    {!condensedExport &&
+                                      (entry.custom ? (
+                                        <span className="text-xs uppercase tracking-wide text-zinc-600 print:text-zinc-700">
+                                          Added manually
+                                        </span>
+                                      ) : (
+                                        <span className="text-sm text-zinc-500 print:text-zinc-800">
+                                          From recipes: {entry.recipeTitle}
+                                        </span>
+                                      ))}
                                   </label>
                                 </li>
                               ))}
@@ -964,6 +1079,7 @@ export default function ShoppingList() {
                   </section>
                 )}
 
+                {(!shoppingListCreated || finalListMinimized) && (
                 <section className="space-y-3 print:hidden">
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -1014,7 +1130,7 @@ export default function ShoppingList() {
                             size="sm"
                             onClick={clearIngredientSelection}
                             disabled={selectedIngredientCount === 0}
-                            className="border-[#cbd5e1] bg-white"
+                            className="bg-white text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
                           >
                             Clear
                           </Button>
@@ -1030,7 +1146,7 @@ export default function ShoppingList() {
                   )}
 
                   {shoppingList.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-zinc-200 p-4 text-sm text-zinc-500">
+                    <div className="rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-zinc-500">
                       Select recipes on the left to build the combined
                       ingredient list.
                     </div>
@@ -1045,7 +1161,7 @@ export default function ShoppingList() {
                             className={`flex items-start gap-3 rounded-xl border p-3 transition-colors ${
                               isChecked
                                 ? "border-[#2596be]/30 bg-[#2596be]/10"
-                                : "border-zinc-200 hover:bg-zinc-50"
+                                : "border-[#e2e8f0] hover:bg-[#F8FAFC]"
                             }`}
                           >
                             <Checkbox
@@ -1067,7 +1183,7 @@ export default function ShoppingList() {
                                 Used in: {item.recipeTitle}
                               </span>
                               {item.originals && item.originals.length > 0 && (
-                                <span className="text-xs text-zinc-400">
+                                <span className="text-xs text-zinc-500">
                                   Matches: {item.originals.join(" & ")}
                                 </span>
                               )}
@@ -1078,10 +1194,11 @@ export default function ShoppingList() {
                     </ul>
                   )}
                 </section>
+                )}
               </div>
             </div>
             {shoppingListCreated && finalShoppingList.length > 0 && (
-              <div className="p-4 border-t border-zinc-200 bg-zinc-50 text-center print:hidden">
+              <div className="p-4 border-t border-[#e2e8f0] bg-[#F8FAFC] text-center print:hidden">
                 <p className="text-sm text-zinc-500">
                   {finalShoppingList.length} total items
                 </p>
@@ -1090,6 +1207,20 @@ export default function ShoppingList() {
           </div>
         </div>
       </div>
+
+      {/* Mobile-only: jump straight to the ingredients panel once something
+          is selected, instead of scrolling past the whole recipe list. */}
+      {!mobileListView && totalItemsSelectedCount > 0 && (
+        <div className="fixed inset-x-4 bottom-20 z-30 lg:hidden print:hidden">
+          <Button
+            onClick={() => setMobileListView(true)}
+            className="h-14 w-full rounded-[12px] bg-[#2596be] font-ui text-[18px] font-bold text-white shadow-lg hover:bg-[#1f86ad]"
+          >
+            View ingredients ({selectedRecipeCount}{" "}
+            {selectedRecipeCount === 1 ? "recipe" : "recipes"}) →
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

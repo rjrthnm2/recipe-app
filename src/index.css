@@ -139,6 +139,32 @@
   }
 }
 
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heart-glow {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.3);
+  }
+}
+
 @layer components {
   .reveal-up {
     animation: fade-up 360ms ease-out both;
@@ -146,6 +172,14 @@
 
   .reveal-card {
     animation: fade-up 420ms ease-out both;
+  }
+
+  .heart-pop {
+    animation: heart-pop 400ms ease-out;
+  }
+
+  .heart-glow {
+    animation: heart-glow 650ms ease-out forwards;
   }
 }
 
