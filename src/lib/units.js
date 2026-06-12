@@ -103,6 +103,20 @@ const UNIT_ALIASES = {
   dash: "dash", dashes: "dash",
 };
 
+// Units that act as containers in "size before container" phrasing,
+// e.g. "2 15 oz. cans Chili" -> unit: can, note: "15 oz".
+const CONTAINER_UNITS = new Set([
+  "can",
+  "jar",
+  "package",
+  "container",
+  "box",
+  "bottle",
+  "bag",
+  "pouch",
+  "packet",
+]);
+
 export function emptyIngredient() {
   return { quantity: "", unit: "", name: "", note: "" };
 }
@@ -113,6 +127,8 @@ export function cleanIngredientText(raw) {
   return String(raw ?? "")
     .replace(/^[\s*•◦‣⁃·‐-―-]+/, "") // leading bullets / dashes (incl. unicode)
     .replace(/⁄/g, "/") // unicode fraction slash ⁄ -> /
+    .replace(/^\/(\d)/, "1/$1") // orphaned leading fraction "⁄2" -> "1/2"
+    .replace(/^~\s*/, "") // "~2 lb." -> "2 lb."
     .replace(/½/g, " 1/2")
     .replace(/¼/g, " 1/4")
     .replace(/¾/g, " 3/4")
@@ -199,7 +215,13 @@ export function normalizeIngredient(raw) {
 
   let rest = text;
   let quantity = "";
-  const qtyMatch = rest.match(/^(\d+(?:[\s-]\d+\/\d+|\/\d+|\.\d+)?)\s*(.*)$/);
+  const notes = [];
+
+  // Quantity, including mixed fractions ("1 1/2") and ranges ("3-4",
+  // "2 to 3", "1 to 1-1/2").
+  const qtyMatch = rest.match(
+    /^(\d+(?:[\s-]\d+\/\d+|\/\d+|\.\d+)?(?:\s*(?:-|–|to)\s*\d+(?:[\s-]\d+\/\d+|\/\d+|\.\d+)?)?)\s*(.*)$/i,
+  );
   if (qtyMatch) {
     quantity = qtyMatch[1].trim();
     rest = qtyMatch[2].trim();
@@ -208,12 +230,40 @@ export function normalizeIngredient(raw) {
   // Strip a stray dash/bullet left on the remainder, e.g. "1-can" -> "can".
   rest = rest.replace(/^[\s*•◦‣⁃·‐-―-]+/, "").trim();
 
+  // Pull leading "(...)" package sizes into the note, e.g. "1 (11-oz) can".
+  const takeLeadingParens = () => {
+    let m;
+    while ((m = rest.match(/^\(([^)]*)\)\s*(.*)$/))) {
+      if (m[1].trim()) notes.push(m[1].trim());
+      rest = m[2].trim();
+    }
+  };
+  takeLeadingParens();
+
+  const matchUnitToken = (token) => {
+    const rawFirst = (token || "").replace(/\.$/, ""); // keep case; drop dot
+    const lowerFirst = rawFirst.toLowerCase().replace(/\./g, "");
+    return UNIT_ALIASES_CASE[rawFirst] || UNIT_ALIASES[lowerFirst] || "";
+  };
+
+  // A second leading number with a weight/volume measure is a package SIZE,
+  // not the amount: "2 15 oz. cans Chili", "1 8 oz. cream cheese". It moves
+  // to the note; a container word after it ("cans") becomes the unit below.
+  const takeLeadingSize = () => {
+    const sizeMatch = rest.match(
+      /^(\d[\d\s/.-]*?\s*(?:oz|ounces?|lbs?|pounds?|g|kg|ml|l)\b\.?)\s+(.*)$/i,
+    );
+    if (sizeMatch && quantity) {
+      notes.push(sizeMatch[1].replace(/\.$/, "").trim());
+      rest = sizeMatch[2].trim();
+    }
+  };
+  takeLeadingSize();
+
   let unit = "";
   const tokens = rest.split(/\s+/);
   if (tokens.length > 1 || (tokens.length === 1 && quantity)) {
-    const rawFirst = tokens[0].replace(/\.$/, ""); // keep case; drop trailing dot
-    const lowerFirst = rawFirst.toLowerCase().replace(/\./g, "");
-    const matched = UNIT_ALIASES_CASE[rawFirst] || UNIT_ALIASES[lowerFirst];
+    const matched = matchUnitToken(tokens[0]);
     if (matched) {
       unit = matched;
       tokens.shift();
@@ -221,14 +271,36 @@ export function normalizeIngredient(raw) {
     }
   }
 
-  let note = "";
+  // Sizes can also follow the unit: "1 can (10-1/2 oz) chicken broth",
+  // "1 pkg. 10 oz. frozen peas", or an unclosed "(10 oz. whole tomatoes".
+  takeLeadingParens();
+  if (rest.startsWith("(") && !rest.includes(")")) {
+    rest = rest.slice(1).trim();
+  }
+  takeLeadingSize();
+
   const commaIdx = rest.indexOf(",");
   if (commaIdx >= 0) {
-    note = rest.slice(commaIdx + 1).trim();
+    notes.push(rest.slice(commaIdx + 1).trim());
     rest = rest.slice(0, commaIdx).trim();
   }
 
-  return { quantity, unit, name: rest, note };
+  // Any "(...)" inside the name moves to the note, e.g. "tomato sauce (8 oz)"
+  // or "butter beans (15 oz) drained".
+  rest = rest
+    .replace(/\(([^)]*)\)/g, (_, inner) => {
+      if (inner.trim()) notes.push(inner.trim());
+      return " ";
+    })
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    quantity,
+    unit,
+    name: rest,
+    note: notes.filter(Boolean).join(", "),
+  };
 }
 
 // Unique, sorted list of ingredient NAMES used across all recipes (structured

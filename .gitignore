@@ -16,6 +16,10 @@ dist-ssr
 serviceAccountKey.json
 *.serviceaccount.json
 
+# Migration working files
+migration-dryrun-report.md
+recipes-backup-*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
