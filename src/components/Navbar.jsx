@@ -66,6 +66,16 @@ const MOBILE_TABS = [
       </>
     ),
   },
+  {
+    to: "/about",
+    label: "Jewel",
+    icon: (
+      <>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </>
+    ),
+  },
 ];
 
 export default function Navbar() {
@@ -146,6 +156,14 @@ export default function Navbar() {
                 asChild
               >
                 <Link to="/">Browse</Link>
+              </Button>
+
+              <Button
+                variant="ghost"
+                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                asChild
+              >
+                <Link to="/about">Meet Jewel</Link>
               </Button>
 
               {user && (
@@ -272,7 +290,7 @@ export default function Navbar() {
           aria-label="Quick navigation"
           className="fixed inset-x-0 bottom-0 z-20 border-t border-[#e2e8f0] bg-white/95 backdrop-blur sm:hidden print:hidden"
         >
-          <div className="grid grid-cols-4">
+          <div className="grid grid-cols-5">
             {MOBILE_TABS.map((tab) => {
               const isActive = location.pathname === tab.to;
               return (

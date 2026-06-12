@@ -165,33 +165,36 @@ export default function ShoppingList() {
     return count;
   }, [selectedRecipeUrls, planner, dayPlanner]);
 
+  // In-app confirmation for switching planners with selections (replaces the
+  // jarring native window.confirm). Holds the tab we're about to switch to.
+  const [pendingTab, setPendingTab] = useState(null);
+
   const handleTabSwitch = (newTab) => {
     if (activeTab === newTab) return;
 
     if (totalItemsSelectedCount > 0) {
-      if (
-        window.confirm(
-          "Switching planners will clear your currently selected recipes. Continue?",
-        )
-      ) {
-        setSelectedRecipeUrls(new Set());
-        setSelectedIngredientKeys(new Set());
-        setCustomItems([]);
-        setCustomItemText("");
-        setShoppingListCreated(false);
-        setFinalListMinimized(false);
-        const initPlanner = {};
-        DAYS.forEach((d) => {
-          initPlanner[d] = { Breakfast: null, Lunch: null, Dinner: null };
-        });
-        setPlanner(initPlanner);
-        setDayPlanner({ Breakfast: null, Lunch: null, Dinner: null });
-        setSelectingFor(null);
-        setActiveTab(newTab);
-      }
+      setPendingTab(newTab);
     } else {
       setActiveTab(newTab);
     }
+  };
+
+  const confirmTabSwitch = () => {
+    setSelectedRecipeUrls(new Set());
+    setSelectedIngredientKeys(new Set());
+    setCustomItems([]);
+    setCustomItemText("");
+    setShoppingListCreated(false);
+    setFinalListMinimized(false);
+    const initPlanner = {};
+    DAYS.forEach((d) => {
+      initPlanner[d] = { Breakfast: null, Lunch: null, Dinner: null };
+    });
+    setPlanner(initPlanner);
+    setDayPlanner({ Breakfast: null, Lunch: null, Dinner: null });
+    setSelectingFor(null);
+    setActiveTab(pendingTab);
+    setPendingTab(null);
   };
 
   // Aggregate ingredients from selected recipes
@@ -560,6 +563,34 @@ export default function ShoppingList() {
             </div>
           )}
 
+          {pendingTab && !selectingFor && (
+            <div
+              role="alertdialog"
+              aria-label="Confirm planner switch"
+              className="mb-6 rounded-[8px] border border-[#e2e8f0] border-l-4 border-l-[#dc2626] bg-white p-4 shadow-sm"
+            >
+              <p className="font-sans text-[16px] text-[#0F172A]">
+                Switching planners clears your current selections.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  onClick={confirmTabSwitch}
+                  variant="outline"
+                  className="font-ui text-[15px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                >
+                  Clear & switch
+                </Button>
+                <Button
+                  onClick={() => setPendingTab(null)}
+                  variant="secondary"
+                  className="font-ui text-[15px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                >
+                  Stay here
+                </Button>
+              </div>
+            </div>
+          )}
+
           {selectingFor ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between bg-[#2596be]/10 border border-[#2596be]/30 p-4 rounded-[12px]">
@@ -876,8 +907,9 @@ export default function ShoppingList() {
                       : "Combined ingredients"}
                   </span>
                   {selectedRecipeCount > 0 && (
-                    <span className="bg-[#2596be]/15 text-[#155e78] text-sm py-1 px-3 rounded-full print:hidden">
-                      {selectedRecipeCount} recipes
+                    <span className="shrink-0 whitespace-nowrap bg-[#2596be]/15 text-[#155e78] text-sm py-1 px-3 rounded-full print:hidden">
+                      {selectedRecipeCount}{" "}
+                      {selectedRecipeCount === 1 ? "recipe" : "recipes"}
                     </span>
                   )}
                 </h2>
