@@ -223,14 +223,19 @@ export default function RecipeDetail() {
                 }
                 aria-pressed={isSaved}
                 title={isSaved ? "Remove from My List" : "Save to My List"}
-                className="relative mt-3 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+                className="relative mt-2 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
               >
                 {isSaved && (
-                  <span
+                  <svg
                     key="glow"
                     aria-hidden="true"
-                    className="heart-glow pointer-events-none absolute inset-0 rounded-full bg-[#2596be]/40"
-                  />
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#2596be"
+                    className="heart-glow pointer-events-none absolute left-2 top-2 h-9 w-9"
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
                 )}
                 <svg
                   key={isSaved ? "saved" : "unsaved"}
@@ -253,7 +258,7 @@ export default function RecipeDetail() {
 
         {/* Superuser actions */}
         {isSuperuser && (
-          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-0 border-[#e2e8f0]">
+          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-[#e2e8f0]">
             {!isEditing ? (
               <Button
                 onClick={handleEditClick}
@@ -404,11 +409,25 @@ export default function RecipeDetail() {
             </>
           ) : (
             <>
-              <span>{currentData.prep_time} Prep</span>
-              <span className="opacity-50">•</span>
-              <span>{currentData.cook_time} Cook</span>
-              <span className="opacity-50">•</span>
-              <span>{currentData.servings} Servings</span>
+              {[
+                currentData.prep_time && `${currentData.prep_time} Prep`,
+                currentData.cook_time && `${currentData.cook_time} Cook`,
+                currentData.servings && `${currentData.servings} Servings`,
+              ]
+                .filter(Boolean)
+                .map((part, i) => (
+                  <span key={part} className="flex items-center gap-4">
+                    {i > 0 && <span className="opacity-50">•</span>}
+                    <span>{part}</span>
+                  </span>
+                ))}
+              {(currentData.prep_time ||
+                currentData.cook_time ||
+                currentData.servings) && <span className="opacity-50">•</span>}
+              {/* Recipes without an owner predate ownership — all Jewel's. */}
+              <span className="font-medium text-[#2596be]">
+                by {recipe.ownerName || "Jewel"}
+              </span>
             </>
           )}
         </div>

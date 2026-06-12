@@ -1,8 +1,10 @@
 // src/components/Navbar.jsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { useAuth } from "../hooks/useAuth";
+import { useRecipes } from "../hooks/useRecipes";
 
 function NavIcon({ path, ...props }) {
   return (
@@ -68,8 +70,40 @@ const MOBILE_TABS = [
 
 export default function Navbar() {
   const { user, login, logout } = useAuth();
+  const { nickname, updateNickname } = useRecipes();
   const [failedPhoto, setFailedPhoto] = useState("");
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [nicknameDraft, setNicknameDraft] = useState("");
+  const accountRef = useRef(null);
   const location = useLocation();
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const onDocClick = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setAccountOpen(false);
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setAccountOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [accountOpen]);
+
+  const openAccount = () => {
+    setNicknameDraft(nickname || "");
+    setAccountOpen((open) => !open);
+  };
+
+  const saveNickname = async () => {
+    await updateNickname(nicknameDraft);
+    setAccountOpen(false);
+  };
 
   const profilePhoto =
     user?.photoURL ||
@@ -144,23 +178,73 @@ export default function Navbar() {
             {/* Login / Logout Button logic */}
             {user ? (
               <div className="flex items-center gap-3 sm:ml-4 sm:border-l sm:border-[#e2e8f0] sm:pl-4">
-                {shouldShowPhoto ? (
-                  <img
-                    src={profilePhoto}
-                    alt="Profile"
-                    className="h-10 w-10 rounded-full border border-[#e2e8f0] object-cover"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    onError={() => setFailedPhoto(profilePhoto)}
-                  />
-                ) : (
-                  <span
-                    aria-label="Profile avatar"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#F8FAFC] text-[14px] font-semibold text-[#0F172A]"
+                <div className="relative" ref={accountRef}>
+                  <button
+                    type="button"
+                    onClick={openAccount}
+                    aria-haspopup="dialog"
+                    aria-expanded={accountOpen}
+                    aria-label="Account and recipe nickname"
+                    title="Set your recipe nickname"
+                    className="block rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] focus-visible:ring-offset-2"
                   >
-                    {profileInitials}
-                  </span>
-                )}
+                    {shouldShowPhoto ? (
+                      <img
+                        src={profilePhoto}
+                        alt="Profile"
+                        className="h-10 w-10 rounded-full border border-[#e2e8f0] object-cover"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={() => setFailedPhoto(profilePhoto)}
+                      />
+                    ) : (
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#F8FAFC] text-[14px] font-semibold text-[#0F172A]">
+                        {profileInitials}
+                      </span>
+                    )}
+                  </button>
+
+                  {accountOpen && (
+                    <div
+                      role="dialog"
+                      aria-label="Recipe nickname"
+                      className="absolute right-0 z-30 mt-2 w-72 rounded-[12px] border border-[#e2e8f0] bg-white p-4 shadow-lg"
+                    >
+                      <p className="font-ui text-[14px] font-medium text-[#0F172A]">
+                        {user.displayName || user.email}
+                      </p>
+                      <label
+                        htmlFor="recipe-nickname"
+                        className="mt-3 block font-ui text-[13px] text-[#64748b]"
+                      >
+                        Recipe nickname — shown as “by …” on recipes you add
+                      </label>
+                      <div className="mt-1.5 flex gap-2">
+                        <Input
+                          id="recipe-nickname"
+                          value={nicknameDraft}
+                          onChange={(e) => setNicknameDraft(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              saveNickname();
+                            }
+                          }}
+                          maxLength={30}
+                          placeholder={nickname || "e.g. Jewel"}
+                          className="h-11 border-[#e2e8f0] font-sans text-[16px]"
+                        />
+                        <Button
+                          type="button"
+                          onClick={saveNickname}
+                          className="h-11 shrink-0 bg-[#2596be] font-ui text-white hover:bg-[#1f86ad]"
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <Button
                   onClick={logout}
                   variant="ghost"
