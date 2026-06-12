@@ -161,7 +161,7 @@ function computeRecipeScore(recipe, queryTokens, normalizedQuery) {
 }
 
 export default function Home() {
-  const { recipes } = useRecipes();
+  const { recipes, loading } = useRecipes();
   const [search, setSearch] = useState("");
   const normalizedQuery = normalizeText(search);
   const queryTokens = tokenize(search);
@@ -210,20 +210,20 @@ export default function Home() {
 
   return (
     <div className="space-y-10">
-      <section className="reveal-up relative overflow-hidden rounded-[16px] bg-[#F8FAFC] border border-[#e2e8f0] p-8 shadow-sm md:p-12 text-[#0F172A]">
-        <div className="relative flex flex-col gap-6">
-          <div className="space-y-3">
-            <h1 className="font-heading text-4xl font-bold tracking-tight text-[#0F172A] md:text-5xl">
+      <section className="reveal-up relative overflow-hidden rounded-[16px] bg-[#F8FAFC] border border-[#e2e8f0] p-5 shadow-sm md:p-12 text-[#0F172A]">
+        <div className="relative flex flex-col gap-4 md:gap-6">
+          <div className="space-y-2 md:space-y-3">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A] md:text-5xl">
               Find The Right Recipe Faster
             </h1>
-            <p className="font-sans max-w-2xl text-[18px] text-[#0F172A]/80 md:text-[20px]">
-              Search by tags first, then titles, then ingredients to surface the
-              best matches.
+            <p className="font-sans max-w-2xl text-[16px] text-[#0F172A]/80 md:text-[20px]">
+              Search by name, ingredient, or tag — or browse the whole
+              collection below.
             </p>
           </div>
 
           <Input
-            placeholder="Search by title, ingredient, or tag..."
+            placeholder="Search recipes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search recipes by title, ingredient, or tag"
@@ -231,8 +231,8 @@ export default function Home() {
           />
 
           {popularTags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <span className="mr-2 font-ui text-[16px] font-medium text-[#0F172A]/70">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pt-2">
+              <span className="shrink-0 mr-1 font-ui text-[14px] sm:text-[16px] font-medium text-[#0F172A]/70 sm:mr-2">
                 Popular tags:
               </span>
               {popularTags.map((tag) => {
@@ -244,7 +244,7 @@ export default function Home() {
                     variant={isActive ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSearch(tag)}
-                    className={`rounded-full px-4 py-2 font-ui text-[16px] h-auto transition-transform active:scale-95 hover:scale-105 duration-200 ${isActive ? "bg-[#2596be] text-white hover:bg-[#2596be]/90 border-[#2596be]" : "bg-white border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"}`}
+                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 sm:px-4 sm:py-2 font-ui text-[14px] sm:text-[16px] h-auto transition-transform active:scale-95 hover:scale-105 duration-200 ${isActive ? "bg-[#2596be] text-white hover:bg-[#2596be]/90 border-[#2596be]" : "bg-white border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"}`}
                     aria-pressed={isActive}
                   >
                     {tag}
@@ -261,12 +261,26 @@ export default function Home() {
           All Recipes
         </h2>
         <p className="font-ui rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
-          {filteredRecipes.length} result
-          {filteredRecipes.length === 1 ? "" : "s"}
+          {loading
+            ? "Loading…"
+            : `${filteredRecipes.length} result${
+                filteredRecipes.length === 1 ? "" : "s"
+              }`}
         </p>
       </div>
 
-      {normalizedQuery && filteredRecipes.length === 0 && (
+      {loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-52 animate-pulse rounded-[8px] border border-[#e2e8f0] border-t-[6px] border-t-[#cbd5e1] bg-[#F8FAFC]"
+            />
+          ))}
+        </div>
+      )}
+
+      {!loading && normalizedQuery && filteredRecipes.length === 0 && (
         <div className="rounded-xl border border-zinc-300 bg-amber-50 p-6 text-left text-zinc-800">
           <p className="text-lg font-semibold">No relevant recipes found.</p>
           <p className="mt-2 text-base">
@@ -283,14 +297,19 @@ export default function Home() {
           return (
             <Card
               key={recipe.url || index}
-              className="reveal-card flex h-full flex-col bg-[#FAFAFA] border-t-[6px] border-t-[#2596be] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
+              size="sm"
+              className="reveal-card flex h-full flex-col gap-2 py-3 bg-[#FAFAFA] border-t-[6px] border-t-[#2596be] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
               style={{ animationDelay: `${index * 45}ms` }}
             >
-              <CardHeader className="p-4 pb-2">
-                <div className="min-h-[5rem] space-y-1.5">
-                  <CardTitle className="font-heading line-clamp-2 text-[20px] font-bold leading-tight text-[#0F172A]">
-                    {recipe.title}
-                  </CardTitle>
+              <CardHeader className="pb-0">
+                <CardTitle className="font-heading line-clamp-2 text-[18px] md:text-[20px] font-bold leading-tight text-[#0F172A]">
+                  {recipe.title}
+                </CardTitle>
+              </CardHeader>
+              {/* mt-auto anchors prep + divider + tags just above the button,
+                  so they line up across cards no matter the title length. */}
+              <CardContent className="mt-auto pt-0">
+                {recipe.prep_time && (
                   <div className="flex items-center text-[14px] font-sans text-[#64748b]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -307,25 +326,32 @@ export default function Home() {
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
-                    <span>Prep: {recipe.prep_time || "N/A"}</span>
+                    <span>Prep: {recipe.prep_time}</span>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-grow p-4 pt-0">
-                <div className="border-t border-dashed border-[#cbd5e1] w-full my-2"></div>
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {recipe.tags?.map((tag, i) => (
+                )}
+                <div className="border-t border-dashed border-[#cbd5e1] w-full my-1.5"></div>
+                <div className="flex flex-nowrap items-center gap-1.5 mt-1.5 overflow-hidden">
+                  {recipe.tags?.slice(0, 2).map((tag, i) => (
                     <Badge
                       key={i}
                       variant="secondary"
-                      className="bg-white text-[#0F172A]/70 border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
+                      className="whitespace-nowrap bg-white text-[#0F172A]/70 border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
                     >
                       {tag.replace(/[()]/g, "")}
                     </Badge>
                   ))}
+                  {(recipe.tags?.length || 0) > 2 && (
+                    <Badge
+                      variant="secondary"
+                      className="shrink-0 bg-[#F8FAFC] text-[#64748b] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
+                      aria-label={`${recipe.tags.length - 2} more tags`}
+                    >
+                      …
+                    </Badge>
+                  )}
                 </div>
               </CardContent>
-              <CardFooter className="p-4 pt-0">
+              <CardFooter className="pt-0">
                 <Button
                   className="w-full bg-[#0F172A] hover:bg-[#2596be] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
                   asChild

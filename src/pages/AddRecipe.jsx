@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
+import { useToast } from "../components/Toast";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -11,6 +12,7 @@ import { emptyIngredient, collectIngredientNames } from "../lib/units";
 export default function AddRecipe() {
   const { addRecipe, recipes } = useRecipes();
   const navigate = useNavigate();
+  const showToast = useToast();
   const ingredientNames = useMemo(
     () => collectIngredientNames(recipes),
     [recipes],
@@ -24,8 +26,45 @@ export default function AddRecipe() {
     servings: "",
     tags: "",
     ingredients: [emptyIngredient()],
-    directions: "",
+    directions: [""],
   });
+  const [saving, setSaving] = useState(false);
+
+  // Warn before losing typed work on refresh / tab close.
+  const isDirty =
+    formData.title.trim() !== "" ||
+    formData.ingredients.some((ing) => ing.name.trim() !== "") ||
+    formData.directions.some((step) => step.trim() !== "");
+
+  useEffect(() => {
+    if (!isDirty || saving) return;
+    const handler = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty, saving]);
+
+  const updateDirection = (index, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      directions: prev.directions.map((step, i) =>
+        i === index ? value : step,
+      ),
+    }));
+  };
+
+  const addDirection = () => {
+    setFormData((prev) => ({ ...prev, directions: [...prev.directions, ""] }));
+  };
+
+  const removeDirection = (index) => {
+    setFormData((prev) => {
+      const next = prev.directions.filter((_, i) => i !== index);
+      return { ...prev, directions: next.length > 0 ? next : [""] };
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +80,16 @@ export default function AddRecipe() {
       }));
 
     if (cleanedIngredients.length === 0) {
-      alert("Please add at least one ingredient (with a name).");
+      showToast("Please add at least one ingredient.", "error");
+      return;
+    }
+
+    const cleanedDirections = formData.directions
+      .map((step) => step.trim())
+      .filter((step) => step !== "");
+
+    if (cleanedDirections.length === 0) {
+      showToast("Please add at least one direction step.", "error");
       return;
     }
 
@@ -53,15 +101,16 @@ export default function AddRecipe() {
         .filter((t) => t !== "")
         .map((t) => (t.startsWith("(") ? t : `(${t})`)),
       ingredients: cleanedIngredients,
-      directions: formData.directions
-        .split("\n")
-        .filter((line) => line.trim() !== ""),
+      directions: cleanedDirections,
     };
 
+    setSaving(true);
     const newId = await addRecipe(newRecipe);
     if (newId) {
       // Need to use replace: true so going "back" goes to home screen instead of form
       navigate(`/recipe/${newId}`, { replace: true });
+    } else {
+      setSaving(false);
     }
   };
 
@@ -91,7 +140,7 @@ export default function AddRecipe() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Label
               htmlFor="prep"
@@ -122,6 +171,23 @@ export default function AddRecipe() {
               value={formData.cook_time}
               onChange={(e) =>
                 setFormData({ ...formData, cook_time: e.target.value })
+              }
+              className="border-[#e2e8f0] font-sans text-[16px] h-12"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="servings"
+              className="font-sans text-[16px] text-[#0F172A]"
+            >
+              Servings
+            </Label>
+            <Input
+              id="servings"
+              placeholder="4"
+              value={formData.servings}
+              onChange={(e) =>
+                setFormData({ ...formData, servings: e.target.value })
               }
               className="border-[#e2e8f0] font-sans text-[16px] h-12"
             />
@@ -162,22 +228,45 @@ export default function AddRecipe() {
         </div>
 
         <div className="space-y-2">
-          <Label
-            htmlFor="directions"
-            className="font-sans text-[16px] text-[#0F172A]"
-          >
-            Directions (one per line)
+          <Label className="font-sans text-[16px] text-[#0F172A]">
+            Directions
           </Label>
-          <Textarea
-            id="directions"
-            required
-            className="min-h-[180px] border-[#e2e8f0] font-sans text-[16px]"
-            placeholder="Brown the beef&#10;Add the sauce and simmer"
-            value={formData.directions}
-            onChange={(e) =>
-              setFormData({ ...formData, directions: e.target.value })
-            }
-          />
+          <div className="space-y-3">
+            {formData.directions.map((step, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="mt-3 w-6 shrink-0 text-right font-heading text-[20px] font-bold text-[#2596be]">
+                  {i + 1}
+                </span>
+                <Textarea
+                  value={step}
+                  onChange={(e) => updateDirection(i, e.target.value)}
+                  className="min-h-[64px] border-[#e2e8f0] font-sans text-[16px]"
+                  placeholder={
+                    i === 0 ? "e.g. Brown the beef in a large skillet" : ""
+                  }
+                  aria-label={`Direction step ${i + 1}`}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="mt-1 h-11 w-11 shrink-0 text-[#94a3b8] hover:bg-red-50 hover:text-[#dc2626]"
+                  onClick={() => removeDirection(i)}
+                  aria-label={`Remove step ${i + 1}`}
+                >
+                  &times;
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 w-full border-dashed border-[#cbd5e1] font-ui text-[16px] text-[#0F172A] hover:border-[#2596be] hover:bg-[#2596be]/5"
+              onClick={addDirection}
+            >
+              + Add step
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2">

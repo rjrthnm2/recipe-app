@@ -34,7 +34,7 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
   const triggerLabel = value ? (UNIT_MAP[value]?.label ?? value) : "Unit";
 
   const chipClass = (active) =>
-    `rounded-full px-3 py-1.5 font-ui text-[14px] border transition-colors ${
+    `rounded-full px-3 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
       active
         ? "bg-[#2596be] text-white border-[#2596be]"
         : "bg-white text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"
@@ -48,7 +48,7 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
-        className={`flex h-12 w-full items-center justify-between rounded-md border border-[#e2e8f0] bg-white px-3 font-sans text-[16px] ${
+        className={`flex h-12 w-full items-center justify-between rounded-md border border-[#e2e8f0] bg-white px-3 font-sans text-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
           value ? "text-[#0F172A]" : "text-zinc-500"
         }`}
       >
@@ -102,7 +102,7 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
                       onClick={() => select(unit.key)}
                       role="option"
                       aria-selected={value === unit.key}
-                      className={`rounded-md px-2.5 py-1.5 font-ui text-[14px] border transition-colors ${
+                      className={`rounded-md px-2.5 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                         value === unit.key
                           ? "bg-[#2596be] text-white border-[#2596be]"
                           : "bg-white text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"

@@ -8,12 +8,14 @@ import AddRecipe from "./pages/AddRecipe";
 import ShoppingList from "./pages/ShoppingList";
 import { RecipesProvider } from "./hooks/useRecipes";
 import { AuthProvider } from "./hooks/useAuth";
+import { ToastProvider } from "./components/Toast";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <RecipesProvider>
+        <ToastProvider>
+          <RecipesProvider>
           <div className="min-h-screen bg-background text-foreground font-sans">
             <a
               href="#main-content"
@@ -24,7 +26,7 @@ function App() {
             <Navbar />
             <main
               id="main-content"
-              className="container mx-auto p-5 md:p-8 lg:p-10"
+              className="container mx-auto p-5 pb-24 sm:pb-8 md:p-8 lg:p-10"
             >
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -35,7 +37,8 @@ function App() {
               </Routes>
             </main>
           </div>
-        </RecipesProvider>
+          </RecipesProvider>
+        </ToastProvider>
       </AuthProvider>
     </Router>
   );
