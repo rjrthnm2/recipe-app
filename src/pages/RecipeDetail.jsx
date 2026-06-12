@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui/button";
@@ -55,9 +55,20 @@ function PencilIcon(props) {
   );
 }
 
+// Build editable form state from a recipe (legacy or structured).
+function toEditForm(recipe) {
+  return {
+    ...recipe,
+    tags: recipe.tags ? recipe.tags.map((t) => t.replace(/[()]/g, "")) : [],
+    // Convert ingredients (legacy strings or structured) to editable rows.
+    ingredients: (recipe.ingredients || []).map(normalizeIngredient),
+  };
+}
+
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isAdmin: isSuperuser } = useAuth();
 
   const { recipes, toggleSave, savedIds, loading, updateRecipe, deleteRecipe } =
@@ -76,6 +87,26 @@ export default function RecipeDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(null);
   const [deleteStep, setDeleteStep] = useState(0);
+
+  // ?edit=1 (e.g. the pencil button on My List) opens the editor directly
+  // once the recipe and superuser status have loaded. Guarded setState during
+  // render per https://react.dev/learn/you-might-not-need-an-effect
+  const wantsEdit = searchParams.get("edit") === "1";
+  if (wantsEdit && !loading && isSuperuser && !isEditing && !editForm) {
+    const target = recipes.find((r) => r.url.endsWith(id));
+    if (target) {
+      setIsEditing(true);
+      setEditForm(toEditForm(target));
+    }
+  }
+
+  // Consume the param once the editor is open so refresh doesn't reopen it.
+  useEffect(() => {
+    if (!wantsEdit || !isEditing) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete("edit");
+    setSearchParams(next, { replace: true });
+  }, [wantsEdit, isEditing, searchParams, setSearchParams]);
 
   if (loading)
     return (
@@ -117,12 +148,7 @@ export default function RecipeDetail() {
   // Superuser actions
   const handleEditClick = () => {
     setIsEditing(true);
-    setEditForm({
-      ...recipe,
-      tags: recipe.tags ? recipe.tags.map((t) => t.replace(/[()]/g, "")) : [],
-      // Convert ingredients (legacy strings or structured) to editable rows.
-      ingredients: (recipe.ingredients || []).map(normalizeIngredient),
-    });
+    setEditForm(toEditForm(recipe));
   };
 
   const handleCancelEdit = () => {
@@ -506,8 +532,10 @@ export default function RecipeDetail() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-3 gap-10">
-        <div className="md:col-span-1 space-y-6">
+      {/* The structured ingredients editor needs full width, so edit mode
+          stacks the sections instead of using the 1/3 + 2/3 columns. */}
+      <div className={isEditing ? "space-y-12" : "grid md:grid-cols-3 gap-10"}>
+        <div className={isEditing ? "space-y-6" : "md:col-span-1 space-y-6"}>
           <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
             Ingredients
           </h2>
@@ -548,7 +576,7 @@ export default function RecipeDetail() {
           )}
         </div>
 
-        <div className="md:col-span-2 space-y-6">
+        <div className={isEditing ? "space-y-6" : "md:col-span-2 space-y-6"}>
           <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
             Directions
           </h2>
