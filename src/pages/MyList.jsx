@@ -1,4 +1,5 @@
 import { useRecipes } from "../hooks/useRecipes";
+import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -10,8 +11,29 @@ import {
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 
+// Simple Pencil Icon SVG
+function PencilIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+    </svg>
+  );
+}
+
 export default function MyList() {
   const { recipes, savedIds, loading } = useRecipes();
+  const { isAdmin: isSuperuser } = useAuth();
 
   // Filter the master list to only show saved recipes
   const favoriteRecipes = recipes.filter((r) => savedIds.includes(r.url));
@@ -106,13 +128,26 @@ export default function MyList() {
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="pt-0">
+                <CardFooter className="pt-0 gap-2">
                   <Button
-                    className="w-full bg-[#0F172A] hover:bg-[#2596be] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
+                    className="flex-1 bg-[#0F172A] hover:bg-[#2596be] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
                     asChild
                   >
                     <Link to={`/recipe/${recipeId}`}>View Recipe</Link>
                   </Button>
+                  {isSuperuser && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="h-10 w-10 shrink-0 p-0 rounded-[6px] border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC] hover:text-[#2596be]"
+                      aria-label={`Edit ${recipe.title}`}
+                      title="Edit recipe"
+                    >
+                      <Link to={`/recipe/${recipeId}?edit=1`}>
+                        <PencilIcon className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             );
