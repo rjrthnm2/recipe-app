@@ -218,7 +218,13 @@ export default function Home() {
             </h1>
             <p className="font-sans max-w-2xl text-[16px] text-[#0F172A]/80 md:text-[20px]">
               Search by name, ingredient, or tag — or browse the whole
-              collection below.
+              collection below.{" "}
+              <Link
+                to="/about"
+                className="whitespace-nowrap font-medium text-[#2596be] underline-offset-4 hover:underline"
+              >
+                Made with love by Jewel. Come meet her →
+              </Link>
             </p>
           </div>
 

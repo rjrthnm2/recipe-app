@@ -1,4 +1,5 @@
 // src/App.jsx
+import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -9,6 +10,9 @@ import ShoppingList from "./pages/ShoppingList";
 import { RecipesProvider } from "./hooks/useRecipes";
 import { AuthProvider } from "./hooks/useAuth";
 import { ToastProvider } from "./components/Toast";
+
+// Lazy-loaded so the 3D globe (three.js) only downloads on /about.
+const About = lazy(() => import("./pages/About"));
 
 function App() {
   return (
@@ -34,6 +38,20 @@ function App() {
                 <Route path="/shopping-list" element={<ShoppingList />} />
                 <Route path="/add" element={<AddRecipe />} />
                 <Route path="/recipe/:id" element={<RecipeDetail />} />
+                <Route
+                  path="/about"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="p-8 text-center text-[#64748b]">
+                          Loading...
+                        </div>
+                      }
+                    >
+                      <About />
+                    </Suspense>
+                  }
+                />
               </Routes>
             </main>
           </div>
