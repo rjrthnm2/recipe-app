@@ -20,9 +20,17 @@ export function RecipesProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedIds, setSavedIds] = useState([]);
+  const [nickname, setNickname] = useState("");
 
   const { user, isAdmin } = useAuth(); // <-- Get the currently logged-in user
   const showToast = useToast();
+
+  // Default recipe byline when no nickname is set: first name from Google.
+  const defaultNickname =
+    user?.displayName?.trim().split(/\s+/)[0] ||
+    user?.email?.split("@")[0] ||
+    "";
+  const displayNickname = nickname || defaultNickname;
 
   // 1. Fetch the master recipe list (Same as before)
   useEffect(() => {
@@ -58,16 +66,36 @@ export function RecipesProvider({ children }) {
     const fetchUserList = async () => {
       if (!user) {
         setSavedIds([]); // If logged out, empty the list
+        setNickname("");
         return;
       }
       // Look for a document matching this user's unique ID
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         setSavedIds(userDoc.data().savedRecipes || []);
+        setNickname(userDoc.data().nickname || "");
       }
     };
     fetchUserList();
   }, [user]);
+
+  // Save the user's chosen recipe nickname (shown as "by <nickname>").
+  const updateNickname = async (newNickname) => {
+    if (!user) return;
+    const cleaned = newNickname.trim().slice(0, 30);
+    try {
+      await setDoc(
+        doc(db, "users", user.uid),
+        { nickname: cleaned },
+        { merge: true },
+      );
+      setNickname(cleaned);
+      showToast("Nickname saved.", "success");
+    } catch (error) {
+      console.error("Error saving nickname: ", error);
+      showToast("Could not save the nickname. Please try again.", "error");
+    }
+  };
 
   // 3. Update toggleSave to sync with Firestore instead of local storage
   const toggleSave = async (recipeUrl) => {
@@ -101,7 +129,15 @@ export function RecipesProvider({ children }) {
       newRecipeData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") +
       "-" +
       Date.now();
-    const completeRecipe = { ...newRecipeData, url: uniqueId };
+    const completeRecipe = {
+      ...newRecipeData,
+      url: uniqueId,
+      // Stamp the creator so everyone can see whose recipe it is. Recipes
+      // without these fields predate ownership and are Jewel's.
+      ownerId: user.uid,
+      ownerName: displayNickname || "Friend",
+      createdAt: new Date().toISOString(),
+    };
 
     try {
       const docRef = doc(db, "recipes", uniqueId);
@@ -183,6 +219,8 @@ export function RecipesProvider({ children }) {
         updateRecipe,
         deleteRecipe,
         loading,
+        nickname: displayNickname,
+        updateNickname,
       }}
     >
       {children}

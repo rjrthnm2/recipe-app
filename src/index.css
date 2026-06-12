@@ -156,12 +156,12 @@
 
 @keyframes heart-glow {
   0% {
-    opacity: 0.55;
-    transform: scale(0.5);
+    opacity: 0.5;
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(2.3);
+    transform: scale(2.4);
   }
 }
 
