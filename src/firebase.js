@@ -1,7 +1,6 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -16,9 +15,8 @@ const firebaseConfig = {
   measurementId: "G-6B2E2NHR6V",
 };
 
-// Initialize Firebase
+// Initialize Firebase (no Analytics — nothing is tracked).
 const app = initializeApp(firebaseConfig);
-const ANALYTICS = getAnalytics(app);
 
 // Initialize Firestore (The database)
 export const db = getFirestore(app);

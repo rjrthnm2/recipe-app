@@ -8,6 +8,7 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import IngredientsEditor from "../components/IngredientsEditor";
+import usePageTitle from "../hooks/usePageTitle";
 import {
   formatIngredient,
   normalizeIngredient,
@@ -93,7 +94,7 @@ export default function RecipeDetail() {
   // render per https://react.dev/learn/you-might-not-need-an-effect
   const wantsEdit = searchParams.get("edit") === "1";
   if (wantsEdit && !loading && isSuperuser && !isEditing && !editForm) {
-    const target = recipes.find((r) => r.url.endsWith(id));
+    const target = recipes.find((r) => r.url === id);
     if (target) {
       setIsEditing(true);
       setEditForm(toEditForm(target));
@@ -108,15 +109,33 @@ export default function RecipeDetail() {
     setSearchParams(next, { replace: true });
   }, [wantsEdit, isEditing, searchParams, setSearchParams]);
 
+  // recipe.url IS the document id — exact match only, so one recipe's link
+  // can never resolve to another recipe whose id happens to end the same way.
+  const recipe = recipes.find((r) => r.url === id);
+  usePageTitle(loading ? null : recipe ? recipe.title : "Recipe not found");
+
   if (loading)
     return (
-      <div className="p-8 text-center text-zinc-500">Loading recipe...</div>
+      <div className="p-8 text-center text-[#475569]">Loading recipe...</div>
     );
 
-  // Find the recipe where the URL ends with our ID
-  const recipe = recipes.find((r) => r.url.endsWith(id));
-
-  if (!recipe) return <div className="p-8 text-center">Recipe not found.</div>;
+  if (!recipe)
+    return (
+      <div className="mx-auto max-w-xl rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] px-8 py-16 text-center">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A]">
+          We couldn't find that recipe.
+        </h1>
+        <p className="mt-3 font-sans text-[18px] text-[#0F172A]/75">
+          It may have been deleted, or the link may be mistyped.
+        </p>
+        <Button
+          asChild
+          className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[17px] font-medium text-white hover:bg-[#2596be]"
+        >
+          <Link to="/">Back to Browse</Link>
+        </Button>
+      </div>
+    );
 
   const isSaved = savedIds.includes(recipe.url);
   const recipeUrl = window.location.href;

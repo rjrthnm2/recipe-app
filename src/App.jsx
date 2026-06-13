@@ -7,6 +7,8 @@ import MyList from "./pages/MyList";
 import RecipeDetail from "./pages/RecipeDetail";
 import AddRecipe from "./pages/AddRecipe";
 import ShoppingList from "./pages/ShoppingList";
+import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 import { RecipesProvider } from "./hooks/useRecipes";
 import { AuthProvider } from "./hooks/useAuth";
 import { ToastProvider } from "./components/Toast";
@@ -17,8 +19,9 @@ const About = lazy(() => import("./pages/About"));
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <ToastProvider>
+      <ScrollToTop />
+      <ToastProvider>
+        <AuthProvider>
           <RecipesProvider>
           <div className="min-h-screen bg-background text-foreground font-sans">
             <a
@@ -43,8 +46,11 @@ function App() {
                   element={
                     <Suspense
                       fallback={
-                        <div className="p-8 text-center text-[#64748b]">
-                          Loading...
+                        <div className="p-8 text-center font-sans text-[18px] text-[#475569]">
+                          <p>Loading Jewel's page...</p>
+                          <p className="mt-1 text-[15px]">
+                            The globe takes a few seconds the first time.
+                          </p>
                         </div>
                       }
                     >
@@ -52,12 +58,13 @@ function App() {
                     </Suspense>
                   }
                 />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
           </div>
           </RecipesProvider>
-        </ToastProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   );
 }

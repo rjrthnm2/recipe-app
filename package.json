@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.2.8",
-    "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/outfit": "^5.2.8",
     "@fontsource-variable/source-sans-3": "^5.2.9",
     "@hugeicons/core-free-icons": "^4.0.0",

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import NationsGlobe from "../components/NationsGlobe";
 import { NATIONS, CATEGORY_LABELS } from "../data/nations";
+import usePageTitle from "../hooks/usePageTitle";
 
 const CATEGORY_DOT = {
   home: "#0F172A",
@@ -20,6 +21,7 @@ const LOVES = [
 ];
 
 export default function About() {
+  usePageTitle("Meet Jewel");
   const [selected, setSelected] = useState(null);
 
   return (

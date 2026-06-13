@@ -19,6 +19,7 @@ const RecipesContext = createContext();
 export function RecipesProvider({ children }) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [savedIds, setSavedIds] = useState([]);
   const [nickname, setNickname] = useState("");
 
@@ -54,6 +55,7 @@ export function RecipesProvider({ children }) {
         }
       } catch (error) {
         console.error("Error fetching recipes: ", error);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -104,19 +106,30 @@ export function RecipesProvider({ children }) {
       return;
     }
 
+    const previousSavedIds = savedIds;
     const newSavedIds = savedIds.includes(recipeUrl)
       ? savedIds.filter((id) => id !== recipeUrl)
       : [...savedIds, recipeUrl];
 
     setSavedIds(newSavedIds); // Update the screen instantly
 
-    // Save the new array to the user's personal cloud document
-    // { merge: true } ensures we don't accidentally overwrite other user data if we add features later
-    await setDoc(
-      doc(db, "users", user.uid),
-      { savedRecipes: newSavedIds },
-      { merge: true },
-    );
+    try {
+      // Save the new array to the user's personal cloud document.
+      // { merge: true } keeps other fields (nickname) intact.
+      await setDoc(
+        doc(db, "users", user.uid),
+        { savedRecipes: newSavedIds },
+        { merge: true },
+      );
+    } catch (error) {
+      // Put the screen back the way it was so it never lies about a save.
+      setSavedIds(previousSavedIds);
+      console.error("Error saving list: ", error);
+      showToast(
+        "That didn't save. Check your internet and try again.",
+        "error",
+      );
+    }
   };
 
   const addRecipe = async (newRecipeData) => {
@@ -125,10 +138,13 @@ export function RecipesProvider({ children }) {
       return;
     }
 
+    // Slug + timestamp + short random suffix so two same-titled recipes can
+    // never collide, even if added in the same instant.
     const uniqueId =
       newRecipeData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") +
       "-" +
-      Date.now();
+      Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 6);
     const completeRecipe = {
       ...newRecipeData,
       url: uniqueId,
@@ -146,6 +162,11 @@ export function RecipesProvider({ children }) {
       return uniqueId;
     } catch (error) {
       console.error("Error adding document: ", error);
+      showToast(
+        "The recipe didn't save. Check your internet and try again.",
+        "error",
+      );
+      return null;
     }
   };
 
@@ -198,9 +219,20 @@ export function RecipesProvider({ children }) {
       // Update local state
       setRecipes((prev) => prev.filter((recipe) => recipe.url !== id));
 
-      // We could also remove from savedIds if it's there
+      // Drop it from the user's saved list too (best-effort — the delete
+      // itself already succeeded, so don't fail the whole operation).
       if (savedIds.includes(id)) {
-        await toggleSave(id);
+        const newSavedIds = savedIds.filter((saved) => saved !== id);
+        setSavedIds(newSavedIds);
+        try {
+          await setDoc(
+            doc(db, "users", user.uid),
+            { savedRecipes: newSavedIds },
+            { merge: true },
+          );
+        } catch (cleanupError) {
+          console.error("Error updating saved list: ", cleanupError);
+        }
       }
       showToast("Recipe deleted.", "success");
     } catch (error) {
@@ -219,6 +251,7 @@ export function RecipesProvider({ children }) {
         updateRecipe,
         deleteRecipe,
         loading,
+        loadError,
         nickname: displayNickname,
         updateNickname,
       }}

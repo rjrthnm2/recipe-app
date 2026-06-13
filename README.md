@@ -81,3 +81,21 @@ npm run build
 firebase deploy --only hosting          # deploy the site
 firebase deploy --only firestore:rules  # deploy security rules
 ```
+
+## Operations notes
+
+- **Backups.** Set up a periodic Firestore export from the
+  [Firebase Console](https://console.firebase.google.com/project/recipe-app-f8fd3)
+  (Firestore -> Import/Export, or `gcloud firestore export`). The
+  `deleted_recipes` collection is a soft-delete archive, not a backup. A local
+  rollback snapshot from the June 2026 units migration
+  (`recipes-backup-*.json`, git-ignored) exists on the maintainer's machine.
+- **Dev writes to production.** `npm run dev` talks to the live Firestore
+  project. Be careful with destructive testing; if testing gets heavier,
+  create a second Firebase project and point a `.env.local` config at it.
+- **Security rules.** `firestore.rules` validates recipe writes (allowlisted
+  fields, owner stamp must match the signed-in account). Redeploy with
+  `firebase deploy --only firestore:rules` after any change.
+- **Dependency audits.** `npm audit --omit=dev` checks what actually ships.
+  Remaining esbuild/vite advisories are dev-server-only and need a major vite
+  upgrade to clear.
