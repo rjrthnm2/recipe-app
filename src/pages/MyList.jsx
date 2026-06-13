@@ -1,6 +1,8 @@
 import { useRecipes } from "../hooks/useRecipes";
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
+import LoadErrorNotice from "../components/LoadErrorNotice";
+import usePageTitle from "../hooks/usePageTitle";
 import {
   Card,
   CardHeader,
@@ -32,7 +34,8 @@ function PencilIcon(props) {
 }
 
 export default function MyList() {
-  const { recipes, savedIds, loading } = useRecipes();
+  usePageTitle("My List");
+  const { recipes, savedIds, loading, loadError } = useRecipes();
   const { isAdmin: isSuperuser } = useAuth();
 
   // Filter the master list to only show saved recipes
@@ -53,6 +56,8 @@ export default function MyList() {
             />
           ))}
         </div>
+      ) : loadError ? (
+        <LoadErrorNotice />
       ) : favoriteRecipes.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-[#e2e8f0] bg-[#F8FAFC] py-20 text-center">
           <p className="text-[18px] text-[#0F172A]/70 font-sans">
@@ -69,7 +74,7 @@ export default function MyList() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {favoriteRecipes.map((recipe, index) => {
-            const recipeId = recipe.url.split("/").pop();
+            const recipeId = recipe.url; // url IS the document id
 
             return (
               <Card
@@ -120,7 +125,7 @@ export default function MyList() {
                     {(recipe.tags?.length || 0) > 2 && (
                       <Badge
                         variant="secondary"
-                        className="shrink-0 bg-[#F8FAFC] text-[#64748b] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
+                        className="shrink-0 bg-[#F8FAFC] text-[#475569] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
                         aria-label={`${recipe.tags.length - 2} more tags`}
                       >
                         …

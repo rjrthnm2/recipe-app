@@ -13,11 +13,40 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Every field a recipe document may contain. Writes with any other
+    // field are rejected, which blocks junk data and ownership spoofing.
+    function hasOnlyRecipeFields(data) {
+      return data.keys().hasOnly([
+        'title', 'author_note', 'prep_time', 'cook_time', 'servings',
+        'tags', 'ingredients', 'directions', 'url',
+        'ownerId', 'ownerName', 'createdAt'
+      ]);
+    }
+
+    function isValidRecipe(data) {
+      return data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 200
+        && data.tags is list && data.tags.size() <= 25
+        && data.ingredients is list && data.ingredients.size() <= 150
+        && data.directions is list && data.directions.size() <= 60;
+    }
+
     // Master recipe list.
     match /recipes/{recipeId} {
       allow read: if true;                 // anyone can browse, no login needed
-      allow create: if isSignedIn();       // any signed-in user can add a recipe
-      allow update, delete: if isSuperuser(); // only the two owners can edit/delete
+      // Any signed-in user can add a recipe, but only with known fields,
+      // sane sizes, and their own account id as the owner stamp.
+      allow create: if isSignedIn()
+        && hasOnlyRecipeFields(request.resource.data)
+        && isValidRecipe(request.resource.data)
+        && request.resource.data.url == recipeId
+        && request.resource.data.ownerId == request.auth.uid;
+      // Only the two owners can edit, and edits cannot introduce new fields.
+      allow update: if isSuperuser()
+        && hasOnlyRecipeFields(request.resource.data)
+        && isValidRecipe(request.resource.data);
+      allow delete: if isSuperuser();
     }
 
     // Each user's personal saved ("My List") document.

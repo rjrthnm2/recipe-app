@@ -8,8 +8,10 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import IngredientsEditor from "../components/IngredientsEditor";
 import { emptyIngredient, collectIngredientNames } from "../lib/units";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function AddRecipe() {
+  usePageTitle("Add a Recipe");
   const { addRecipe, recipes } = useRecipes();
   const navigate = useNavigate();
   const showToast = useToast();

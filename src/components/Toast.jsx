@@ -2,22 +2,46 @@ import { createContext, useCallback, useContext, useState } from "react";
 
 const ToastContext = createContext(null);
 
-const TYPE_STYLES = {
-  info: "bg-[#0F172A] text-white",
-  success: "bg-[#16a34a] text-white",
-  error: "bg-[#dc2626] text-white",
+// High-visibility styling: white card, bold colored edge, icon chip.
+// Designed to be unmissable for older eyes.
+const TYPE_CONFIG = {
+  info: {
+    border: "border-l-[#0F172A]",
+    chip: "bg-[#0F172A]",
+    icon: "i",
+    label: "Notice",
+  },
+  success: {
+    border: "border-l-[#16a34a]",
+    chip: "bg-[#16a34a]",
+    icon: "✓",
+    label: "Done",
+  },
+  error: {
+    border: "border-l-[#dc2626]",
+    chip: "bg-[#dc2626]",
+    icon: "!",
+    label: "Problem",
+  },
 };
+
+// Errors stay up longer so there's time to read them.
+const DURATION = { info: 5000, success: 5000, error: 7000 };
 
 // Lightweight in-app notifications, replacing blocking alert() popups.
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
+
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const showToast = useCallback((message, type = "info") => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    }, DURATION[type] || DURATION.info);
   }, []);
 
   return (
@@ -25,19 +49,37 @@ export function ToastProvider({ children }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex flex-col items-center gap-2 px-4 sm:bottom-6 print:hidden"
+        className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex flex-col items-center gap-3 px-4 sm:bottom-6 sm:items-end sm:px-6 print:hidden"
       >
-        {toasts.map((t) => (
-          <div
-            key={t.id}
-            role="status"
-            className={`pointer-events-auto rounded-[8px] px-5 py-3 font-sans text-[16px] shadow-lg motion-safe:animate-in motion-safe:slide-in-from-bottom-2 ${
-              TYPE_STYLES[t.type] || TYPE_STYLES.info
-            }`}
-          >
-            {t.message}
-          </div>
-        ))}
+        {toasts.map((t) => {
+          const config = TYPE_CONFIG[t.type] || TYPE_CONFIG.info;
+          return (
+            <div
+              key={t.id}
+              role="status"
+              className={`pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-[10px] border border-[#e2e8f0] border-l-[6px] bg-white py-3 pl-4 pr-2 shadow-xl ring-1 ring-black/5 motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-300 ${config.border}`}
+            >
+              <span
+                aria-hidden="true"
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] font-bold text-white ${config.chip}`}
+              >
+                {config.icon}
+              </span>
+              <p className="flex-1 font-sans text-[17px] leading-snug text-[#0F172A]">
+                <span className="sr-only">{config.label}: </span>
+                {t.message}
+              </p>
+              <button
+                type="button"
+                onClick={() => dismissToast(t.id)}
+                aria-label="Dismiss notification"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[20px] text-[#475569] transition-colors hover:bg-[#F8FAFC] hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

@@ -17,6 +17,7 @@ import {
   isStructuredIngredient,
   cleanIngredientText,
 } from "../lib/units";
+import usePageTitle from "../hooks/usePageTitle";
 
 // A heuristic parser for recipe ingredients
 function parseIngredient(rawText) {
@@ -121,6 +122,7 @@ const DAYS = [
 const MEALS = ["Breakfast", "Lunch", "Dinner"];
 
 export default function ShoppingList() {
+  usePageTitle("Shopping List");
   const { recipes } = useRecipes();
   // Set of recipe URLs that are currently selected for the shopping list
   const [selectedRecipeUrls, setSelectedRecipeUrls] = useState(new Set());
@@ -168,9 +170,12 @@ export default function ShoppingList() {
   // In-app confirmation for switching planners with selections (replaces the
   // jarring native window.confirm). Holds the tab we're about to switch to.
   const [pendingTab, setPendingTab] = useState(null);
+  // In-app confirmation for the Clear All / Clear Week / Clear Day buttons.
+  const [pendingClear, setPendingClear] = useState(false);
 
   const handleTabSwitch = (newTab) => {
     if (activeTab === newTab) return;
+    setPendingClear(false);
 
     if (totalItemsSelectedCount > 0) {
       setPendingTab(newTab);
@@ -534,7 +539,7 @@ export default function ShoppingList() {
                 className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "quick"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#64748b] hover:text-[#0F172A]"
+                    : "text-[#475569] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("quick")}
               >
@@ -544,7 +549,7 @@ export default function ShoppingList() {
                 className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "day"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#64748b] hover:text-[#0F172A]"
+                    : "text-[#475569] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("day")}
               >
@@ -554,12 +559,43 @@ export default function ShoppingList() {
                 className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                   activeTab === "planner"
                     ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#64748b] hover:text-[#0F172A]"
+                    : "text-[#475569] hover:text-[#0F172A]"
                 }`}
                 onClick={() => handleTabSwitch("planner")}
               >
                 Week Plan
               </button>
+            </div>
+          )}
+
+          {pendingClear && !selectingFor && (
+            <div
+              role="alertdialog"
+              aria-label="Confirm clearing selections"
+              className="mb-6 rounded-[8px] border border-[#e2e8f0] border-l-4 border-l-[#dc2626] bg-white p-4 shadow-sm"
+            >
+              <p className="font-sans text-[16px] text-[#0F172A]">
+                Clear your current selections? This can't be undone.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  onClick={() => {
+                    clearSelection();
+                    setPendingClear(false);
+                  }}
+                  variant="outline"
+                  className="font-ui text-[15px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                >
+                  Yes, clear
+                </Button>
+                <Button
+                  onClick={() => setPendingClear(false)}
+                  variant="secondary"
+                  className="font-ui text-[15px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                >
+                  Keep them
+                </Button>
+              </div>
             </div>
           )}
 
@@ -659,7 +695,7 @@ export default function ShoppingList() {
                   variant="outline"
                   size="sm"
                   className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
-                  onClick={clearSelection}
+                  onClick={() => setPendingClear(true)}
                 >
                   Clear Week
                 </Button>
@@ -740,7 +776,7 @@ export default function ShoppingList() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={clearSelection}
+                  onClick={() => setPendingClear(true)}
                   className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
                 >
                   Clear Day
@@ -819,7 +855,7 @@ export default function ShoppingList() {
                   {selectedRecipeUrls.size > 0 && (
                     <Button
                       variant="outline"
-                      onClick={clearSelection}
+                      onClick={() => setPendingClear(true)}
                       className="whitespace-nowrap h-10 font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
                     >
                       Clear All
@@ -869,7 +905,7 @@ export default function ShoppingList() {
                               {recipe.title}
                             </h3>
                             {recipe.ingredients && (
-                              <p className="font-sans text-[14px] text-[#64748b] mt-1">
+                              <p className="font-sans text-[14px] text-[#475569] mt-1">
                                 {recipe.ingredients.length} ingredients
                               </p>
                             )}
@@ -1137,7 +1173,7 @@ export default function ShoppingList() {
                     <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="font-ui text-[13px] uppercase tracking-wide text-[#64748b]">
+                          <p className="font-ui text-[13px] uppercase tracking-wide text-[#475569]">
                             Selection progress
                           </p>
                           <p className="font-sans text-sm text-[#0F172A]">

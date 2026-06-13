@@ -12,6 +12,8 @@ import {
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
+import LoadErrorNotice from "../components/LoadErrorNotice";
+import usePageTitle from "../hooks/usePageTitle";
 
 const INGREDIENT_VARIANTS = {
   tomato: ["tomatoes"],
@@ -161,7 +163,8 @@ function computeRecipeScore(recipe, queryTokens, normalizedQuery) {
 }
 
 export default function Home() {
-  const { recipes, loading } = useRecipes();
+  usePageTitle("Browse Recipes");
+  const { recipes, loading, loadError } = useRecipes();
   const [search, setSearch] = useState("");
   const normalizedQuery = normalizeText(search);
   const queryTokens = tokenize(search);
@@ -286,6 +289,8 @@ export default function Home() {
         </div>
       )}
 
+      {!loading && loadError && <LoadErrorNotice />}
+
       {!loading && normalizedQuery && filteredRecipes.length === 0 && (
         <div className="rounded-xl border border-zinc-300 bg-amber-50 p-6 text-left text-zinc-800">
           <p className="text-lg font-semibold">No relevant recipes found.</p>
@@ -298,7 +303,7 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {filteredRecipes.map(({ recipe }, index) => {
           // Extract a clean ID from the URL to use for routing
-          const recipeId = recipe.url.split("/").pop();
+          const recipeId = recipe.url; // url IS the document id
 
           return (
             <Card
@@ -349,7 +354,7 @@ export default function Home() {
                   {(recipe.tags?.length || 0) > 2 && (
                     <Badge
                       variant="secondary"
-                      className="shrink-0 bg-[#F8FAFC] text-[#64748b] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
+                      className="shrink-0 bg-[#F8FAFC] text-[#475569] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
                       aria-label={`${recipe.tags.length - 2} more tags`}
                     >
                       …
