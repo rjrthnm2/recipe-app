@@ -235,10 +235,10 @@ export default function RecipeDetail() {
   const currentData = isEditing ? editForm : recipe;
 
   return (
-    <article className="mx-auto max-w-4xl space-y-8 pb-20">
+    <article className="mx-auto max-w-4xl space-y-8 pb-20 print:space-y-5 print:pb-0">
       <Link
         to="/"
-        className="font-ui text-[16px] text-[#0F172A]/70 hover:text-[#2596be]"
+        className="font-ui text-[16px] text-[#0F172A]/70 hover:text-[#2596be] print:hidden"
       >
         ← Back to Browse
       </Link>
@@ -268,7 +268,7 @@ export default function RecipeDetail() {
                 }
                 aria-pressed={isSaved}
                 title={isSaved ? "Remove from My List" : "Save to My List"}
-                className="relative mt-2 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+                className="relative mt-2 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] print:hidden"
               >
                 {isSaved && (
                   <svg
@@ -303,7 +303,7 @@ export default function RecipeDetail() {
 
         {/* Superuser actions */}
         {isSuperuser && (
-          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-[#e2e8f0]">
+          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-[#e2e8f0] print:hidden">
             {!isEditing ? (
               <Button
                 onClick={handleEditClick}
@@ -415,7 +415,7 @@ export default function RecipeDetail() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-4 text-[16px] text-[#64748b] items-center font-sans tracking-wide">
+        <div className="flex flex-wrap gap-4 text-[16px] text-[#64748b] items-center font-sans tracking-wide print:text-black">
           {isEditing ? (
             <>
               <div className="flex items-center gap-2">
@@ -470,7 +470,7 @@ export default function RecipeDetail() {
                 currentData.cook_time ||
                 currentData.servings) && <span className="opacity-50">•</span>}
               {/* Recipes without an owner predate ownership — all Jewel's. */}
-              <span className="font-medium text-[#2596be]">
+              <span className="font-medium text-[#2596be] print:text-black">
                 by {recipe.ownerName || "Jewel"}
               </span>
             </>
@@ -479,7 +479,7 @@ export default function RecipeDetail() {
       </div>
 
       {!isEditing && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 print:hidden">
           <Button
             onClick={() => toggleSave(recipe.url)}
             variant={isSaved ? "secondary" : "default"}
@@ -529,13 +529,13 @@ export default function RecipeDetail() {
       )}
 
       {shareMessage && (
-        <p role="status" className="font-sans text-[18px] text-[#2596be]">
+        <p role="status" className="font-sans text-[18px] text-[#2596be] print:hidden">
           {shareMessage}
         </p>
       )}
 
       {(currentData.author_note || isEditing) && (
-        <div className="rounded-[8px] border-l-4 border-l-[#2596be] bg-[#F8FAFC] p-6 italic font-sans text-[20px] text-[#0F172A]/80 shadow-sm">
+        <div className="rounded-[8px] border-l-4 border-l-[#2596be] bg-[#F8FAFC] p-6 italic font-sans text-[20px] text-[#0F172A]/80 shadow-sm print:border-l-black print:bg-white print:p-0 print:pl-4 print:shadow-none print:break-inside-avoid">
           {isEditing ? (
             <Textarea
               value={currentData.author_note || ""}
@@ -552,9 +552,22 @@ export default function RecipeDetail() {
       )}
 
       {/* The structured ingredients editor needs full width, so edit mode
-          stacks the sections instead of using the 1/3 + 2/3 columns. */}
-      <div className={isEditing ? "space-y-12" : "grid md:grid-cols-3 gap-10"}>
-        <div className={isEditing ? "space-y-6" : "md:col-span-1 space-y-6"}>
+          stacks the sections instead of using the 1/3 + 2/3 columns. Print
+          also stacks them (ingredients first) for a clean recipe-card layout. */}
+      <div
+        className={
+          isEditing
+            ? "space-y-12"
+            : "grid md:grid-cols-3 gap-10 print:block print:gap-0"
+        }
+      >
+        <div
+          className={
+            isEditing
+              ? "space-y-6"
+              : "md:col-span-1 space-y-6 print:mb-6 print:break-inside-avoid"
+          }
+        >
           <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
             Ingredients
           </h2>
@@ -573,18 +586,23 @@ export default function RecipeDetail() {
                 return (
                   <li
                     key={i}
-                    className="flex items-start gap-4 font-sans text-[18px] text-[#0F172A] p-2 hover:bg-[#F8FAFC] rounded-[8px] transition-colors"
+                    className="flex items-start gap-4 font-sans text-[18px] text-[#0F172A] p-2 hover:bg-[#F8FAFC] rounded-[8px] transition-colors print:p-0 print:text-black"
                   >
                     <Checkbox
                       id={`ingredient-${i}`}
                       checked={Boolean(checkedIngredients[i])}
                       onCheckedChange={() => toggleIngredientCheck(i)}
                       aria-label={`Mark ingredient as prepared: ${text}`}
-                      className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be]"
+                      className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] print:hidden"
                     />
+                    {/* Paper tick-box for the printed copy. */}
+                    <span
+                      aria-hidden="true"
+                      className="mt-1 hidden h-4 w-4 shrink-0 rounded-sm border-2 border-black print:block"
+                    ></span>
                     <label
                       htmlFor={`ingredient-${i}`}
-                      className={`cursor-pointer leading-relaxed ${checkedIngredients[i] ? "line-through text-[#64748b]" : ""}`}
+                      className={`cursor-pointer leading-relaxed ${checkedIngredients[i] ? "line-through text-[#64748b]" : ""} print:cursor-auto print:no-underline print:text-black`}
                     >
                       {text}
                     </label>
@@ -639,12 +657,12 @@ export default function RecipeDetail() {
               currentData.directions.map((step, i) => (
                 <li
                   key={i}
-                  className="flex gap-5 border-b border-[#e2e8f0] pb-6 last:border-b-0"
+                  className="flex gap-5 border-b border-[#e2e8f0] pb-6 last:border-b-0 print:break-inside-avoid print:pb-3"
                 >
-                  <span className="font-heading text-4xl font-bold leading-none text-[#2596be] opacity-80 mt-1">
+                  <span className="font-heading text-4xl font-bold leading-none text-[#2596be] opacity-80 mt-1 print:text-black print:opacity-100 print:text-2xl">
                     {i + 1}
                   </span>
-                  <p className="font-sans text-[20px] leading-[1.7] text-[#0F172A]">
+                  <p className="font-sans text-[20px] leading-[1.7] text-[#0F172A] print:text-[16px] print:text-black">
                     {step}
                   </p>
                 </li>
@@ -653,6 +671,11 @@ export default function RecipeDetail() {
           </ol>
         </div>
       </div>
+
+      {/* Source line, printed copies only. */}
+      <p className="hidden print:block print:pt-6 print:text-[12px] print:text-black">
+        From Jewel's Recipes — recipe-app-f8fd3.web.app
+      </p>
     </article>
   );
 }
