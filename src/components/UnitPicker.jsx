@@ -49,7 +49,7 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
         aria-expanded={open}
         aria-label={ariaLabel}
         className={`flex h-12 w-full items-center justify-between rounded-md border border-[#e2e8f0] bg-white px-3 font-sans text-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
-          value ? "text-[#0F172A]" : "text-zinc-500"
+          value ? "text-[#0F172A]" : "text-slate-500"
         }`}
       >
         <span className="truncate">{triggerLabel}</span>

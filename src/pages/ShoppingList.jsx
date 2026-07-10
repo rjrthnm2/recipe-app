@@ -734,7 +734,7 @@ export default function ShoppingList() {
                                   {recipe.title}
                                 </span>
                               ) : (
-                                <span className="text-zinc-600 italic">
+                                <span className="text-slate-600 italic">
                                   None
                                 </span>
                               )}
@@ -800,7 +800,7 @@ export default function ShoppingList() {
                         className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-[#F8FAFC] group"
                       >
                         <div>
-                          <p className="font-semibold text-zinc-500 text-sm uppercase tracking-wider mb-1">
+                          <p className="font-semibold text-slate-500 text-sm uppercase tracking-wider mb-1">
                             {meal}
                           </p>
                           {recipe ? (
@@ -808,7 +808,7 @@ export default function ShoppingList() {
                               {recipe.title}
                             </p>
                           ) : (
-                            <p className="text-base text-zinc-600 italic">
+                            <p className="text-base text-slate-600 italic">
                               No recipe selected
                             </p>
                           )}
@@ -1003,12 +1003,12 @@ export default function ShoppingList() {
                               <h3 className="font-heading text-lg font-bold text-[#0F172A]">
                                 Final shopping list
                               </h3>
-                              <p className="text-sm text-zinc-500 print:hidden">
+                              <p className="text-sm text-slate-500 print:hidden">
                                 Minimize to pick more ingredients, or cancel to
                                 start over.
                               </p>
                             </div>
-                            <span className="text-sm font-medium text-zinc-500 print:hidden">
+                            <span className="text-sm font-medium text-slate-500 print:hidden">
                               {finalShoppingList.length} items
                             </span>
                           </div>
@@ -1062,7 +1062,7 @@ export default function ShoppingList() {
                               variant="ghost"
                               size="sm"
                               onClick={() => setFinalListMinimized(true)}
-                              className="text-zinc-600 hover:bg-zinc-100"
+                              className="text-slate-600 hover:bg-slate-100"
                             >
                               Minimize
                             </Button>
@@ -1104,7 +1104,7 @@ export default function ShoppingList() {
                           </div>
 
                           {finalShoppingList.length === 0 ? (
-                            <div className="mt-3 rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-zinc-500 print:border-black print:text-black">
+                            <div className="mt-3 rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-slate-500 print:border-black print:text-black">
                               Select ingredients below or add custom items here.
                             </div>
                           ) : (
@@ -1132,11 +1132,11 @@ export default function ShoppingList() {
                                     </span>
                                     {!condensedExport &&
                                       (entry.custom ? (
-                                        <span className="text-xs uppercase tracking-wide text-zinc-600 print:text-zinc-700">
+                                        <span className="text-xs uppercase tracking-wide text-slate-600 print:text-slate-700">
                                           Added manually
                                         </span>
                                       ) : (
-                                        <span className="text-sm text-zinc-500 print:text-zinc-800">
+                                        <span className="text-sm text-slate-500 print:text-slate-800">
                                           From recipes: {entry.recipeTitle}
                                         </span>
                                       ))}
@@ -1155,7 +1155,7 @@ export default function ShoppingList() {
                 <section className="space-y-3 print:hidden">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm text-zinc-500">
+                      <p className="text-sm text-slate-500">
                         Select the ingredients you need, then create the
                         shopping list.
                       </p>
@@ -1168,7 +1168,7 @@ export default function ShoppingList() {
                           </p>
                         )}
                     </div>
-                    <span className="text-sm font-medium text-zinc-500">
+                    <span className="text-sm font-medium text-slate-500">
                       {shoppingList.length} items
                     </span>
                   </div>
@@ -1218,7 +1218,7 @@ export default function ShoppingList() {
                   )}
 
                   {shoppingList.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-zinc-500">
+                    <div className="rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-slate-500">
                       Select recipes on the left to build the combined
                       ingredient list.
                     </div>
@@ -1251,11 +1251,11 @@ export default function ShoppingList() {
                               <span className="text-base font-medium leading-snug text-[#0F172A]">
                                 {item.text}
                               </span>
-                              <span className="text-sm text-zinc-500">
+                              <span className="text-sm text-slate-500">
                                 Used in: {item.recipeTitle}
                               </span>
                               {item.originals && item.originals.length > 0 && (
-                                <span className="text-xs text-zinc-500">
+                                <span className="text-xs text-slate-500">
                                   Matches: {item.originals.join(" & ")}
                                 </span>
                               )}
@@ -1271,7 +1271,7 @@ export default function ShoppingList() {
             </div>
             {shoppingListCreated && finalShoppingList.length > 0 && (
               <div className="p-4 border-t border-[#e2e8f0] bg-[#F8FAFC] text-center print:hidden">
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-slate-500">
                   {finalShoppingList.length} total items
                 </p>
               </div>
