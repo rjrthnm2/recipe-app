@@ -116,7 +116,43 @@ export default function RecipeDetail() {
 
   if (loading)
     return (
-      <div className="p-8 text-center text-[#475569]">Loading recipe...</div>
+      <div
+        className="mx-auto max-w-4xl space-y-8 pb-20"
+        aria-busy="true"
+        aria-label="Loading recipe"
+      >
+        <div className="h-5 w-36 animate-pulse rounded bg-[#e2e8f0]" />
+        <div className="h-12 w-3/4 animate-pulse rounded-[8px] bg-[#e2e8f0]" />
+        <div className="h-5 w-48 animate-pulse rounded bg-[#e2e8f0]" />
+        <div className="flex flex-wrap gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-10 w-28 animate-pulse rounded-[8px] border border-[#e2e8f0] bg-[#F8FAFC]"
+            />
+          ))}
+        </div>
+        <div className="grid gap-10 md:grid-cols-3">
+          <div className="space-y-4 md:col-span-1">
+            <div className="h-8 w-40 animate-pulse rounded bg-[#e2e8f0]" />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-6 w-full animate-pulse rounded bg-[#F8FAFC]"
+              />
+            ))}
+          </div>
+          <div className="space-y-4 md:col-span-2">
+            <div className="h-8 w-40 animate-pulse rounded bg-[#e2e8f0]" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-16 w-full animate-pulse rounded bg-[#F8FAFC]"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     );
 
   if (!recipe)
