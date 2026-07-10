@@ -269,7 +269,7 @@ export default function Home() {
         <h2 className="font-heading text-3xl font-semibold tracking-tight text-[#0F172A]">
           All Recipes
         </h2>
-        <p className="font-ui rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
+        <p className="font-ui tabular rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
           {loading
             ? "Loading…"
             : `${filteredRecipes.length} result${
