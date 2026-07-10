@@ -28,7 +28,7 @@
 - **Approach:** Restrained + High Contrast.
 - **Primary:** Deep Velvet Navy (`#0F172A`) — For primary text and major structural elements (matches the velvet sofas).
 - **Secondary:** Soft Gray-White (`#F8FAFC`) — Secondary surfaces.
-- **Accent:** Bright Azure (`#2596be`) — Strict use for primary buttons and active states (accent vase color).
+- **Accent:** Bright Azure (`#2596be`) — Strict use for primary buttons and active states (accent vase color). Hover/darker steps in use: `#1f86ad` (hover), `#155e78` (deep text on azure tint).
 - **Neutrals:** Crisp Snow White (`#FFFFFF`) for main background, slate grays for inactive/borders (`#94A3B8`, `#cbd5e1`).
 - **Semantic:** success `#16a34a`, warning `#ea580c`, error `#dc2626`, info `#0284c7`.
 - **Dark mode:** Not prioritized initially to maintain high contrast white/navy paper feel, but if implemented: deep navy backgrounds with off-white text.
@@ -42,9 +42,10 @@
 ## Layout
 
 - **Approach:** Grid-disciplined. No hidden hamburger menus.
-- **Grid:** 1 column on mobile, max 2 on desktop.
-- **Max content width:** 800px (keeps reading line lengths comfortable).
-- **Border radius:** sm:4px, md:8px, lg:16px, full:9999px. Soft, inviting corners.
+- **Browse grids (recipe cards):** 1 column mobile → up to 5 columns at xl (1280px container). Cards are compact scanning units, so wide grids beat the original 2-column plan.
+- **Reading content (recipe detail, About):** max ~896px (max-w-4xl) to keep line lengths comfortable; About sections may use max-w-5xl.
+- **Border radius:** sm:4px, md:8px, lg:16px, full:9999px. Soft, inviting corners. (Buttons currently 6px; treat 8px as the target when touching them.)
+- **Mobile navigation:** persistent bottom tab bar (5 tabs, 60px targets) when logged in.
 
 ## Motion
 
@@ -59,3 +60,7 @@
 | Date       | Decision                      | Rationale                                                                             |
 | ---------- | ----------------------------- | ------------------------------------------------------------------------------------- |
 | 2026-03-28 | Initial design system created | Created by /design-consultation based on interior design photo & accessibility needs. |
+| 2026-07-10 | Browse grid widened to 5 columns / 1280px | 132+ compact cards scan far better wide; reading pages keep ~896px measure. Supersedes "max 2 columns / 800px". |
+| 2026-07-10 | Body base corrected to 18px in code | index.css had shipped 17px; code now matches this doc. |
+| 2026-07-10 | Print is a first-class surface | Recipe detail + shopping list have full print styles (paper tick-boxes, black accents, source line). |
+| 2026-07-10 | Known debt (from /design-review) | Color tokens exist in index.css but pages hardcode hex (297 sites); type sizes use raw px with some off-scale values; radius mixes 6/8/12px with named classes. Normalize opportunistically when touching files. |
