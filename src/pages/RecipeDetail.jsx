@@ -629,7 +629,7 @@ export default function RecipeDetail() {
                       checked={Boolean(checkedIngredients[i])}
                       onCheckedChange={() => toggleIngredientCheck(i)}
                       aria-label={`Mark ingredient as prepared: ${text}`}
-                      className="mt-1 h-5 w-5 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] print:hidden"
+                      className="mt-0.5 h-6 w-6 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] print:hidden"
                     />
                     {/* Paper tick-box for the printed copy. */}
                     <span
