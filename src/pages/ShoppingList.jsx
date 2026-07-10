@@ -508,10 +508,14 @@ export default function ShoppingList() {
     window.print();
   };
 
+  // Alphabetical, matching Browse — the same list in two orders is confusing.
   const filteredRecipes = useMemo(() => {
-    if (!searchQuery.trim()) return recipes;
+    const sorted = [...recipes].sort((a, b) =>
+      (a.title || "").localeCompare(b.title || ""),
+    );
+    if (!searchQuery.trim()) return sorted;
     const lowerQuery = searchQuery.toLowerCase();
-    return recipes.filter((r) => r.title?.toLowerCase().includes(lowerQuery));
+    return sorted.filter((r) => r.title?.toLowerCase().includes(lowerQuery));
   }, [recipes, searchQuery]);
 
   return (
