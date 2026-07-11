@@ -324,7 +324,13 @@ export default function Home() {
             >
               <CardHeader className="pb-0">
                 <CardTitle className="font-heading line-clamp-2 text-[18px] md:text-[20px] font-bold leading-tight text-[#0F172A]">
-                  {recipe.title}
+                  {/* Title navigates too — a bigger target than the button alone. */}
+                  <Link
+                    to={`/recipe/${recipeId}`}
+                    className="rounded-sm transition-colors hover:text-[#2596be] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+                  >
+                    {recipe.title}
+                  </Link>
                 </CardTitle>
               </CardHeader>
               {/* mt-auto anchors prep + divider + tags just above the button,
