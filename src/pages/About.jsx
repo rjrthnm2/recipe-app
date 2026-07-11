@@ -101,7 +101,7 @@ export default function About() {
                       type="button"
                       onClick={() => setSelected(isActive ? null : nation)}
                       aria-pressed={isActive}
-                      className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 font-ui text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                      className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 font-ui text-[16px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
                         isActive
                           ? "border-transparent bg-[#2596be] text-white"
                           : "border-[#e2e8f0] bg-white text-[#0F172A] hover:bg-[#F8FAFC]"
@@ -128,13 +128,13 @@ export default function About() {
                   key={selected.id}
                   className="reveal-card rounded-[8px] border border-[#e2e8f0] border-l-4 border-l-[#2596be] bg-[#F8FAFC] p-5"
                 >
-                  <p className="font-ui text-[13px] font-medium uppercase tracking-wider text-[#64748b]">
+                  <p className="font-ui text-[14px] font-medium uppercase tracking-wider text-[#64748b]">
                     {CATEGORY_LABELS[selected.category]}
                   </p>
                   <h3 className="font-heading mt-1 text-xl font-bold text-[#0F172A]">
                     {selected.name}
                   </h3>
-                  <p className="mt-2 font-sans text-[17px] leading-relaxed text-[#0F172A]/85">
+                  <p className="mt-2 font-sans text-[18px] leading-relaxed text-[#0F172A]/85">
                     {selected.story}
                   </p>
                 </div>
@@ -203,7 +203,7 @@ export default function About() {
             <h3 className="font-heading text-xl font-bold text-[#0F172A]">
               The widows group
             </h3>
-            <p className="mt-1 font-sans text-[17px] leading-relaxed text-[#0F172A]/85">
+            <p className="mt-1 font-sans text-[18px] leading-relaxed text-[#0F172A]/85">
               A small group for widows. Women learning to laugh again, around
               my table.
             </p>
@@ -212,7 +212,7 @@ export default function About() {
             <h3 className="font-heading text-xl font-bold text-[#0F172A]">
               The prophetic group
             </h3>
-            <p className="mt-1 font-sans text-[17px] leading-relaxed text-[#0F172A]/85">
+            <p className="mt-1 font-sans text-[18px] leading-relaxed text-[#0F172A]/85">
               A prophetic small group where we pray, listen, and watch God
               move.
             </p>
@@ -276,7 +276,7 @@ export default function About() {
         </p>
         <Button
           asChild
-          className="mt-5 h-12 bg-[#2596be] px-8 font-ui text-[17px] font-bold text-white hover:bg-[#1f86ad]"
+          className="mt-5 h-12 bg-[#2596be] px-8 font-ui text-[18px] font-bold text-white hover:bg-[#1f86ad]"
         >
           <Link to="/">Browse the recipes</Link>
         </Button>

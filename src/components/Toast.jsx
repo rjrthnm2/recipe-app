@@ -65,7 +65,7 @@ export function ToastProvider({ children }) {
               >
                 {config.icon}
               </span>
-              <p className="flex-1 font-sans text-[17px] leading-snug text-[#0F172A]">
+              <p className="flex-1 font-sans text-[18px] leading-snug text-[#0F172A]">
                 <span className="sr-only">{config.label}: </span>
                 {t.message}
               </p>

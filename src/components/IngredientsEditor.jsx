@@ -89,7 +89,7 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
             <Input
               value={row.note}
               onChange={(e) => updateRow(index, "note", e.target.value)}
-              className="h-12 border-[#e2e8f0] bg-[#F8FAFC]/40 font-sans text-[15px] text-[#475569]"
+              className="h-12 border-[#e2e8f0] bg-[#F8FAFC]/40 font-sans text-[16px] text-[#475569]"
               placeholder="finely chopped"
               aria-label={`Note for ingredient ${index + 1}`}
             />

@@ -48,7 +48,7 @@ function App() {
                       fallback={
                         <div className="p-8 text-center font-sans text-[18px] text-[#475569]">
                           <p>Loading Jewel's page...</p>
-                          <p className="mt-1 text-[15px]">
+                          <p className="mt-1 text-[16px]">
                             The globe takes a few seconds the first time.
                           </p>
                         </div>

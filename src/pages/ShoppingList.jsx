@@ -588,14 +588,14 @@ export default function ShoppingList() {
                     setPendingClear(false);
                   }}
                   variant="outline"
-                  className="font-ui text-[15px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                  className="font-ui text-[16px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
                 >
                   Yes, clear
                 </Button>
                 <Button
                   onClick={() => setPendingClear(false)}
                   variant="secondary"
-                  className="font-ui text-[15px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                  className="font-ui text-[16px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
                 >
                   Keep them
                 </Button>
@@ -616,14 +616,14 @@ export default function ShoppingList() {
                 <Button
                   onClick={confirmTabSwitch}
                   variant="outline"
-                  className="font-ui text-[15px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                  className="font-ui text-[16px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
                 >
                   Clear & switch
                 </Button>
                 <Button
                   onClick={() => setPendingTab(null)}
                   variant="secondary"
-                  className="font-ui text-[15px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                  className="font-ui text-[16px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
                 >
                   Stay here
                 </Button>
@@ -978,7 +978,7 @@ export default function ShoppingList() {
                       <div className="mb-4 rounded-xl border border-[#2596be]/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <p className="font-ui text-[13px] uppercase tracking-wide text-[#2596be]">
+                            <p className="font-ui text-[14px] uppercase tracking-wide text-[#2596be]">
                               Shopping list ready
                             </p>
                             <p className="font-sans text-sm text-[#0F172A]">
@@ -1014,7 +1014,7 @@ export default function ShoppingList() {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 print:hidden">
-                            <div className="mr-auto flex items-center rounded-md border border-[#e2e8f0] bg-[#F8FAFC] p-0.5 font-ui text-[13px]">
+                            <div className="mr-auto flex items-center rounded-md border border-[#e2e8f0] bg-[#F8FAFC] p-0.5 font-ui text-[14px]">
                               <button
                                 type="button"
                                 onClick={() => setCondensedExport(false)}
@@ -1177,7 +1177,7 @@ export default function ShoppingList() {
                     <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="font-ui text-[13px] uppercase tracking-wide text-[#475569]">
+                          <p className="font-ui text-[14px] uppercase tracking-wide text-[#475569]">
                             Selection progress
                           </p>
                           <p className="font-sans text-sm text-[#0F172A]">
