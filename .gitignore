@@ -33,3 +33,4 @@ recipes-backup-*.json
 .github/
 .claude/
 CLAUDE.md
+.gstack/
