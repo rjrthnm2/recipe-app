@@ -269,7 +269,7 @@ export default function Home() {
         <h2 className="font-heading text-3xl font-semibold tracking-tight text-[#0F172A]">
           All Recipes
         </h2>
-        <p className="font-ui rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
+        <p className="font-ui tabular rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
           {loading
             ? "Loading…"
             : `${filteredRecipes.length} result${
@@ -292,11 +292,21 @@ export default function Home() {
       {!loading && loadError && <LoadErrorNotice />}
 
       {!loading && normalizedQuery && filteredRecipes.length === 0 && (
-        <div className="rounded-xl border border-zinc-300 bg-amber-50 p-6 text-left text-zinc-800">
-          <p className="text-lg font-semibold">No relevant recipes found.</p>
-          <p className="mt-2 text-base">
+        <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-6 text-left text-[#0F172A]">
+          <p className="font-sans text-lg font-semibold">
+            No relevant recipes found.
+          </p>
+          <p className="mt-2 font-sans text-base text-[#475569]">
             Try fewer words or ingredient basics like chicken, tomato, or onion.
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setSearch("")}
+            className="mt-4 h-11 border-[#e2e8f0] px-5 font-ui text-[16px] font-medium text-[#0F172A] hover:bg-white"
+          >
+            Clear search
+          </Button>
         </div>
       )}
 

@@ -105,7 +105,8 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-size: 17px;
+    /* DESIGN.md base size — legibility first for our audience. */
+    font-size: 18px;
     line-height: 1.6;
     background-image:
       radial-gradient(
@@ -125,6 +126,18 @@
 
   :focus-visible {
     outline-offset: 3px;
+  }
+
+  /* Long recipe titles wrap evenly instead of leaving a lone word. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  /* DESIGN.md: numeric data uses tabular figures so counts align. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
 
