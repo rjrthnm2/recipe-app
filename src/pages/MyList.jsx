@@ -1,5 +1,4 @@
 import { useRecipes } from "../hooks/useRecipes";
-import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import LoadErrorNotice from "../components/LoadErrorNotice";
 import usePageTitle from "../hooks/usePageTitle";
@@ -35,8 +34,8 @@ function PencilIcon(props) {
 
 export default function MyList() {
   usePageTitle("My List");
-  const { recipes, savedIds, loading, loadError } = useRecipes();
-  const { isAdmin: isSuperuser } = useAuth();
+  const { recipes, savedIds, loading, loadError, canManageRecipe } =
+    useRecipes();
 
   // Filter the master list to only show saved recipes
   const favoriteRecipes = recipes.filter((r) => savedIds.includes(r.url));
@@ -146,7 +145,7 @@ export default function MyList() {
                   >
                     <Link to={`/recipe/${recipeId}`}>View Recipe</Link>
                   </Button>
-                  {isSuperuser && (
+                  {canManageRecipe(recipe) && (
                     <Button
                       asChild
                       variant="outline"

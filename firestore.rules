@@ -32,6 +32,11 @@ service cloud.firestore {
         && data.directions is list && data.directions.size() <= 60;
     }
 
+    // Whoever created this recipe (stamped + verified at create time).
+    function isRecipeOwner() {
+      return isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
     // Master recipe list.
     match /recipes/{recipeId} {
       allow read: if true;                 // anyone can browse, no login needed
@@ -42,11 +47,19 @@ service cloud.firestore {
         && isValidRecipe(request.resource.data)
         && request.resource.data.url == recipeId
         && request.resource.data.ownerId == request.auth.uid;
-      // Only the two owners can edit, and edits cannot introduce new fields.
-      allow update: if isSuperuser()
-        && hasOnlyRecipeFields(request.resource.data)
-        && isValidRecipe(request.resource.data);
-      allow delete: if isSuperuser();
+      // Superusers can edit anything. Creators can edit their own recipes,
+      // but cannot reassign ownership or change the recipe id.
+      allow update: if hasOnlyRecipeFields(request.resource.data)
+        && isValidRecipe(request.resource.data)
+        && (
+          isSuperuser()
+          || (
+            isRecipeOwner()
+            && request.resource.data.ownerId == resource.data.ownerId
+            && request.resource.data.url == resource.data.url
+          )
+        );
+      allow delete: if isSuperuser() || isRecipeOwner();
     }
 
     // Each user's personal saved ("My List") document.
@@ -54,9 +67,13 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Archive written automatically when a superuser deletes a recipe.
+    // Archive written automatically by the app as part of deleting a recipe.
+    // Creators archive their own recipe on the way out; only superusers can
+    // read or clean up the archive.
     match /deleted_recipes/{recipeId} {
-      allow read, write: if isSuperuser();
+      allow create: if isSuperuser()
+        || (isSignedIn() && request.resource.data.ownerId == request.auth.uid);
+      allow read, update, delete: if isSuperuser();
     }
 
     // Deny anything not matched above.
