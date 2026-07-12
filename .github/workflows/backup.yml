@@ -1,0 +1,38 @@
+# Weekly automated backup of the recipe database.
+#
+# Reads all recipes (public read access, no secrets needed) and stores the
+# JSON as a workflow artifact for 90 days. Restore = download the artifact
+# and re-import with a firebase-admin script.
+#
+# Manual run: Actions tab -> "Weekly recipe backup" -> Run workflow.
+
+name: Weekly recipe backup
+
+on:
+  schedule:
+    - cron: "0 11 * * 0" # Sundays 11:00 UTC (early morning US time)
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies (production only)
+        run: npm ci --omit=dev
+
+      - name: Export all recipes
+        run: node scripts/backupRecipes.mjs recipes-backup.json
+
+      - name: Store backup artifact (kept 90 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: recipes-backup-${{ github.run_number }}
+          path: recipes-backup.json
+          retention-days: 90

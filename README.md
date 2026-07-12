@@ -21,7 +21,7 @@ src/
     useRecipes.jsx     Recipes context: fetch / add / edit / delete / save
   pages/
     Home.jsx           Browse + ranked search
-    RecipeDetail.jsx   View a recipe (+ edit/delete for superusers)
+    RecipeDetail.jsx   View a recipe (+ edit/delete for its creator/superusers)
     AddRecipe.jsx      Add-a-recipe form
     MyList.jsx         Personal saved recipes
     ShoppingList.jsx   Meal planner + shopping-list builder
@@ -40,13 +40,16 @@ firestore.rules        Server-side security rules (source of truth)
 | Who | Browse | Add | Edit / Delete |
 | --- | :---: | :---: | :---: |
 | Not logged in | ✅ | ❌ | ❌ |
-| Any logged-in user | ✅ | ✅ | ❌ |
-| Superusers (admin claim) | ✅ | ✅ | ✅ |
+| Any logged-in user | ✅ | ✅ | Own recipes only |
+| Superusers (admin claim) | ✅ | ✅ | ✅ (everything) |
 
+Recipes are stamped with their creator's account id (`ownerId`) at create
+time, verified server-side. Creators can edit and delete their own recipes
+(ownership itself can't be reassigned); superusers can manage everything.
 Superusers are identified by a Firebase **custom claim** (`admin: true`) on
 their auth token — no emails are stored in the codebase. Both `firestore.rules`
-(server-side enforcement) and the app UI check this claim. Saved-recipe lists
-are private per user.
+(server-side enforcement) and the app UI check these permissions. Saved-recipe
+lists are private per user.
 
 ### Granting admin access
 
@@ -84,12 +87,15 @@ firebase deploy --only firestore:rules  # deploy security rules
 
 ## Operations notes
 
-- **Backups.** Set up a periodic Firestore export from the
-  [Firebase Console](https://console.firebase.google.com/project/recipe-app-f8fd3)
-  (Firestore -> Import/Export, or `gcloud firestore export`). The
-  `deleted_recipes` collection is a soft-delete archive, not a backup. A local
-  rollback snapshot from the June 2026 units migration
-  (`recipes-backup-*.json`, git-ignored) exists on the maintainer's machine.
+- **Backups (automated).** A GitHub Actions workflow
+  ([`.github/workflows/backup.yml`](.github/workflows/backup.yml)) exports all
+  recipes every Sunday and stores the JSON as a workflow artifact for 90 days
+  (Actions tab -> "Weekly recipe backup"; can also be run manually there).
+  Restore = download the artifact and re-import with a firebase-admin script.
+  The export uses public read access only, so no secrets live in CI. Run it
+  locally anytime: `node scripts/backupRecipes.mjs`. The `deleted_recipes`
+  collection is a soft-delete archive, not a backup. A local rollback snapshot
+  from the June 2026 units migration also exists on the maintainer's machine.
 - **Dev writes to production.** `npm run dev` talks to the live Firestore
   project. Be careful with destructive testing; if testing gets heavier,
   create a second Firebase project and point a `.env.local` config at it.

@@ -30,7 +30,6 @@ recipes-backup-*.json
 *.njsproj
 *.sln
 *.sw?
-.github/
 .claude/
 CLAUDE.md
 .gstack/
