@@ -19,7 +19,7 @@ export default function NotFound() {
       </p>
       <Button
         asChild
-        className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[17px] font-medium text-white hover:bg-[#2596be]"
+        className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[18px] font-medium text-white hover:bg-[#2596be]"
       >
         <Link to="/">Back to Browse</Link>
       </Button>

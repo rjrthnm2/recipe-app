@@ -233,7 +233,7 @@ export default function Navbar() {
                       </p>
                       <label
                         htmlFor="recipe-nickname"
-                        className="mt-3 block font-ui text-[13px] text-[#64748b]"
+                        className="mt-3 block font-ui text-[14px] text-[#64748b]"
                       >
                         Recipe nickname — shown as “by …” on recipes you add
                       </label>

@@ -170,9 +170,15 @@ export function RecipesProvider({ children }) {
     }
   };
 
+  // Superusers manage everything; creators manage the recipes they added.
+  // (Firestore rules enforce the same thing server-side.)
+  const canManageRecipe = (recipe) =>
+    Boolean(user) && (isAdmin || (recipe && recipe.ownerId === user.uid));
+
   const updateRecipe = async (id, updatedData) => {
-    if (!user || !isAdmin) {
-      showToast("Only a superuser can edit recipes.", "error");
+    const target = recipes.find((r) => r.url === id);
+    if (!canManageRecipe(target)) {
+      showToast("You can only edit recipes you added.", "error");
       return;
     }
 
@@ -194,14 +200,14 @@ export function RecipesProvider({ children }) {
   };
 
   const deleteRecipe = async (id) => {
-    if (!user || !isAdmin) {
-      showToast("Only a superuser can delete recipes.", "error");
+    // Find the recipe data before deleting it
+    const recipeToArchive = recipes.find((r) => r.url === id);
+    if (!canManageRecipe(recipeToArchive)) {
+      showToast("You can only delete recipes you added.", "error");
       return;
     }
 
     try {
-      // Find the recipe data before deleting it
-      const recipeToArchive = recipes.find((r) => r.url === id);
 
       if (recipeToArchive) {
         // Save the deleted recipe to a "deleted_recipes" collection (our cloud JSON database for deleted items)
@@ -250,6 +256,7 @@ export function RecipesProvider({ children }) {
         addRecipe,
         updateRecipe,
         deleteRecipe,
+        canManageRecipe,
         loading,
         loadError,
         nickname: displayNickname,

@@ -1,5 +1,4 @@
 import { useRecipes } from "../hooks/useRecipes";
-import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import LoadErrorNotice from "../components/LoadErrorNotice";
 import usePageTitle from "../hooks/usePageTitle";
@@ -35,8 +34,8 @@ function PencilIcon(props) {
 
 export default function MyList() {
   usePageTitle("My List");
-  const { recipes, savedIds, loading, loadError } = useRecipes();
-  const { isAdmin: isSuperuser } = useAuth();
+  const { recipes, savedIds, loading, loadError, canManageRecipe } =
+    useRecipes();
 
   // Filter the master list to only show saved recipes
   const favoriteRecipes = recipes.filter((r) => savedIds.includes(r.url));
@@ -85,7 +84,13 @@ export default function MyList() {
               >
                 <CardHeader className="pb-0">
                   <CardTitle className="font-heading line-clamp-2 text-[18px] md:text-[20px] font-bold text-[#0F172A] leading-tight">
-                    {recipe.title}
+                    {/* Title navigates too — a bigger target than the button alone. */}
+                    <Link
+                      to={`/recipe/${recipeId}`}
+                      className="rounded-sm transition-colors hover:text-[#2596be] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+                    >
+                      {recipe.title}
+                    </Link>
                   </CardTitle>
                 </CardHeader>
                 {/* mt-auto anchors prep + divider + tags just above the button,
@@ -140,7 +145,7 @@ export default function MyList() {
                   >
                     <Link to={`/recipe/${recipeId}`}>View Recipe</Link>
                   </Button>
-                  {isSuperuser && (
+                  {canManageRecipe(recipe) && (
                     <Button
                       asChild
                       variant="outline"

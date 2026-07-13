@@ -9,7 +9,7 @@ export default function LoadErrorNotice() {
       <p className="font-heading text-xl font-bold text-[#0F172A]">
         The recipes couldn't load.
       </p>
-      <p className="mt-2 font-sans text-[17px] text-[#0F172A]/75">
+      <p className="mt-2 font-sans text-[18px] text-[#0F172A]/75">
         Please check your internet connection, then refresh this page.
       </p>
       <button

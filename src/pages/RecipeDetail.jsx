@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
-import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Checkbox } from "../components/ui/checkbox";
@@ -70,10 +69,15 @@ export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isAdmin: isSuperuser } = useAuth();
-
-  const { recipes, toggleSave, savedIds, loading, updateRecipe, deleteRecipe } =
-    useRecipes();
+  const {
+    recipes,
+    toggleSave,
+    savedIds,
+    loading,
+    updateRecipe,
+    deleteRecipe,
+    canManageRecipe,
+  } = useRecipes();
   const ingredientNames = useMemo(
     () => collectIngredientNames(recipes),
     [recipes],
@@ -90,12 +94,12 @@ export default function RecipeDetail() {
   const [deleteStep, setDeleteStep] = useState(0);
 
   // ?edit=1 (e.g. the pencil button on My List) opens the editor directly
-  // once the recipe and superuser status have loaded. Guarded setState during
+  // once the recipe and permissions have loaded. Guarded setState during
   // render per https://react.dev/learn/you-might-not-need-an-effect
   const wantsEdit = searchParams.get("edit") === "1";
-  if (wantsEdit && !loading && isSuperuser && !isEditing && !editForm) {
+  if (wantsEdit && !loading && !isEditing && !editForm) {
     const target = recipes.find((r) => r.url === id);
-    if (target) {
+    if (target && canManageRecipe(target)) {
       setIsEditing(true);
       setEditForm(toEditForm(target));
     }
@@ -166,7 +170,7 @@ export default function RecipeDetail() {
         </p>
         <Button
           asChild
-          className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[17px] font-medium text-white hover:bg-[#2596be]"
+          className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[18px] font-medium text-white hover:bg-[#2596be]"
         >
           <Link to="/">Back to Browse</Link>
         </Button>
@@ -174,6 +178,8 @@ export default function RecipeDetail() {
     );
 
   const isSaved = savedIds.includes(recipe.url);
+  // Superusers manage everything; the person who added a recipe manages it too.
+  const canManage = canManageRecipe(recipe);
   const recipeUrl = window.location.href;
   const encodedTitle = encodeURIComponent(`Recipe: ${recipe.title}`);
   const encodedBody = encodeURIComponent(
@@ -337,8 +343,8 @@ export default function RecipeDetail() {
           )}
         </div>
 
-        {/* Superuser actions */}
-        {isSuperuser && (
+        {/* Manage actions — superusers and the recipe's creator */}
+        {canManage && (
           <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-[#e2e8f0] print:hidden">
             {!isEditing ? (
               <Button
