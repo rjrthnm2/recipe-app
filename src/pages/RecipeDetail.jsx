@@ -125,33 +125,33 @@ export default function RecipeDetail() {
         aria-busy="true"
         aria-label="Loading recipe"
       >
-        <div className="h-5 w-36 animate-pulse rounded bg-[#e2e8f0]" />
-        <div className="h-12 w-3/4 animate-pulse rounded-[8px] bg-[#e2e8f0]" />
-        <div className="h-5 w-48 animate-pulse rounded bg-[#e2e8f0]" />
+        <div className="h-5 w-36 animate-pulse rounded bg-border" />
+        <div className="h-12 w-3/4 animate-pulse rounded-[8px] bg-border" />
+        <div className="h-5 w-48 animate-pulse rounded bg-border" />
         <div className="flex flex-wrap gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-10 w-28 animate-pulse rounded-[8px] border border-[#e2e8f0] bg-[#F8FAFC]"
+              className="h-10 w-28 animate-pulse rounded-[8px] border border-border bg-secondary"
             />
           ))}
         </div>
         <div className="grid gap-10 md:grid-cols-3">
           <div className="space-y-4 md:col-span-1">
-            <div className="h-8 w-40 animate-pulse rounded bg-[#e2e8f0]" />
+            <div className="h-8 w-40 animate-pulse rounded bg-border" />
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-6 w-full animate-pulse rounded bg-[#F8FAFC]"
+                className="h-6 w-full animate-pulse rounded bg-secondary"
               />
             ))}
           </div>
           <div className="space-y-4 md:col-span-2">
-            <div className="h-8 w-40 animate-pulse rounded bg-[#e2e8f0]" />
+            <div className="h-8 w-40 animate-pulse rounded bg-border" />
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-16 w-full animate-pulse rounded bg-[#F8FAFC]"
+                className="h-16 w-full animate-pulse rounded bg-secondary"
               />
             ))}
           </div>
@@ -161,16 +161,16 @@ export default function RecipeDetail() {
 
   if (!recipe)
     return (
-      <div className="mx-auto max-w-xl rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] px-8 py-16 text-center">
-        <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A]">
+      <div className="mx-auto max-w-xl rounded-xl border border-border bg-secondary px-8 py-16 text-center">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-primary">
           We couldn't find that recipe.
         </h1>
-        <p className="mt-3 font-sans text-[18px] text-[#0F172A]/75">
+        <p className="mt-3 font-sans text-[18px] text-primary/75">
           It may have been deleted, or the link may be mistyped.
         </p>
         <Button
           asChild
-          className="mt-6 h-12 bg-[#0F172A] px-8 font-ui text-[18px] font-medium text-white hover:bg-[#2596be]"
+          className="mt-6 h-12 bg-primary px-8 font-ui text-[18px] font-medium text-white hover:bg-accent"
         >
           <Link to="/">Back to Browse</Link>
         </Button>
@@ -280,7 +280,7 @@ export default function RecipeDetail() {
     <article className="mx-auto max-w-4xl space-y-8 pb-20 print:space-y-5 print:pb-0">
       <Link
         to="/"
-        className="font-ui text-[16px] text-[#0F172A]/70 hover:text-[#2596be] print:hidden"
+        className="font-ui text-[16px] text-primary/70 hover:text-accent print:hidden"
       >
         ← Back to Browse
       </Link>
@@ -294,12 +294,12 @@ export default function RecipeDetail() {
               onChange={(e) =>
                 setEditForm({ ...editForm, title: e.target.value })
               }
-              className="text-4xl font-bold p-6 font-heading border-[#e2e8f0] bg-white text-[#0F172A]"
+              className="text-4xl font-bold p-6 font-heading border-border bg-white text-primary"
               placeholder="Recipe Title"
             />
           ) : (
             <div className="flex items-start gap-3">
-              <h1 className="font-heading text-4xl md:text-5xl font-bold tracking-tight mt-2 text-[#0F172A]">
+              <h1 className="font-heading text-4xl md:text-5xl font-bold tracking-tight mt-2 text-primary">
                 {currentData.title}
               </h1>
               <button
@@ -310,7 +310,7 @@ export default function RecipeDetail() {
                 }
                 aria-pressed={isSaved}
                 title={isSaved ? "Remove from My List" : "Save to My List"}
-                className="relative mt-2 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] print:hidden"
+                className="relative mt-2 shrink-0 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent print:hidden"
               >
                 {isSaved && (
                   <svg
@@ -345,12 +345,12 @@ export default function RecipeDetail() {
 
         {/* Manage actions — superusers and the recipe's creator */}
         {canManage && (
-          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-[#e2e8f0] print:hidden">
+          <div className="flex flex-wrap items-center justify-end gap-3 mt-2 md:mt-3.5 border-border print:hidden">
             {!isEditing ? (
               <Button
                 onClick={handleEditClick}
                 variant="outline"
-                className="flex items-center text-[18px] py-6 px-4 font-ui font-medium border-[#e2e8f0] hover:bg-[#F8FAFC] text-[#0F172A]"
+                className="flex items-center text-[18px] py-6 px-4 font-ui font-medium border-border hover:bg-secondary text-primary"
               >
                 <PencilIcon className="w-5 h-5 mr-2" />
                 Edit Recipe
@@ -360,14 +360,14 @@ export default function RecipeDetail() {
                 <Button
                   onClick={handleSaveEdit}
                   variant="default"
-                  className="flex items-center text-[18px] py-6 px-4 font-ui font-bold bg-[#2596be] hover:bg-[#2596be]/90 text-white"
+                  className="flex items-center text-[18px] py-6 px-4 font-ui font-bold bg-accent hover:bg-accent/90 text-white"
                 >
                   Save Edits
                 </Button>
                 <Button
                   onClick={handleCancelEdit}
                   variant="secondary"
-                  className="flex items-center text-[18px] py-6 px-4 font-ui font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                  className="flex items-center text-[18px] py-6 px-4 font-ui font-medium bg-border/40 hover:bg-border text-primary"
                 >
                   Cancel
                 </Button>
@@ -379,7 +379,7 @@ export default function RecipeDetail() {
                 <Button
                   onClick={handleDeleteCancel}
                   variant="outline"
-                  className="text-[18px] py-6 px-4 font-ui font-medium border-[#e2e8f0] text-[#0F172A]"
+                  className="text-[18px] py-6 px-4 font-ui font-medium border-border text-primary"
                 >
                   Cancel Delete
                 </Button>
@@ -389,8 +389,8 @@ export default function RecipeDetail() {
                 variant={deleteStep > 0 ? "destructive" : "outline"}
                 className={
                   deleteStep === 0
-                    ? "flex items-center text-[18px] py-6 px-4 text-[#dc2626] hover:text-[#dc2626] hover:bg-red-50 border-red-200 hover:border-red-300 font-ui font-medium"
-                    : "flex items-center text-[18px] py-6 px-4 font-ui font-medium bg-[#dc2626] text-white hover:bg-[#dc2626]/90"
+                    ? "flex items-center text-[18px] py-6 px-4 text-destructive hover:text-destructive hover:bg-red-50 border-red-200 hover:border-red-300 font-ui font-medium"
+                    : "flex items-center text-[18px] py-6 px-4 font-ui font-medium bg-destructive text-white hover:bg-destructive/90"
                 }
                 aria-label="Delete recipe"
               >
@@ -409,7 +409,7 @@ export default function RecipeDetail() {
       <div className="space-y-4">
         {isEditing ? (
           <div className="flex flex-col gap-2">
-            <label className="text-[16px] font-sans font-semibold text-[#0F172A]/70">
+            <label className="text-[16px] font-sans font-semibold text-primary/70">
               Tags
             </label>
             <div className="flex flex-wrap gap-2">
@@ -420,13 +420,13 @@ export default function RecipeDetail() {
                     onChange={(e) =>
                       handleArrayChange("tags", i, e.target.value)
                     }
-                    className="w-32 bg-white border-[#e2e8f0] font-sans"
+                    className="w-32 bg-white border-border font-sans"
                     placeholder="Tag"
                   />
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 text-[#dc2626] hover:bg-red-50"
+                    className="h-9 w-9 text-destructive hover:bg-red-50"
                     onClick={() => handleRemoveArrayItem("tags", i)}
                   >
                     &times;
@@ -436,7 +436,7 @@ export default function RecipeDetail() {
               <Button
                 variant="outline"
                 size="sm"
-                className="font-ui border-[#e2e8f0] text-[#0F172A]"
+                className="font-ui border-border text-primary"
                 onClick={() => handleAddArrayItem("tags")}
               >
                 + Add Tag
@@ -449,7 +449,7 @@ export default function RecipeDetail() {
               <Badge
                 key={i}
                 variant="outline"
-                className="border-[#e2e8f0] text-[#0F172A]/80 font-ui text-[14px] px-3 py-1 font-medium rounded-full bg-[#F8FAFC]"
+                className="border-border text-primary/80 font-ui text-[14px] px-3 py-1 font-medium rounded-full bg-secondary"
               >
                 {tag.replace(/[()]/g, "")}
               </Badge>
@@ -457,7 +457,7 @@ export default function RecipeDetail() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-4 text-[16px] text-[#64748b] items-center font-sans tracking-wide print:text-black">
+        <div className="flex flex-wrap gap-4 text-[16px] text-muted-foreground items-center font-sans tracking-wide print:text-black">
           {isEditing ? (
             <>
               <div className="flex items-center gap-2">
@@ -466,10 +466,10 @@ export default function RecipeDetail() {
                   onChange={(e) =>
                     setEditForm({ ...editForm, prep_time: e.target.value })
                   }
-                  className="w-24 bg-white border-[#e2e8f0]"
+                  className="w-24 bg-white border-border"
                   placeholder="Prep time"
                 />{" "}
-                <span className="text-[14px] text-[#64748b]">Prep</span>
+                <span className="text-[14px] text-muted-foreground">Prep</span>
               </div>
               <div className="flex items-center gap-2">
                 <Input
@@ -477,10 +477,10 @@ export default function RecipeDetail() {
                   onChange={(e) =>
                     setEditForm({ ...editForm, cook_time: e.target.value })
                   }
-                  className="w-24 bg-white border-[#e2e8f0]"
+                  className="w-24 bg-white border-border"
                   placeholder="Cook time"
                 />{" "}
-                <span className="text-[14px] text-[#64748b]">Cook</span>
+                <span className="text-[14px] text-muted-foreground">Cook</span>
               </div>
               <div className="flex items-center gap-2">
                 <Input
@@ -488,10 +488,10 @@ export default function RecipeDetail() {
                   onChange={(e) =>
                     setEditForm({ ...editForm, servings: e.target.value })
                   }
-                  className="w-24 bg-white border-[#e2e8f0]"
+                  className="w-24 bg-white border-border"
                   placeholder="Servings"
                 />{" "}
-                <span className="text-[14px] text-[#64748b]">Servings</span>
+                <span className="text-[14px] text-muted-foreground">Servings</span>
               </div>
             </>
           ) : (
@@ -512,7 +512,7 @@ export default function RecipeDetail() {
                 currentData.cook_time ||
                 currentData.servings) && <span className="opacity-50">•</span>}
               {/* Recipes without an owner predate ownership — all Jewel's. */}
-              <span className="font-medium text-[#2596be] print:text-black">
+              <span className="font-medium text-accent print:text-black">
                 by {recipe.ownerName || "Jewel"}
               </span>
             </>
@@ -527,8 +527,8 @@ export default function RecipeDetail() {
             variant={isSaved ? "secondary" : "default"}
             className={
               isSaved
-                ? "font-ui text-[16px] font-bold bg-[#e2e8f0]/40 text-[#0F172A] hover:bg-[#e2e8f0]"
-                : "font-ui text-[16px] font-bold bg-[#2596be] text-white hover:bg-[#2596be]/90"
+                ? "font-ui text-[16px] font-bold bg-border/40 text-primary hover:bg-border"
+                : "font-ui text-[16px] font-bold bg-accent text-white hover:bg-accent/90"
             }
             aria-label={
               isSaved
@@ -542,7 +542,7 @@ export default function RecipeDetail() {
           <Button
             onClick={copyLink}
             variant="outline"
-            className="font-ui text-[16px] font-medium border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"
+            className="font-ui text-[16px] font-medium border-border text-primary hover:bg-secondary"
             aria-label="Copy recipe link"
           >
             {copied ? "Copied" : "Copy Link"}
@@ -551,7 +551,7 @@ export default function RecipeDetail() {
           <Button
             asChild
             variant="outline"
-            className="font-ui text-[16px] font-medium border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"
+            className="font-ui text-[16px] font-medium border-border text-primary hover:bg-secondary"
             aria-label="Share recipe by email"
           >
             <a href={`mailto:?subject=${encodedTitle}&body=${encodedBody}`}>
@@ -562,7 +562,7 @@ export default function RecipeDetail() {
           <Button
             onClick={() => window.print()}
             variant="outline"
-            className="font-ui text-[16px] font-medium border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"
+            className="font-ui text-[16px] font-medium border-border text-primary hover:bg-secondary"
             aria-label="Print recipe"
           >
             Print Recipe
@@ -571,20 +571,20 @@ export default function RecipeDetail() {
       )}
 
       {shareMessage && (
-        <p role="status" className="font-sans text-[18px] text-[#2596be] print:hidden">
+        <p role="status" className="font-sans text-[18px] text-accent print:hidden">
           {shareMessage}
         </p>
       )}
 
       {(currentData.author_note || isEditing) && (
-        <div className="rounded-[8px] border-l-4 border-l-[#2596be] bg-[#F8FAFC] p-6 italic font-sans text-[20px] text-[#0F172A]/80 shadow-sm print:border-l-black print:bg-white print:p-0 print:pl-4 print:shadow-none print:break-inside-avoid">
+        <div className="rounded-[8px] border-l-4 border-l-accent bg-secondary p-6 italic font-sans text-[20px] text-primary/80 shadow-sm print:border-l-black print:bg-white print:p-0 print:pl-4 print:shadow-none print:break-inside-avoid">
           {isEditing ? (
             <Textarea
               value={currentData.author_note || ""}
               onChange={(e) =>
                 setEditForm({ ...editForm, author_note: e.target.value })
               }
-              className="w-full bg-white border-[#e2e8f0] min-h-[100px] not-italic font-sans text-[18px]"
+              className="w-full bg-white border-border min-h-[100px] not-italic font-sans text-[18px]"
               placeholder="Author's note..."
             />
           ) : (
@@ -610,7 +610,7 @@ export default function RecipeDetail() {
               : "md:col-span-1 space-y-6 print:mb-6 print:break-inside-avoid"
           }
         >
-          <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
+          <h2 className="font-heading text-3xl font-semibold text-primary border-b border-border pb-2">
             Ingredients
           </h2>
           {isEditing ? (
@@ -628,14 +628,14 @@ export default function RecipeDetail() {
                 return (
                   <li
                     key={i}
-                    className="flex items-start gap-4 font-sans text-[18px] text-[#0F172A] p-2 hover:bg-[#F8FAFC] rounded-[8px] transition-colors print:p-0 print:text-black"
+                    className="flex items-start gap-4 font-sans text-[18px] text-primary p-2 hover:bg-secondary rounded-[8px] transition-colors print:p-0 print:text-black"
                   >
                     <Checkbox
                       id={`ingredient-${i}`}
                       checked={Boolean(checkedIngredients[i])}
                       onCheckedChange={() => toggleIngredientCheck(i)}
                       aria-label={`Mark ingredient as prepared: ${text}`}
-                      className="mt-0.5 h-6 w-6 border-[#e2e8f0] data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] print:hidden"
+                      className="mt-0.5 h-6 w-6 border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent print:hidden"
                     />
                     {/* Paper tick-box for the printed copy. */}
                     <span
@@ -644,7 +644,7 @@ export default function RecipeDetail() {
                     ></span>
                     <label
                       htmlFor={`ingredient-${i}`}
-                      className={`cursor-pointer leading-relaxed ${checkedIngredients[i] ? "line-through text-[#64748b]" : ""} print:cursor-auto print:no-underline print:text-black`}
+                      className={`cursor-pointer leading-relaxed ${checkedIngredients[i] ? "line-through text-muted-foreground" : ""} print:cursor-auto print:no-underline print:text-black`}
                     >
                       {text}
                     </label>
@@ -656,7 +656,7 @@ export default function RecipeDetail() {
         </div>
 
         <div className={isEditing ? "space-y-6" : "md:col-span-2 space-y-6"}>
-          <h2 className="font-heading text-3xl font-semibold text-[#0F172A] border-b border-[#e2e8f0] pb-2">
+          <h2 className="font-heading text-3xl font-semibold text-primary border-b border-border pb-2">
             Directions
           </h2>
           <ol className="space-y-6">
@@ -664,7 +664,7 @@ export default function RecipeDetail() {
               <div className="space-y-6">
                 {currentData.directions.map((step, i) => (
                   <div key={i} className="flex gap-4 items-start">
-                    <span className="font-heading text-3xl font-bold leading-none text-[#64748b] mt-2">
+                    <span className="font-heading text-3xl font-bold leading-none text-muted-foreground mt-2">
                       {i + 1}
                     </span>
                     <div className="flex-1 flex gap-2">
@@ -673,13 +673,13 @@ export default function RecipeDetail() {
                         onChange={(e) =>
                           handleArrayChange("directions", i, e.target.value)
                         }
-                        className="bg-white min-h-[100px] font-sans text-[18px] border-[#e2e8f0]"
+                        className="bg-white min-h-[100px] font-sans text-[18px] border-border"
                         placeholder="Step description"
                       />
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-[#dc2626] h-10 w-10 shrink-0 hover:bg-red-50"
+                        className="text-destructive h-10 w-10 shrink-0 hover:bg-red-50"
                         onClick={() => handleRemoveArrayItem("directions", i)}
                       >
                         &times;
@@ -689,7 +689,7 @@ export default function RecipeDetail() {
                 ))}
                 <Button
                   variant="outline"
-                  className="w-full mt-4 font-ui text-[#0F172A] border-[#e2e8f0]"
+                  className="w-full mt-4 font-ui text-primary border-border"
                   onClick={() => handleAddArrayItem("directions")}
                 >
                   + Add Step
@@ -699,12 +699,12 @@ export default function RecipeDetail() {
               currentData.directions.map((step, i) => (
                 <li
                   key={i}
-                  className="flex gap-5 border-b border-[#e2e8f0] pb-6 last:border-b-0 print:break-inside-avoid print:pb-3"
+                  className="flex gap-5 border-b border-border pb-6 last:border-b-0 print:break-inside-avoid print:pb-3"
                 >
-                  <span className="font-heading text-4xl font-bold leading-none text-[#2596be] opacity-80 mt-1 print:text-black print:opacity-100 print:text-2xl">
+                  <span className="font-heading text-4xl font-bold leading-none text-accent opacity-80 mt-1 print:text-black print:opacity-100 print:text-2xl">
                     {i + 1}
                   </span>
-                  <p className="font-sans text-[20px] leading-[1.7] text-[#0F172A] print:text-[16px] print:text-black">
+                  <p className="font-sans text-[20px] leading-[1.7] text-primary print:text-[16px] print:text-black">
                     {step}
                   </p>
                 </li>

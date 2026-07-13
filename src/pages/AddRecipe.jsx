@@ -118,7 +118,7 @@ export default function AddRecipe() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 pb-20">
-      <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A]">
+      <h1 className="font-heading text-3xl font-bold tracking-tight text-primary">
         Add New Recipe
       </h1>
 
@@ -126,7 +126,7 @@ export default function AddRecipe() {
         <div className="space-y-2">
           <Label
             htmlFor="title"
-            className="font-sans text-[16px] text-[#0F172A]"
+            className="font-sans text-[16px] text-primary"
           >
             Recipe Title
           </Label>
@@ -137,7 +137,7 @@ export default function AddRecipe() {
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
-            className="border-[#e2e8f0] font-sans text-[16px] h-12"
+            className="border-border font-sans text-[16px] h-12"
             placeholder="e.g. Grandma's Famous Chili"
           />
         </div>
@@ -146,7 +146,7 @@ export default function AddRecipe() {
           <div className="space-y-2">
             <Label
               htmlFor="prep"
-              className="font-sans text-[16px] text-[#0F172A]"
+              className="font-sans text-[16px] text-primary"
             >
               Prep Time
             </Label>
@@ -157,13 +157,13 @@ export default function AddRecipe() {
               onChange={(e) =>
                 setFormData({ ...formData, prep_time: e.target.value })
               }
-              className="border-[#e2e8f0] font-sans text-[16px] h-12"
+              className="border-border font-sans text-[16px] h-12"
             />
           </div>
           <div className="space-y-2">
             <Label
               htmlFor="cook"
-              className="font-sans text-[16px] text-[#0F172A]"
+              className="font-sans text-[16px] text-primary"
             >
               Cook Time
             </Label>
@@ -174,13 +174,13 @@ export default function AddRecipe() {
               onChange={(e) =>
                 setFormData({ ...formData, cook_time: e.target.value })
               }
-              className="border-[#e2e8f0] font-sans text-[16px] h-12"
+              className="border-border font-sans text-[16px] h-12"
             />
           </div>
           <div className="space-y-2">
             <Label
               htmlFor="servings"
-              className="font-sans text-[16px] text-[#0F172A]"
+              className="font-sans text-[16px] text-primary"
             >
               Servings
             </Label>
@@ -191,7 +191,7 @@ export default function AddRecipe() {
               onChange={(e) =>
                 setFormData({ ...formData, servings: e.target.value })
               }
-              className="border-[#e2e8f0] font-sans text-[16px] h-12"
+              className="border-border font-sans text-[16px] h-12"
             />
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function AddRecipe() {
         <div className="space-y-2">
           <Label
             htmlFor="tags"
-            className="font-sans text-[16px] text-[#0F172A]"
+            className="font-sans text-[16px] text-primary"
           >
             Tags (comma separated)
           </Label>
@@ -208,15 +208,15 @@ export default function AddRecipe() {
             placeholder="Ground beef, Quick, Dinner"
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-            className="border-[#e2e8f0] font-sans text-[16px] h-12"
+            className="border-border font-sans text-[16px] h-12"
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="font-sans text-[16px] text-[#0F172A]">
+          <Label className="font-sans text-[16px] text-primary">
             Ingredients
           </Label>
-          <p className="font-sans text-[14px] text-[#64748b]">
+          <p className="font-sans text-[14px] text-muted-foreground">
             Enter an amount, pick a unit, and name the ingredient. The unit list
             keeps everything consistent across recipes.
           </p>
@@ -230,19 +230,19 @@ export default function AddRecipe() {
         </div>
 
         <div className="space-y-2">
-          <Label className="font-sans text-[16px] text-[#0F172A]">
+          <Label className="font-sans text-[16px] text-primary">
             Directions
           </Label>
           <div className="space-y-3">
             {formData.directions.map((step, i) => (
               <div key={i} className="flex items-start gap-3">
-                <span className="mt-3 w-6 shrink-0 text-right font-heading text-[20px] font-bold text-[#2596be]">
+                <span className="mt-3 w-6 shrink-0 text-right font-heading text-[20px] font-bold text-accent">
                   {i + 1}
                 </span>
                 <Textarea
                   value={step}
                   onChange={(e) => updateDirection(i, e.target.value)}
-                  className="min-h-[64px] border-[#e2e8f0] font-sans text-[16px]"
+                  className="min-h-[64px] border-border font-sans text-[16px]"
                   placeholder={
                     i === 0 ? "e.g. Brown the beef in a large skillet" : ""
                   }
@@ -252,7 +252,7 @@ export default function AddRecipe() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="mt-1 h-11 w-11 shrink-0 text-[#94a3b8] hover:bg-red-50 hover:text-[#dc2626]"
+                  className="mt-1 h-11 w-11 shrink-0 text-faded hover:bg-red-50 hover:text-destructive"
                   onClick={() => removeDirection(i)}
                   aria-label={`Remove step ${i + 1}`}
                 >
@@ -263,7 +263,7 @@ export default function AddRecipe() {
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-full border-dashed border-[#cbd5e1] font-ui text-[16px] text-[#0F172A] hover:border-[#2596be] hover:bg-[#2596be]/5"
+              className="h-12 w-full border-dashed border-divider font-ui text-[16px] text-primary hover:border-accent hover:bg-accent/5"
               onClick={addDirection}
             >
               + Add step
@@ -274,7 +274,7 @@ export default function AddRecipe() {
         <div className="space-y-2">
           <Label
             htmlFor="note"
-            className="font-sans text-[16px] text-[#0F172A]"
+            className="font-sans text-[16px] text-primary"
           >
             Author Note (Optional)
           </Label>
@@ -284,13 +284,13 @@ export default function AddRecipe() {
             onChange={(e) =>
               setFormData({ ...formData, author_note: e.target.value })
             }
-            className="border-[#e2e8f0] font-sans text-[16px] h-12"
+            className="border-border font-sans text-[16px] h-12"
           />
         </div>
 
         <Button
           type="submit"
-          className="w-full text-[18px] bg-[#2596be] hover:bg-[#2596be]/90 text-white font-ui font-bold h-14 rounded-[8px] transition-colors mt-6"
+          className="w-full text-[18px] bg-accent hover:bg-accent/90 text-white font-ui font-bold h-14 rounded-[8px] transition-colors mt-6"
         >
           Save Recipe
         </Button>

@@ -26,6 +26,16 @@
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #2596be;
+  /* Extended palette — every color the app uses, so no raw hex in markup. */
+  --accent-hover: #1f86ad; /* azure, pressed/hover step */
+  --accent-deep: #155e78; /* dark azure text on azure tints */
+  --accent-soft: #7cc0db; /* light azure accents (About hero subtitle) */
+  --navy-soft: #1d546b; /* hero gradient end */
+  --surface: #fafafa; /* recipe card background */
+  --muted-strong: #475569; /* muted text on gray surfaces (contrast-safe) */
+  --divider: #cbd5e1; /* dashed dividers, skeleton top bars */
+  --faded: #94a3b8; /* faintest text/strokes */
+  --success: #16a34a;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
@@ -72,6 +82,15 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-soft: var(--accent-soft);
+  --color-navy-soft: var(--navy-soft);
+  --color-surface: var(--surface);
+  --color-muted-strong: var(--muted-strong);
+  --color-divider: var(--divider);
+  --color-faded: var(--faded);
+  --color-success: var(--success);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);

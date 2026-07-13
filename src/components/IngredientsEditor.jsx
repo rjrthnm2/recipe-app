@@ -31,9 +31,9 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
   };
 
   const headerLabel =
-    "font-ui text-[12px] font-medium uppercase tracking-wide text-[#64748b]";
+    "font-ui text-[12px] font-medium uppercase tracking-wide text-muted-foreground";
   const mobileLabel =
-    "mb-1 block font-ui text-[12px] text-[#64748b] sm:hidden";
+    "mb-1 block font-ui text-[12px] text-muted-foreground sm:hidden";
 
   return (
     <div className="space-y-2">
@@ -51,14 +51,14 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
       {rows.map((row, index) => (
         <div
           key={index}
-          className={`space-y-2 rounded-[8px] border border-[#e2e8f0] bg-white p-3 sm:space-y-0 sm:rounded-md sm:border-0 sm:bg-transparent sm:p-1 sm:odd:bg-[#F8FAFC]/60 ${GRID}`}
+          className={`space-y-2 rounded-[8px] border border-border bg-white p-3 sm:space-y-0 sm:rounded-md sm:border-0 sm:bg-transparent sm:p-1 sm:odd:bg-secondary/60 ${GRID}`}
         >
           <div>
             <span className={mobileLabel}>Amount</span>
             <Input
               value={row.quantity}
               onChange={(e) => updateRow(index, "quantity", e.target.value)}
-              className="h-12 border-[#e2e8f0] font-sans text-[16px]"
+              className="h-12 border-border font-sans text-[16px]"
               placeholder="1"
               aria-label={`Amount for ingredient ${index + 1}`}
             />
@@ -89,7 +89,7 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
             <Input
               value={row.note}
               onChange={(e) => updateRow(index, "note", e.target.value)}
-              className="h-12 border-[#e2e8f0] bg-[#F8FAFC]/40 font-sans text-[16px] text-[#475569]"
+              className="h-12 border-border bg-secondary/40 font-sans text-[16px] text-muted-strong"
               placeholder="finely chopped"
               aria-label={`Note for ingredient ${index + 1}`}
             />
@@ -100,7 +100,7 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
               type="button"
               variant="ghost"
               size="icon"
-              className="h-11 w-11 shrink-0 text-[#94a3b8] hover:bg-red-50 hover:text-[#dc2626]"
+              className="h-11 w-11 shrink-0 text-faded hover:bg-red-50 hover:text-destructive"
               onClick={() => removeRow(index)}
               aria-label={`Remove ingredient ${index + 1}`}
             >
@@ -113,7 +113,7 @@ export default function IngredientsEditor({ value, onChange, suggestions = [] })
       <Button
         type="button"
         variant="outline"
-        className="h-12 w-full border-dashed border-[#cbd5e1] font-ui text-[16px] text-[#0F172A] hover:border-[#2596be] hover:bg-[#2596be]/5"
+        className="h-12 w-full border-dashed border-divider font-ui text-[16px] text-primary hover:border-accent hover:bg-accent/5"
         onClick={addRow}
       >
         + Add ingredient

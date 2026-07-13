@@ -521,10 +521,10 @@ export default function ShoppingList() {
   return (
     <div className="space-y-10 pb-20 print:space-y-4 print:pb-0">
       <div className="space-y-4 print:hidden">
-        <h1 className="font-heading text-4xl font-bold tracking-tight text-[#0F172A]">
+        <h1 className="font-heading text-4xl font-bold tracking-tight text-primary">
           Build a Shopping List
         </h1>
-        <p className="font-sans text-[18px] text-[#0F172A]/80 max-w-2xl">
+        <p className="font-sans text-[18px] text-primary/80 max-w-2xl">
           Select the recipes you want to make, and we'll compile all the
           ingredients you need into one list.
         </p>
@@ -538,32 +538,32 @@ export default function ShoppingList() {
           }`}
         >
           {!selectingFor && (
-            <div className="flex p-1 bg-[#F8FAFC] rounded-[8px] w-full sm:w-auto max-w-md border border-[#e2e8f0] shadow-sm mb-6">
+            <div className="flex p-1 bg-secondary rounded-[8px] w-full sm:w-auto max-w-md border border-border shadow-sm mb-6">
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   activeTab === "quick"
-                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#475569] hover:text-[#0F172A]"
+                    ? "bg-white shadow-sm text-primary border border-border"
+                    : "text-muted-strong hover:text-primary"
                 }`}
                 onClick={() => handleTabSwitch("quick")}
               >
                 Quick Select
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   activeTab === "day"
-                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#475569] hover:text-[#0F172A]"
+                    ? "bg-white shadow-sm text-primary border border-border"
+                    : "text-muted-strong hover:text-primary"
                 }`}
                 onClick={() => handleTabSwitch("day")}
               >
                 1-Day Plan
               </button>
               <button
-                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                className={`flex-1 py-2 px-2 rounded-[6px] font-ui font-semibold text-[16px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   activeTab === "planner"
-                    ? "bg-white shadow-sm text-[#0F172A] border border-[#e2e8f0]"
-                    : "text-[#475569] hover:text-[#0F172A]"
+                    ? "bg-white shadow-sm text-primary border border-border"
+                    : "text-muted-strong hover:text-primary"
                 }`}
                 onClick={() => handleTabSwitch("planner")}
               >
@@ -576,9 +576,9 @@ export default function ShoppingList() {
             <div
               role="alertdialog"
               aria-label="Confirm clearing selections"
-              className="mb-6 rounded-[8px] border border-[#e2e8f0] border-l-4 border-l-[#dc2626] bg-white p-4 shadow-sm"
+              className="mb-6 rounded-[8px] border border-border border-l-4 border-l-destructive bg-white p-4 shadow-sm"
             >
-              <p className="font-sans text-[16px] text-[#0F172A]">
+              <p className="font-sans text-[16px] text-primary">
                 Clear your current selections? This can't be undone.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -588,14 +588,14 @@ export default function ShoppingList() {
                     setPendingClear(false);
                   }}
                   variant="outline"
-                  className="font-ui text-[16px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                  className="font-ui text-[16px] font-medium text-destructive hover:text-destructive border-red-200 hover:border-red-300 hover:bg-red-50"
                 >
                   Yes, clear
                 </Button>
                 <Button
                   onClick={() => setPendingClear(false)}
                   variant="secondary"
-                  className="font-ui text-[16px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                  className="font-ui text-[16px] font-medium bg-border/40 hover:bg-border text-primary"
                 >
                   Keep them
                 </Button>
@@ -607,23 +607,23 @@ export default function ShoppingList() {
             <div
               role="alertdialog"
               aria-label="Confirm planner switch"
-              className="mb-6 rounded-[8px] border border-[#e2e8f0] border-l-4 border-l-[#dc2626] bg-white p-4 shadow-sm"
+              className="mb-6 rounded-[8px] border border-border border-l-4 border-l-destructive bg-white p-4 shadow-sm"
             >
-              <p className="font-sans text-[16px] text-[#0F172A]">
+              <p className="font-sans text-[16px] text-primary">
                 Switching planners clears your current selections.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button
                   onClick={confirmTabSwitch}
                   variant="outline"
-                  className="font-ui text-[16px] font-medium text-[#dc2626] hover:text-[#dc2626] border-red-200 hover:border-red-300 hover:bg-red-50"
+                  className="font-ui text-[16px] font-medium text-destructive hover:text-destructive border-red-200 hover:border-red-300 hover:bg-red-50"
                 >
                   Clear & switch
                 </Button>
                 <Button
                   onClick={() => setPendingTab(null)}
                   variant="secondary"
-                  className="font-ui text-[16px] font-medium bg-[#e2e8f0]/40 hover:bg-[#e2e8f0] text-[#0F172A]"
+                  className="font-ui text-[16px] font-medium bg-border/40 hover:bg-border text-primary"
                 >
                   Stay here
                 </Button>
@@ -633,12 +633,12 @@ export default function ShoppingList() {
 
           {selectingFor ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-[#2596be]/10 border border-[#2596be]/30 p-4 rounded-[12px]">
+              <div className="flex items-center justify-between bg-accent/10 border border-accent/30 p-4 rounded-[12px]">
                 <div>
-                  <h2 className="font-heading text-2xl font-bold text-[#2596be]">
+                  <h2 className="font-heading text-2xl font-bold text-accent">
                     Selecting {selectingFor.meal}
                   </h2>
-                  <p className="font-sans text-[16px] text-[#1f7ea0]">
+                  <p className="font-sans text-[16px] text-accent-hover">
                     for {selectingFor.day}
                   </p>
                 </div>
@@ -648,7 +648,7 @@ export default function ShoppingList() {
                     setSelectingFor(null);
                     setSearchQuery("");
                   }}
-                  className="bg-white font-ui font-bold text-[#0F172A]"
+                  className="bg-white font-ui font-bold text-primary"
                 >
                   Cancel
                 </Button>
@@ -657,29 +657,29 @@ export default function ShoppingList() {
                 placeholder="Search recipes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white h-12 text-[18px] border-[#e2e8f0] font-sans"
+                className="w-full bg-white h-12 text-[18px] border-border font-sans"
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 pb-4">
                 {filteredRecipes.length === 0 ? (
-                  <div className="col-span-1 md:col-span-2 text-center py-10 text-[#64748b] font-sans">
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-muted-foreground font-sans">
                     No recipes found matching "{searchQuery}"
                   </div>
                 ) : (
                   filteredRecipes.map((recipe) => (
                     <Card
                       key={recipe.url}
-                      className="cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-[#e2e8f0] border-t-[6px] border-t-[#2596be] hover:shadow-md bg-[#FAFAFA] rounded-[8px]"
+                      className="cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-border border-t-[6px] border-t-accent hover:shadow-md bg-surface rounded-[8px]"
                       onClick={() => handlePlannerSelect(recipe.url)}
                     >
                       <CardContent className="p-4 flex items-center justify-between h-full">
                         <div>
-                          <h3 className="font-heading font-bold text-[18px] leading-tight text-[#0F172A]">
+                          <h3 className="font-heading font-bold text-[18px] leading-tight text-primary">
                             {recipe.title}
                           </h3>
                         </div>
                         <Button
                           variant="ghost"
-                          className="text-[#2596be] hover:bg-[#F8FAFC] font-ui font-bold ml-2"
+                          className="text-accent hover:bg-secondary font-ui font-bold ml-2"
                         >
                           Add
                         </Button>
@@ -692,13 +692,13 @@ export default function ShoppingList() {
           ) : activeTab === "planner" ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                <h2 className="font-heading text-2xl font-bold text-primary">
                   Plan Your Week
                 </h2>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
+                  className="font-ui text-destructive border-red-200 hover:bg-red-50 hover:text-destructive hover:border-red-300"
                   onClick={() => setPendingClear(true)}
                 >
                   Clear Week
@@ -708,9 +708,9 @@ export default function ShoppingList() {
                 {DAYS.map((day) => (
                   <div
                     key={day}
-                    className="bg-white border-2 border-[#e2e8f0] rounded-[8px] shadow-sm overflow-hidden flex flex-col"
+                    className="bg-white border-2 border-border rounded-[8px] shadow-sm overflow-hidden flex flex-col"
                   >
-                    <div className="bg-[#F8FAFC] border-b border-[#e2e8f0] px-4 py-2 font-ui font-semibold text-[#0F172A]">
+                    <div className="bg-secondary border-b border-border px-4 py-2 font-ui font-semibold text-primary">
                       {day}
                     </div>
                     <div className="p-3 space-y-3 flex-1 flex flex-col justify-center">
@@ -726,11 +726,11 @@ export default function ShoppingList() {
                             className="flex items-center justify-between text-[16px] group font-sans"
                           >
                             <div className="flex items-center gap-3 overflow-hidden mr-2">
-                              <span className="w-20 shrink-0 font-ui font-medium text-[#64748b] uppercase tracking-wide text-[12px]">
+                              <span className="w-20 shrink-0 font-ui font-medium text-muted-foreground uppercase tracking-wide text-[12px]">
                                 {meal}
                               </span>
                               {recipe ? (
-                                <span className="font-bold text-[#155e78] truncate">
+                                <span className="font-bold text-accent-deep truncate">
                                   {recipe.title}
                                 </span>
                               ) : (
@@ -754,7 +754,7 @@ export default function ShoppingList() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-6 px-2 py-0 border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10 text-xs"
+                                className="h-6 px-2 py-0 border-accent/30 text-accent-hover hover:bg-accent/10 text-xs"
                                 onClick={() => {
                                   setSelectingFor({ type: "week", day, meal });
                                   setSearchQuery("");
@@ -774,20 +774,20 @@ export default function ShoppingList() {
           ) : activeTab === "day" ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                <h2 className="font-heading text-2xl font-bold text-primary">
                   1-Day Plan
                 </h2>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPendingClear(true)}
-                  className="font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
+                  className="font-ui text-destructive border-red-200 hover:bg-red-50 hover:text-destructive hover:border-red-300"
                 >
                   Clear Day
                 </Button>
               </div>
-              <Card className="border-2 border-[#e2e8f0] py-0 gap-0 shadow-sm overflow-hidden">
-                <CardContent className="p-0 divide-y divide-[#e2e8f0]">
+              <Card className="border-2 border-border py-0 gap-0 shadow-sm overflow-hidden">
+                <CardContent className="p-0 divide-y divide-border">
                   {MEALS.map((meal) => {
                     const recipeUrl = dayPlanner[meal];
                     const recipe = recipeUrl
@@ -797,14 +797,14 @@ export default function ShoppingList() {
                     return (
                       <div
                         key={meal}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-[#F8FAFC] group"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 transition-colors hover:bg-secondary group"
                       >
                         <div>
                           <p className="font-semibold text-slate-500 text-sm uppercase tracking-wider mb-1">
                             {meal}
                           </p>
                           {recipe ? (
-                            <p className="text-lg text-[#155e78] font-bold leading-tight">
+                            <p className="text-lg text-accent-deep font-bold leading-tight">
                               {recipe.title}
                             </p>
                           ) : (
@@ -824,7 +824,7 @@ export default function ShoppingList() {
                         ) : (
                           <Button
                             variant="outline"
-                            className="border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10 bg-white"
+                            className="border-accent/30 text-accent-hover hover:bg-accent/10 bg-white"
                             onClick={() => {
                               setSelectingFor({
                                 type: "day",
@@ -846,7 +846,7 @@ export default function ShoppingList() {
           ) : (
             <>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="font-heading text-2xl font-bold text-[#0F172A]">
+                <h2 className="font-heading text-2xl font-bold text-primary">
                   Quick Select
                 </h2>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -854,13 +854,13 @@ export default function ShoppingList() {
                     placeholder="Search recipes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:max-w-xs bg-white h-10 border-[#e2e8f0] font-sans text-[16px]"
+                    className="w-full sm:max-w-xs bg-white h-10 border-border font-sans text-[16px]"
                   />
                   {selectedRecipeUrls.size > 0 && (
                     <Button
                       variant="outline"
                       onClick={() => setPendingClear(true)}
-                      className="whitespace-nowrap h-10 font-ui text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
+                      className="whitespace-nowrap h-10 font-ui text-destructive border-red-200 hover:bg-red-50 hover:text-destructive hover:border-red-300"
                     >
                       Clear All
                     </Button>
@@ -870,7 +870,7 @@ export default function ShoppingList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[800px] overflow-y-auto pr-2 pb-4">
                 {filteredRecipes.length === 0 ? (
-                  <div className="col-span-1 md:col-span-2 text-center py-10 text-[#64748b] font-sans">
+                  <div className="col-span-1 md:col-span-2 text-center py-10 text-muted-foreground font-sans">
                     No recipes found matching "{searchQuery}"
                   </div>
                 ) : (
@@ -879,10 +879,10 @@ export default function ShoppingList() {
                     return (
                       <Card
                         key={recipe.url}
-                        className={`cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-t-[6px] border-t-[#2596be] hover:shadow-md rounded-[8px] overflow-hidden ${
+                        className={`cursor-pointer py-0 gap-0 transition-all duration-200 border-x border-b border-t-[6px] border-t-accent hover:shadow-md rounded-[8px] overflow-hidden ${
                           isSelected
-                            ? "border-x-[#2596be] border-b-[#2596be] bg-[#2596be]/5"
-                            : "border-x-[#e2e8f0] border-b-[#e2e8f0] bg-[#FAFAFA]"
+                            ? "border-x-accent border-b-accent bg-accent/5"
+                            : "border-x-border border-b-border bg-surface"
                         }`}
                         onClick={() => toggleRecipeSelection(recipe.url)}
                       >
@@ -893,9 +893,9 @@ export default function ShoppingList() {
                               onCheckedChange={() =>
                                 toggleRecipeSelection(recipe.url)
                               }
-                              className={`h-5 w-5 border-[#e2e8f0] ${
+                              className={`h-5 w-5 border-border ${
                                 isSelected
-                                  ? "data-[state=checked]:bg-[#2596be] data-[state=checked]:border-[#2596be] text-white"
+                                  ? "data-[state=checked]:bg-accent data-[state=checked]:border-accent text-white"
                                   : ""
                               }`}
                             />
@@ -903,13 +903,13 @@ export default function ShoppingList() {
                           <div>
                             <h3
                               className={`font-heading font-bold text-[18px] leading-tight ${
-                                isSelected ? "text-[#2596be]" : "text-[#0F172A]"
+                                isSelected ? "text-accent" : "text-primary"
                               }`}
                             >
                               {recipe.title}
                             </h3>
                             {recipe.ingredients && (
-                              <p className="font-sans text-[14px] text-[#475569] mt-1">
+                              <p className="font-sans text-[14px] text-muted-strong mt-1">
                                 {recipe.ingredients.length} ingredients
                               </p>
                             )}
@@ -930,24 +930,24 @@ export default function ShoppingList() {
             !mobileListView ? "hidden lg:block" : ""
           }`}
         >
-          <div className="sticky top-24 bg-white rounded-2xl border border-[#e2e8f0] shadow-sm overflow-hidden flex flex-col max-h-[80vh] print:max-h-max print:border-none print:shadow-none print:rounded-none">
+          <div className="sticky top-24 bg-white rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col max-h-[80vh] print:max-h-max print:border-none print:shadow-none print:rounded-none">
             <button
               type="button"
               onClick={() => setMobileListView(false)}
-              className="flex items-center gap-1 border-b border-[#e2e8f0] bg-white px-6 py-3 text-left font-ui text-[16px] font-medium text-[#2596be] hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2596be] lg:hidden print:hidden"
+              className="flex items-center gap-1 border-b border-border bg-white px-6 py-3 text-left font-ui text-[16px] font-medium text-accent hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent lg:hidden print:hidden"
             >
               ← Back to recipes
             </button>
-            <div className="bg-[#F8FAFC] p-6 border-b border-[#e2e8f0] print:bg-white print:p-0 print:border-b-2 print:border-black print:pb-4 print:mb-4">
+            <div className="bg-secondary p-6 border-b border-border print:bg-white print:p-0 print:border-b-2 print:border-black print:pb-4 print:mb-4">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
-                <h2 className="font-heading text-2xl font-bold text-[#0F172A] flex items-center gap-3">
+                <h2 className="font-heading text-2xl font-bold text-primary flex items-center gap-3">
                   <span>
                     {shoppingListCreated && !finalListMinimized
                       ? "Your shopping list"
                       : "Combined ingredients"}
                   </span>
                   {selectedRecipeCount > 0 && (
-                    <span className="shrink-0 whitespace-nowrap bg-[#2596be]/15 text-[#155e78] text-sm py-1 px-3 rounded-full print:hidden">
+                    <span className="shrink-0 whitespace-nowrap bg-accent/15 text-accent-deep text-sm py-1 px-3 rounded-full print:hidden">
                       {selectedRecipeCount}{" "}
                       {selectedRecipeCount === 1 ? "recipe" : "recipes"}
                     </span>
@@ -961,7 +961,7 @@ export default function ShoppingList() {
                       size="sm"
                       onClick={createShoppingList}
                       disabled={selectedIngredientCount === 0}
-                      className="bg-[#2596be] hover:bg-[#1f86ad] text-white"
+                      className="bg-accent hover:bg-accent-hover text-white"
                     >
                       Create shopping list
                     </Button>
@@ -975,13 +975,13 @@ export default function ShoppingList() {
                 {shoppingListCreated && (
                   <section className="sticky top-0 z-20 print:static">
                     {finalListMinimized ? (
-                      <div className="mb-4 rounded-xl border border-[#2596be]/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
+                      <div className="mb-4 rounded-xl border border-accent/30 bg-white/95 p-3 shadow-md backdrop-blur print:hidden">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <p className="font-ui text-[14px] uppercase tracking-wide text-[#2596be]">
+                            <p className="font-ui text-[14px] uppercase tracking-wide text-accent">
                               Shopping list ready
                             </p>
-                            <p className="font-sans text-sm text-[#0F172A]">
+                            <p className="font-sans text-sm text-primary">
                               {finalShoppingList.length} items selected
                             </p>
                           </div>
@@ -989,18 +989,18 @@ export default function ShoppingList() {
                             variant="outline"
                             size="sm"
                             onClick={() => setFinalListMinimized(false)}
-                            className="border-[#2596be]/40 text-[#2596be] hover:bg-[#2596be]/10"
+                            className="border-accent/40 text-accent hover:bg-accent/10"
                           >
                             Open
                           </Button>
                         </div>
                       </div>
                     ) : (
-                      <div className="mb-4 rounded-2xl border border-[#2596be]/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
-                        <div className="flex flex-col gap-3 border-b border-[#e2e8f0] pb-4 print:border-black print:pb-2">
+                      <div className="mb-4 rounded-2xl border border-accent/30 bg-white/95 p-4 shadow-lg backdrop-blur transition-all duration-300 motion-safe:animate-in motion-safe:slide-in-from-top-2 print:mb-0 print:rounded-none print:border-black print:shadow-none print:bg-white print:p-0">
+                        <div className="flex flex-col gap-3 border-b border-border pb-4 print:border-black print:pb-2">
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <h3 className="font-heading text-lg font-bold text-[#0F172A]">
+                              <h3 className="font-heading text-lg font-bold text-primary">
                                 Final shopping list
                               </h3>
                               <p className="text-sm text-slate-500 print:hidden">
@@ -1014,15 +1014,15 @@ export default function ShoppingList() {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 print:hidden">
-                            <div className="mr-auto flex items-center rounded-md border border-[#e2e8f0] bg-[#F8FAFC] p-0.5 font-ui text-[14px]">
+                            <div className="mr-auto flex items-center rounded-md border border-border bg-secondary p-0.5 font-ui text-[14px]">
                               <button
                                 type="button"
                                 onClick={() => setCondensedExport(false)}
                                 aria-pressed={!condensedExport}
-                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                                   !condensedExport
-                                    ? "bg-white text-[#0F172A] shadow-sm"
-                                    : "text-[#64748b]"
+                                    ? "bg-white text-primary shadow-sm"
+                                    : "text-muted-foreground"
                                 }`}
                               >
                                 With amounts
@@ -1031,10 +1031,10 @@ export default function ShoppingList() {
                                 type="button"
                                 onClick={() => setCondensedExport(true)}
                                 aria-pressed={condensedExport}
-                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                                className={`rounded px-2.5 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                                   condensedExport
-                                    ? "bg-white text-[#0F172A] shadow-sm"
-                                    : "text-[#64748b]"
+                                    ? "bg-white text-primary shadow-sm"
+                                    : "text-muted-foreground"
                                 }`}
                               >
                                 Just items
@@ -1053,7 +1053,7 @@ export default function ShoppingList() {
                               variant="default"
                               size="sm"
                               onClick={handlePrint}
-                              className="bg-[#2596be] text-white hover:bg-[#1f86ad]"
+                              className="bg-accent text-white hover:bg-accent-hover"
                               disabled={finalShoppingList.length === 0}
                             >
                               Print
@@ -1070,7 +1070,7 @@ export default function ShoppingList() {
                               variant="ghost"
                               size="sm"
                               onClick={cancelShoppingList}
-                              className="text-[#dc2626] hover:bg-red-50 hover:text-[#dc2626]"
+                              className="text-destructive hover:bg-red-50 hover:text-destructive"
                             >
                               Cancel list
                             </Button>
@@ -1091,12 +1091,12 @@ export default function ShoppingList() {
                                 }
                               }}
                               placeholder="Add extra item, like milk or foil..."
-                              className="h-11 bg-white text-[16px] border-[#e2e8f0] font-sans"
+                              className="h-11 bg-white text-[16px] border-border font-sans"
                             />
                             <Button
                               type="button"
                               variant="outline"
-                              className="h-11 shrink-0 border-[#2596be]/30 text-[#1f7ea0] hover:bg-[#2596be]/10"
+                              className="h-11 shrink-0 border-accent/30 text-accent-hover hover:bg-accent/10"
                               onClick={addCustomItem}
                             >
                               Add
@@ -1104,7 +1104,7 @@ export default function ShoppingList() {
                           </div>
 
                           {finalShoppingList.length === 0 ? (
-                            <div className="mt-3 rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-slate-500 print:border-black print:text-black">
+                            <div className="mt-3 rounded-xl border border-dashed border-border p-4 text-sm text-slate-500 print:border-black print:text-black">
                               Select ingredients below or add custom items here.
                             </div>
                           ) : (
@@ -1112,7 +1112,7 @@ export default function ShoppingList() {
                               {finalDisplayList.map((entry, id) => (
                                 <li
                                   key={entry.key}
-                                  className="flex items-start gap-3 rounded-xl border border-[#e2e8f0] p-3 print:border-black print:rounded-none print:p-0 print:border-0"
+                                  className="flex items-start gap-3 rounded-xl border border-border p-3 print:border-black print:rounded-none print:p-0 print:border-0"
                                 >
                                   <Checkbox
                                     id={`cart-${id}`}
@@ -1127,7 +1127,7 @@ export default function ShoppingList() {
                                     htmlFor={`cart-${id}`}
                                     className="grid flex-1 cursor-pointer gap-1.5"
                                   >
-                                    <span className="text-base font-medium leading-snug text-[#0F172A] print:text-black print:text-xl">
+                                    <span className="text-base font-medium leading-snug text-primary print:text-black print:text-xl">
                                       {entry.label}
                                     </span>
                                     {!condensedExport &&
@@ -1162,7 +1162,7 @@ export default function ShoppingList() {
                       {!shoppingListCreated &&
                         selectedIngredientCount === 0 &&
                         shoppingList.length > 0 && (
-                          <p className="mt-1 text-xs font-medium text-[#2596be]">
+                          <p className="mt-1 text-xs font-medium text-accent">
                             Select at least one ingredient to enable "Create
                             shopping list".
                           </p>
@@ -1174,13 +1174,13 @@ export default function ShoppingList() {
                   </div>
 
                   {shoppingList.length > 0 && (
-                    <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-3">
+                    <div className="rounded-xl border border-border bg-secondary p-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="font-ui text-[14px] uppercase tracking-wide text-[#475569]">
+                          <p className="font-ui text-[14px] uppercase tracking-wide text-muted-strong">
                             Selection progress
                           </p>
-                          <p className="font-sans text-sm text-[#0F172A]">
+                          <p className="font-sans text-sm text-primary">
                             {selectedIngredientCount} of {totalIngredientCount}{" "}
                             selected
                           </p>
@@ -1192,7 +1192,7 @@ export default function ShoppingList() {
                             size="sm"
                             onClick={selectAllIngredients}
                             disabled={totalIngredientCount === 0}
-                            className="border-[#cbd5e1] bg-white"
+                            className="border-divider bg-white"
                           >
                             Select all
                           </Button>
@@ -1202,15 +1202,15 @@ export default function ShoppingList() {
                             size="sm"
                             onClick={clearIngredientSelection}
                             disabled={selectedIngredientCount === 0}
-                            className="bg-white text-[#dc2626] border-red-200 hover:bg-red-50 hover:text-[#dc2626] hover:border-red-300"
+                            className="bg-white text-destructive border-red-200 hover:bg-red-50 hover:text-destructive hover:border-red-300"
                           >
                             Clear
                           </Button>
                         </div>
                       </div>
-                      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#e2e8f0]">
+                      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-border">
                         <div
-                          className="h-full rounded-full bg-[#2596be] transition-all duration-300"
+                          className="h-full rounded-full bg-accent transition-all duration-300"
                           style={{ width: `${selectionProgress}%` }}
                         />
                       </div>
@@ -1218,7 +1218,7 @@ export default function ShoppingList() {
                   )}
 
                   {shoppingList.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-[#e2e8f0] p-4 text-sm text-slate-500">
+                    <div className="rounded-xl border border-dashed border-border p-4 text-sm text-slate-500">
                       Select recipes on the left to build the combined
                       ingredient list.
                     </div>
@@ -1232,8 +1232,8 @@ export default function ShoppingList() {
                             key={`${item.text}-${id}`}
                             className={`flex items-start gap-3 rounded-xl border p-3 transition-colors ${
                               isChecked
-                                ? "border-[#2596be]/30 bg-[#2596be]/10"
-                                : "border-[#e2e8f0] hover:bg-[#F8FAFC]"
+                                ? "border-accent/30 bg-accent/10"
+                                : "border-border hover:bg-secondary"
                             }`}
                           >
                             <Checkbox
@@ -1248,7 +1248,7 @@ export default function ShoppingList() {
                               htmlFor={`ingredient-${id}`}
                               className="grid flex-1 cursor-pointer gap-1.5"
                             >
-                              <span className="text-base font-medium leading-snug text-[#0F172A]">
+                              <span className="text-base font-medium leading-snug text-primary">
                                 {item.text}
                               </span>
                               <span className="text-sm text-slate-500">
@@ -1270,7 +1270,7 @@ export default function ShoppingList() {
               </div>
             </div>
             {shoppingListCreated && finalShoppingList.length > 0 && (
-              <div className="p-4 border-t border-[#e2e8f0] bg-[#F8FAFC] text-center print:hidden">
+              <div className="p-4 border-t border-border bg-secondary text-center print:hidden">
                 <p className="text-sm text-slate-500">
                   {finalShoppingList.length} total items
                 </p>
@@ -1286,7 +1286,7 @@ export default function ShoppingList() {
         <div className="fixed inset-x-4 bottom-20 z-30 lg:hidden print:hidden">
           <Button
             onClick={() => setMobileListView(true)}
-            className="h-14 w-full rounded-[12px] bg-[#2596be] font-ui text-[18px] font-bold text-white shadow-lg hover:bg-[#1f86ad]"
+            className="h-14 w-full rounded-[12px] bg-accent font-ui text-[18px] font-bold text-white shadow-lg hover:bg-accent-hover"
           >
             View ingredients ({selectedRecipeCount}{" "}
             {selectedRecipeCount === 1 ? "recipe" : "recipes"}) →
