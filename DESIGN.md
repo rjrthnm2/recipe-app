@@ -29,7 +29,7 @@
 - **Primary:** Deep Velvet Navy (`#0F172A`) — For primary text and major structural elements (matches the velvet sofas).
 - **Secondary:** Soft Gray-White (`#F8FAFC`) — Secondary surfaces.
 - **Accent:** Bright Azure (`#2596be`) — Strict use for primary buttons and active states (accent vase color). Hover/darker steps in use: `#1f86ad` (hover), `#155e78` (deep text on azure tint).
-- **Neutrals:** Crisp Snow White (`#FFFFFF`) for main background, slate grays for inactive/borders (`#94A3B8`, `#cbd5e1`).
+- **Neutrals:** Crisp Snow White (`#FFFFFF`) for cards and panels, soft blue-gray canvas (`#eff4f9`, token `--canvas`) for the page surface behind them, slate grays for inactive/borders (`#94A3B8`, `#cbd5e1`).
 - **Semantic:** success `#16a34a`, warning `#ea580c`, error `#dc2626`, info `#0284c7`.
 - **Dark mode:** Not prioritized initially to maintain high contrast white/navy paper feel, but if implemented: deep navy backgrounds with off-white text.
 
@@ -50,7 +50,7 @@
 ## Motion
 
 - **Approach:** Intentional.
-- **Landing Page:** Flowy, slow-moving CSS gradient mesh (water/silk vibe bridging deep navy and blue).
+- **Sitewide background:** Built as of July 2026. Four soft azure/navy radial washes on `body::before`, fixed to the viewport (so they don't scroll away), drifting on a 90s alternating cycle. Sits over the `--canvas` tint, behind all content. Off for `prefers-reduced-motion`, hidden in print.
 - **App Core:** Minimal-functional. Smooth state transitions, fade-ins, soft button scaling. No disorienting shifts.
 - **Easing:** enter(ease-out) exit(ease-in) move(ease-in-out).
 - **Duration:** micro(100ms) short(200ms) medium(300ms) long(500ms).
@@ -63,4 +63,5 @@
 | 2026-07-10 | Browse grid widened to 5 columns / 1280px | 132+ compact cards scan far better wide; reading pages keep ~896px measure. Supersedes "max 2 columns / 800px". |
 | 2026-07-10 | Body base corrected to 18px in code | index.css had shipped 17px; code now matches this doc. |
 | 2026-07-10 | Print is a first-class surface | Recipe detail + shopping list have full print styles (paper tick-boxes, black accents, source line). |
+| 2026-07-13 | Drifting aurora background is the default | Page felt flat because page and card surfaces were both ~white and the old gradient was hidden behind the hero and scrolled away. Chosen from a 5-treatment live preview (current / canvas / aurora / aurora-drift / gingham). |
 | 2026-07-10 | Known debt (from /design-review) | Color tokens exist in index.css but pages hardcode hex (297 sites); type sizes use raw px with some off-scale values; radius mixes 6/8/12px with named classes. Normalize opportunistically when touching files. |
