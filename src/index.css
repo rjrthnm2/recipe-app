@@ -226,6 +226,100 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Background treatments (preview). Switched by data-bg on <html> via the
+   BackgroundPreview panel (?bg=1). No attribute = today's look.
+
+   Rules for every treatment: text contrast never drops (tints stay very
+   light under navy text), nothing animates for prefers-reduced-motion, and
+   print stays pure white.
+   --------------------------------------------------------------------------- */
+
+/* Shared: let the page surface show through the app shell. */
+:root[data-bg]:not([data-bg="current"]) .app-shell {
+  background-color: transparent;
+}
+
+/* 1. Layered canvas — cool gray-blue page, white cards float on it. */
+:root[data-bg="canvas"] body,
+:root[data-bg="aurora"] body,
+:root[data-bg="aurora-drift"] body,
+:root[data-bg="gingham"] body {
+  background-color: #eff4f9;
+  background-image: none;
+}
+
+/* 2. Aurora — soft fixed blooms in her navy/azure palette. */
+:root[data-bg="aurora"] body::before,
+:root[data-bg="aurora-drift"] body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      ellipse 60% 45% at 8% 8%,
+      color-mix(in oklab, var(--color-accent) 42%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 95% 30%,
+      color-mix(in oklab, var(--color-accent) 30%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 85% 95%,
+      color-mix(in oklab, var(--color-primary) 20%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 35% at 15% 85%,
+      color-mix(in oklab, var(--color-accent) 22%, transparent),
+      transparent 70%
+    );
+}
+
+/* 3. Aurora with a very slow drift (water/silk, per DESIGN.md). */
+:root[data-bg="aurora-drift"] body::before {
+  animation: aurora-drift 90s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2.5%, -2%, 0) scale(1.08);
+  }
+}
+
+/* 4. Gingham — faint tea-towel check, kitchen without the kitsch. */
+:root[data-bg="gingham"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in oklab, var(--color-accent) 6%, transparent) 0 14px,
+      transparent 14px 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-accent) 6%, transparent) 0 14px,
+      transparent 14px 28px
+    );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-bg="aurora-drift"] body::before {
+    animation: none;
+  }
+}
+
 @page {
   margin: 1.5cm;
 }
@@ -234,5 +328,8 @@
   /* Drop the decorative page background so printed pages are clean white. */
   body {
     background: none !important;
+  }
+  body::before {
+    display: none !important;
   }
 }
