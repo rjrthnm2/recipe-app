@@ -46,7 +46,7 @@ function App() {
                   element={
                     <Suspense
                       fallback={
-                        <div className="p-8 text-center font-sans text-[18px] text-[#475569]">
+                        <div className="p-8 text-center font-sans text-[18px] text-muted-strong">
                           <p>Loading Jewel's page...</p>
                           <p className="mt-1 text-[16px]">
                             The globe takes a few seconds the first time.

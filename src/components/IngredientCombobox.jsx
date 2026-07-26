@@ -84,12 +84,12 @@ export default function IngredientCombobox({
         aria-expanded={open}
         aria-autocomplete="list"
         autoComplete="off"
-        className="h-12 w-full rounded-md border border-[#e2e8f0] bg-white px-3 font-sans text-[16px] text-[#0F172A] outline-none transition-colors focus:border-[#2596be] focus:ring-2 focus:ring-[#2596be]/20"
+        className="h-12 w-full rounded-md border border-border bg-white px-3 font-sans text-[16px] text-primary outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       {open && matches.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-30 mt-1 w-full overflow-y-auto rounded-md border border-[#e2e8f0] bg-white shadow-lg"
+          className="absolute z-30 mt-1 w-full overflow-y-auto rounded-md border border-border bg-white shadow-lg"
           style={{ maxHeight: "25rem" }}
         >
           {matches.map((s, i) => (
@@ -104,8 +104,8 @@ export default function IngredientCombobox({
               onMouseEnter={() => setActiveIndex(i)}
               className={`cursor-pointer px-3 py-2 font-sans text-[16px] ${
                 i === activeIndex
-                  ? "bg-[#2596be]/10 text-[#0F172A]"
-                  : "text-[#0F172A] hover:bg-[#F8FAFC]"
+                  ? "bg-accent/10 text-primary"
+                  : "text-primary hover:bg-secondary"
               }`}
             >
               {s}

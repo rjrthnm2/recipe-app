@@ -135,12 +135,12 @@ export default function Navbar() {
     <>
       <nav
         aria-label="Main navigation"
-        className="sticky top-0 z-10 border-b border-[#e2e8f0] bg-white/95 p-4 shadow-sm backdrop-blur print:hidden"
+        className="sticky top-0 z-10 border-b border-border bg-white/95 p-4 shadow-sm backdrop-blur print:hidden"
       >
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
           <Link
             to="/"
-            className="font-heading text-2xl font-bold tracking-tight text-[#0F172A] focus-visible:outline-none"
+            className="font-heading text-2xl font-bold tracking-tight text-primary focus-visible:outline-none"
           >
             Jewel's Recipes
           </Link>
@@ -152,7 +152,7 @@ export default function Navbar() {
             >
               <Button
                 variant="ghost"
-                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                className="font-ui text-[16px] text-primary/80 hover:text-primary hover:bg-secondary"
                 asChild
               >
                 <Link to="/">Browse</Link>
@@ -160,7 +160,7 @@ export default function Navbar() {
 
               <Button
                 variant="ghost"
-                className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                className="font-ui text-[16px] text-primary/80 hover:text-primary hover:bg-secondary"
                 asChild
               >
                 <Link to="/about">Meet Jewel</Link>
@@ -170,21 +170,21 @@ export default function Navbar() {
                 <>
                   <Button
                     variant="ghost"
-                    className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                    className="font-ui text-[16px] text-primary/80 hover:text-primary hover:bg-secondary"
                     asChild
                   >
                     <Link to="/my-list">My List</Link>
                   </Button>
                   <Button
                     variant="ghost"
-                    className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                    className="font-ui text-[16px] text-primary/80 hover:text-primary hover:bg-secondary"
                     asChild
                   >
                     <Link to="/shopping-list">Shopping List</Link>
                   </Button>
                   <Button
                     variant="outline"
-                    className="font-ui text-[16px] border-[#2596be]/30 text-[#2596be] bg-[#2596be]/5 hover:bg-[#2596be]/10 hover:border-[#2596be]/50"
+                    className="font-ui text-[16px] border-accent/30 text-accent bg-accent/5 hover:bg-accent/10 hover:border-accent/50"
                     asChild
                   >
                     <Link to="/add">Add Recipe</Link>
@@ -195,7 +195,7 @@ export default function Navbar() {
 
             {/* Login / Logout Button logic */}
             {user ? (
-              <div className="flex items-center gap-3 sm:ml-4 sm:border-l sm:border-[#e2e8f0] sm:pl-4">
+              <div className="flex items-center gap-3 sm:ml-4 sm:border-l sm:border-border sm:pl-4">
                 <div className="relative" ref={accountRef}>
                   <button
                     type="button"
@@ -204,19 +204,19 @@ export default function Navbar() {
                     aria-expanded={accountOpen}
                     aria-label="Account and recipe nickname"
                     title="Set your recipe nickname"
-                    className="block rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] focus-visible:ring-offset-2"
+                    className="block rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                   >
                     {shouldShowPhoto ? (
                       <img
                         src={profilePhoto}
                         alt="Profile"
-                        className="h-10 w-10 rounded-full border border-[#e2e8f0] object-cover"
+                        className="h-10 w-10 rounded-full border border-border object-cover"
                         loading="lazy"
                         referrerPolicy="no-referrer"
                         onError={() => setFailedPhoto(profilePhoto)}
                       />
                     ) : (
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#F8FAFC] text-[14px] font-semibold text-[#0F172A]">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary text-[14px] font-semibold text-primary">
                         {profileInitials}
                       </span>
                     )}
@@ -226,14 +226,14 @@ export default function Navbar() {
                     <div
                       role="dialog"
                       aria-label="Recipe nickname"
-                      className="absolute right-0 z-30 mt-2 w-72 rounded-[12px] border border-[#e2e8f0] bg-white p-4 shadow-lg"
+                      className="absolute right-0 z-30 mt-2 w-72 rounded-[12px] border border-border bg-white p-4 shadow-lg"
                     >
-                      <p className="font-ui text-[14px] font-medium text-[#0F172A]">
+                      <p className="font-ui text-[14px] font-medium text-primary">
                         {user.displayName || user.email}
                       </p>
                       <label
                         htmlFor="recipe-nickname"
-                        className="mt-3 block font-ui text-[14px] text-[#64748b]"
+                        className="mt-3 block font-ui text-[14px] text-muted-foreground"
                       >
                         Recipe nickname — shown as “by …” on recipes you add
                       </label>
@@ -250,12 +250,12 @@ export default function Navbar() {
                           }}
                           maxLength={30}
                           placeholder={nickname || "e.g. Jewel"}
-                          className="h-11 border-[#e2e8f0] font-sans text-[16px]"
+                          className="h-11 border-border font-sans text-[16px]"
                         />
                         <Button
                           type="button"
                           onClick={saveNickname}
-                          className="h-11 shrink-0 bg-[#2596be] font-ui text-white hover:bg-[#1f86ad]"
+                          className="h-11 shrink-0 bg-accent font-ui text-white hover:bg-accent-hover"
                         >
                           Save
                         </Button>
@@ -267,7 +267,7 @@ export default function Navbar() {
                   onClick={logout}
                   variant="ghost"
                   size="sm"
-                  className="font-ui text-[16px] text-[#0F172A]/80 hover:text-[#0F172A] hover:bg-[#F8FAFC]"
+                  className="font-ui text-[16px] text-primary/80 hover:text-primary hover:bg-secondary"
                 >
                   Log Out
                 </Button>
@@ -275,7 +275,7 @@ export default function Navbar() {
             ) : (
               <Button
                 onClick={login}
-                className="ml-4 font-ui text-[16px] bg-[#0F172A] text-white hover:bg-[#0F172A]/90"
+                className="ml-4 font-ui text-[16px] bg-primary text-white hover:bg-primary/90"
               >
                 Log In
               </Button>
@@ -288,7 +288,7 @@ export default function Navbar() {
       {user && (
         <nav
           aria-label="Quick navigation"
-          className="fixed inset-x-0 bottom-0 z-20 border-t border-[#e2e8f0] bg-white/95 backdrop-blur sm:hidden print:hidden"
+          className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white/95 backdrop-blur sm:hidden print:hidden"
         >
           <div className="grid grid-cols-5">
             {MOBILE_TABS.map((tab) => {
@@ -298,8 +298,8 @@ export default function Navbar() {
                   key={tab.to}
                   to={tab.to}
                   aria-current={isActive ? "page" : undefined}
-                  className={`flex min-h-[60px] flex-col items-center justify-center gap-0.5 py-2 font-ui text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2596be] ${
-                    isActive ? "text-[#2596be]" : "text-[#0F172A]/70"
+                  className={`flex min-h-[60px] flex-col items-center justify-center gap-0.5 py-2 font-ui text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
+                    isActive ? "text-accent" : "text-primary/70"
                   }`}
                 >
                   <NavIcon path={tab.icon} width="22" height="22" />

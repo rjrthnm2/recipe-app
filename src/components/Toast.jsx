@@ -6,20 +6,20 @@ const ToastContext = createContext(null);
 // Designed to be unmissable for older eyes.
 const TYPE_CONFIG = {
   info: {
-    border: "border-l-[#0F172A]",
-    chip: "bg-[#0F172A]",
+    border: "border-l-primary",
+    chip: "bg-primary",
     icon: "i",
     label: "Notice",
   },
   success: {
-    border: "border-l-[#16a34a]",
-    chip: "bg-[#16a34a]",
+    border: "border-l-success",
+    chip: "bg-success",
     icon: "✓",
     label: "Done",
   },
   error: {
-    border: "border-l-[#dc2626]",
-    chip: "bg-[#dc2626]",
+    border: "border-l-destructive",
+    chip: "bg-destructive",
     icon: "!",
     label: "Problem",
   },
@@ -57,7 +57,7 @@ export function ToastProvider({ children }) {
             <div
               key={t.id}
               role="status"
-              className={`pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-[10px] border border-[#e2e8f0] border-l-[6px] bg-white py-3 pl-4 pr-2 shadow-xl ring-1 ring-black/5 motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-300 ${config.border}`}
+              className={`pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-[10px] border border-border border-l-[6px] bg-white py-3 pl-4 pr-2 shadow-xl ring-1 ring-black/5 motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-300 ${config.border}`}
             >
               <span
                 aria-hidden="true"
@@ -65,7 +65,7 @@ export function ToastProvider({ children }) {
               >
                 {config.icon}
               </span>
-              <p className="flex-1 font-sans text-[18px] leading-snug text-[#0F172A]">
+              <p className="flex-1 font-sans text-[18px] leading-snug text-primary">
                 <span className="sr-only">{config.label}: </span>
                 {t.message}
               </p>
@@ -73,7 +73,7 @@ export function ToastProvider({ children }) {
                 type="button"
                 onClick={() => dismissToast(t.id)}
                 aria-label="Dismiss notification"
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[20px] text-[#475569] transition-colors hover:bg-[#F8FAFC] hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[20px] text-muted-strong transition-colors hover:bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 ×
               </button>

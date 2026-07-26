@@ -2,17 +2,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useRecipes } from "../hooks/useRecipes";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Badge } from "../components/ui/badge";
 import LoadErrorNotice from "../components/LoadErrorNotice";
+import RecipeCard from "../components/RecipeCard";
 import usePageTitle from "../hooks/usePageTitle";
 
 // Mobile-only floating button — 132 cards is a long way back up.
@@ -40,7 +33,7 @@ function BackToTopButton() {
             : "smooth",
         })
       }
-      className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0F172A] text-white shadow-lg transition-colors hover:bg-[#2596be] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] focus-visible:ring-offset-2 sm:hidden print:hidden"
+      className="fixed bottom-24 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:hidden print:hidden"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -259,18 +252,18 @@ export default function Home() {
 
   return (
     <div className="space-y-10">
-      <section className="reveal-up relative overflow-hidden rounded-[16px] bg-[#F8FAFC] border border-[#e2e8f0] p-5 shadow-sm md:p-12 text-[#0F172A]">
+      <section className="reveal-up relative overflow-hidden rounded-[16px] bg-secondary border border-border p-5 shadow-sm md:p-12 text-primary">
         <div className="relative flex flex-col gap-4 md:gap-6">
           <div className="space-y-2 md:space-y-3">
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-[#0F172A] md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-primary md:text-5xl">
               Find The Right Recipe Faster
             </h1>
-            <p className="font-sans max-w-2xl text-[16px] text-[#0F172A]/80 md:text-[20px]">
+            <p className="font-sans max-w-2xl text-[16px] text-primary/80 md:text-[20px]">
               Search by name, ingredient, or tag — or browse the whole
               collection below.{" "}
               <Link
                 to="/about"
-                className="whitespace-nowrap font-medium text-[#2596be] underline-offset-4 hover:underline"
+                className="whitespace-nowrap font-medium text-accent underline-offset-4 hover:underline"
               >
                 Made with love by Jewel. Come meet her →
               </Link>
@@ -282,12 +275,12 @@ export default function Home() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search recipes by title, ingredient, or tag"
-            className="max-w-2xl bg-white shadow-sm border-[#e2e8f0] h-12 text-[18px] px-4 font-sans"
+            className="max-w-2xl bg-white shadow-sm border-border h-12 text-[18px] px-4 font-sans"
           />
 
           {popularTags.length > 0 && (
             <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pt-2">
-              <span className="shrink-0 mr-1 font-ui text-[14px] sm:text-[16px] font-medium text-[#0F172A]/70 sm:mr-2">
+              <span className="shrink-0 mr-1 font-ui text-[14px] sm:text-[16px] font-medium text-primary/70 sm:mr-2">
                 Popular tags:
               </span>
               {popularTags.map((tag) => {
@@ -299,7 +292,7 @@ export default function Home() {
                     variant={isActive ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSearch(tag)}
-                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 sm:px-4 sm:py-2 font-ui text-[14px] sm:text-[16px] h-auto transition-transform active:scale-95 hover:scale-105 duration-200 ${isActive ? "bg-[#2596be] text-white hover:bg-[#2596be]/90 border-[#2596be]" : "bg-white border-[#e2e8f0] text-[#0F172A] hover:bg-[#F8FAFC]"}`}
+                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 sm:px-4 sm:py-2 font-ui text-[14px] sm:text-[16px] h-auto transition-transform active:scale-95 hover:scale-105 duration-200 ${isActive ? "bg-accent text-white hover:bg-accent/90 border-accent" : "bg-white border-border text-primary hover:bg-secondary"}`}
                     aria-pressed={isActive}
                   >
                     {tag}
@@ -312,10 +305,10 @@ export default function Home() {
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-4 py-4">
-        <h2 className="font-heading text-3xl font-semibold tracking-tight text-[#0F172A]">
+        <h2 className="font-heading text-3xl font-semibold tracking-tight text-primary">
           All Recipes
         </h2>
-        <p className="font-ui tabular rounded-full bg-[#F8FAFC] px-4 py-1.5 text-[16px] text-[#0F172A]/80 border border-[#e2e8f0]">
+        <p className="font-ui tabular rounded-full bg-secondary px-4 py-1.5 text-[16px] text-primary/80 border border-border">
           {loading
             ? "Loading…"
             : `${filteredRecipes.length} result${
@@ -329,7 +322,7 @@ export default function Home() {
           {Array.from({ length: 10 }).map((_, i) => (
             <div
               key={i}
-              className="h-52 animate-pulse rounded-[8px] border border-[#e2e8f0] border-t-[6px] border-t-[#cbd5e1] bg-[#F8FAFC]"
+              className="h-52 animate-pulse rounded-[8px] border border-border border-t-[6px] border-t-divider bg-secondary"
             />
           ))}
         </div>
@@ -338,18 +331,18 @@ export default function Home() {
       {!loading && loadError && <LoadErrorNotice />}
 
       {!loading && normalizedQuery && filteredRecipes.length === 0 && (
-        <div className="rounded-xl border border-[#e2e8f0] bg-[#F8FAFC] p-6 text-left text-[#0F172A]">
+        <div className="rounded-xl border border-border bg-secondary p-6 text-left text-primary">
           <p className="font-sans text-lg font-semibold">
             No relevant recipes found.
           </p>
-          <p className="mt-2 font-sans text-base text-[#475569]">
+          <p className="mt-2 font-sans text-base text-muted-strong">
             Try fewer words or ingredient basics like chicken, tomato, or onion.
           </p>
           <Button
             type="button"
             variant="outline"
             onClick={() => setSearch("")}
-            className="mt-4 h-11 border-[#e2e8f0] px-5 font-ui text-[16px] font-medium text-[#0F172A] hover:bg-white"
+            className="mt-4 h-11 border-border px-5 font-ui text-[16px] font-medium text-primary hover:bg-white"
           >
             Clear search
           </Button>
@@ -357,84 +350,9 @@ export default function Home() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {filteredRecipes.map(({ recipe }, index) => {
-          // Extract a clean ID from the URL to use for routing
-          const recipeId = recipe.url; // url IS the document id
-
-          return (
-            <Card
-              key={recipe.url || index}
-              size="sm"
-              className="reveal-card flex h-full flex-col gap-2 py-3 bg-[#FAFAFA] border-t-[6px] border-t-[#2596be] border-x-[#e2e8f0] border-b-[#e2e8f0] border-x border-b shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md rounded-[8px] overflow-hidden"
-              style={{ animationDelay: `${index * 45}ms` }}
-            >
-              <CardHeader className="pb-0">
-                <CardTitle className="font-heading line-clamp-2 text-[18px] md:text-[20px] font-bold leading-tight text-[#0F172A]">
-                  {/* Title navigates too — a bigger target than the button alone. */}
-                  <Link
-                    to={`/recipe/${recipeId}`}
-                    className="rounded-sm transition-colors hover:text-[#2596be] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be]"
-                  >
-                    {recipe.title}
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              {/* mt-auto anchors prep + divider + tags just above the button,
-                  so they line up across cards no matter the title length. */}
-              <CardContent className="mt-auto pt-0">
-                {recipe.prep_time && (
-                  <div className="flex items-center text-[14px] font-sans text-[#64748b]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mr-1.5"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    <span>Prep: {recipe.prep_time}</span>
-                  </div>
-                )}
-                <div className="border-t border-dashed border-[#cbd5e1] w-full my-1.5"></div>
-                <div className="flex flex-nowrap items-center gap-1.5 mt-1.5 overflow-hidden">
-                  {recipe.tags?.slice(0, 2).map((tag, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="whitespace-nowrap bg-white text-[#0F172A]/70 border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
-                    >
-                      {tag.replace(/[()]/g, "")}
-                    </Badge>
-                  ))}
-                  {(recipe.tags?.length || 0) > 2 && (
-                    <Badge
-                      variant="secondary"
-                      className="shrink-0 bg-[#F8FAFC] text-[#475569] border border-[#e2e8f0] font-ui text-[12px] px-2 py-0.5 font-medium rounded-sm"
-                      aria-label={`${recipe.tags.length - 2} more tags`}
-                    >
-                      …
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="pt-0">
-                <Button
-                  className="w-full bg-[#0F172A] hover:bg-[#2596be] text-white font-ui font-medium text-[16px] h-10 rounded-[6px] transition-colors"
-                  asChild
-                >
-                  <Link to={`/recipe/${recipeId}`}>View Recipe</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
+        {filteredRecipes.map(({ recipe }, index) => (
+          <RecipeCard key={recipe.url || index} recipe={recipe} index={index} />
+        ))}
       </div>
 
       <BackToTopButton />

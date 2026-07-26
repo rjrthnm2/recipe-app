@@ -34,10 +34,10 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
   const triggerLabel = value ? (UNIT_MAP[value]?.label ?? value) : "Unit";
 
   const chipClass = (active) =>
-    `rounded-full px-3 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+    `rounded-full px-3 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
       active
-        ? "bg-[#2596be] text-white border-[#2596be]"
-        : "bg-white text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"
+        ? "bg-accent text-white border-accent"
+        : "bg-white text-primary border-border hover:bg-secondary"
     }`;
 
   return (
@@ -48,20 +48,20 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
-        className={`flex h-12 w-full items-center justify-between rounded-md border border-[#e2e8f0] bg-white px-3 font-sans text-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
-          value ? "text-[#0F172A]" : "text-slate-500"
+        className={`flex h-12 w-full items-center justify-between rounded-md border border-border bg-white px-3 font-sans text-[16px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+          value ? "text-primary" : "text-slate-500"
         }`}
       >
         <span className="truncate">{triggerLabel}</span>
-        <span className="ml-1 shrink-0 text-[#64748b]">▾</span>
+        <span className="ml-1 shrink-0 text-muted-foreground">▾</span>
       </button>
 
       {open && (
         <div
-          className="absolute z-30 mt-1 w-60 rounded-md border border-[#e2e8f0] bg-white p-2 shadow-lg"
+          className="absolute z-30 mt-1 w-60 rounded-md border border-border bg-white p-2 shadow-lg"
           role="listbox"
         >
-          <div className="mb-1 px-1 font-ui text-[12px] font-medium uppercase tracking-wide text-[#64748b]">
+          <div className="mb-1 px-1 font-ui text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
             Common
           </div>
           <div className="mb-2 flex flex-wrap gap-1.5">
@@ -88,10 +88,10 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
             </button>
           </div>
 
-          <div className="max-h-56 overflow-y-auto border-t border-[#e2e8f0] pt-2">
+          <div className="max-h-56 overflow-y-auto border-t border-border pt-2">
             {UNIT_GROUPS.map((group) => (
               <div key={group.label} className="mb-1">
-                <div className="px-1 py-1 font-ui text-[12px] uppercase tracking-wide text-[#94a3b8]">
+                <div className="px-1 py-1 font-ui text-[12px] uppercase tracking-wide text-faded">
                   {group.label}
                 </div>
                 <div className="flex flex-wrap gap-1.5 px-1">
@@ -102,10 +102,10 @@ export default function UnitPicker({ value, onChange, ariaLabel }) {
                       onClick={() => select(unit.key)}
                       role="option"
                       aria-selected={value === unit.key}
-                      className={`rounded-md px-2.5 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2596be] ${
+                      className={`rounded-md px-2.5 py-1.5 font-ui text-[14px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                         value === unit.key
-                          ? "bg-[#2596be] text-white border-[#2596be]"
-                          : "bg-white text-[#0F172A] border-[#e2e8f0] hover:bg-[#F8FAFC]"
+                          ? "bg-accent text-white border-accent"
+                          : "bg-white text-primary border-border hover:bg-secondary"
                       }`}
                     >
                       {unit.label}
