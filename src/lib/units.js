@@ -166,10 +166,103 @@ export function parseQuantity(value) {
   return parseFloat(qtyStr);
 }
 
+// Cook-friendly fractions, in the denominators a kitchen actually owns.
+const NICE_FRACTIONS = [
+  [0, ""],
+  [1 / 16, "1/16"],
+  [1 / 8, "1/8"],
+  [1 / 6, "1/6"],
+  [1 / 4, "1/4"],
+  [1 / 3, "1/3"],
+  [3 / 8, "3/8"],
+  [1 / 2, "1/2"],
+  [5 / 8, "5/8"],
+  [2 / 3, "2/3"],
+  [3 / 4, "3/4"],
+  [5 / 6, "5/6"],
+  [7 / 8, "7/8"],
+  [1, ""],
+];
+
+// Turn a number back into something you'd write on a recipe card:
+// 0.5 -> "1/2", 2.25 -> "2 1/4", 3 -> "3", 0.42 -> "0.42" (no tidy fraction).
+export function formatQuantity(num) {
+  if (!Number.isFinite(num) || num <= 0) return "";
+
+  let whole = Math.floor(num);
+  const remainder = num - whole;
+
+  let best = null;
+  let bestDiff = Infinity;
+  for (const [value, label] of NICE_FRACTIONS) {
+    const diff = Math.abs(remainder - value);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = { value, label };
+    }
+  }
+
+  // Only snap when we're genuinely close to a kitchen fraction.
+  if (bestDiff > 0.02) {
+    return String(Math.round(num * 100) / 100);
+  }
+
+  if (best.value === 1) whole += 1; // e.g. 1.999 -> "2"
+  const fraction = best.value === 1 ? "" : best.label;
+
+  if (whole > 0 && fraction) return `${whole} ${fraction}`;
+  if (fraction) return fraction;
+  return String(whole);
+}
+
+// Scale a quantity string by a factor, preserving ranges ("3-4" -> "6-8").
+export function scaleQuantity(quantity, factor) {
+  const raw = String(quantity ?? "").trim();
+  if (!raw || !factor || factor === 1) return raw;
+
+  const rangeMatch = raw.match(
+    /^(\d+(?:\s\d+\/\d+|\/\d+|\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\s\d+\/\d+|\/\d+|\.\d+)?)$/i,
+  );
+  if (rangeMatch) {
+    const low = formatQuantity(parseQuantity(rangeMatch[1]) * factor);
+    const high = formatQuantity(parseQuantity(rangeMatch[2]) * factor);
+    return low && high ? `${low}-${high}` : raw;
+  }
+
+  const num = parseQuantity(raw);
+  if (!num) return raw; // nothing numeric to scale — leave it alone
+  return formatQuantity(num * factor);
+}
+
+// Scale one ingredient. Items with no quantity ("shredded lettuce") or
+// "to taste" are returned untouched — doubling "to taste" means nothing.
+export function scaleIngredient(ing, factor) {
+  if (!factor || factor === 1) return ing;
+  if (!isStructuredIngredient(ing)) return ing;
+  if (ing.unit === "to_taste" || !ing.quantity) return ing;
+  return { ...ing, quantity: scaleQuantity(ing.quantity, factor) };
+}
+
+// Scale a servings value for display ("4" -> "8", "6-8" -> "12-16").
+export function scaleServings(servings, factor) {
+  const raw = String(servings ?? "").trim();
+  if (!raw || !factor || factor === 1) return raw;
+  // Keep any trailing words: "12 cookies" -> "24 cookies".
+  const match = raw.match(/^([\d\s/.\-–]+)(.*)$/);
+  if (!match) return raw;
+  const scaled = scaleQuantity(match[1].trim(), factor);
+  if (!scaled) return raw;
+  const rest = match[2].trim();
+  return rest ? `${scaled} ${rest}` : scaled;
+}
+
 export function getUnitLabel(key, qty = 0) {
   const unit = UNIT_MAP[key];
   if (!unit) return "";
-  if (unit.plural && qty !== 1) return unit.plural;
+  // Singular for exactly 1 and for fractions under 1 ("1/2 package", not
+  // "1/2 packages"), which is what halving a recipe produces.
+  const isFraction = qty > 0 && qty < 1;
+  if (unit.plural && qty !== 1 && !isFraction) return unit.plural;
   return unit.label;
 }
 

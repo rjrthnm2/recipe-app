@@ -8,11 +8,14 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import IngredientsEditor from "../components/IngredientsEditor";
 import { PencilIcon, TrashIcon } from "../components/Icons";
+import ServingScaler from "../components/ServingScaler";
 import usePageTitle from "../hooks/usePageTitle";
 import {
   formatIngredient,
   normalizeIngredient,
   collectIngredientNames,
+  scaleIngredient,
+  scaleServings,
 } from "../lib/units";
 
 // Build editable form state from a recipe (legacy or structured).
@@ -47,6 +50,8 @@ export default function RecipeDetail() {
   const [copied, setCopied] = useState(false);
   const [shareMessage, setShareMessage] = useState("");
   const [checkedIngredients, setCheckedIngredients] = useState({});
+  // Ingredient-amount multiplier (1 = as written).
+  const [scale, setScale] = useState(1);
 
   // Edit/Delete states
   const [isEditing, setIsEditing] = useState(false);
@@ -63,6 +68,15 @@ export default function RecipeDetail() {
       setIsEditing(true);
       setEditForm(toEditForm(target));
     }
+  }
+
+  // Reset the scaler when navigating to a different recipe (the component
+  // stays mounted across route changes). Adjusting state during render is
+  // the documented pattern for "reset state when a prop changes".
+  const [scaleFor, setScaleFor] = useState(id);
+  if (scaleFor !== id) {
+    setScaleFor(id);
+    setScale(1);
   }
 
   // Consume the param once the editor is open so refresh doesn't reopen it.
@@ -459,7 +473,8 @@ export default function RecipeDetail() {
               {[
                 currentData.prep_time && `${currentData.prep_time} Prep`,
                 currentData.cook_time && `${currentData.cook_time} Cook`,
-                currentData.servings && `${currentData.servings} Servings`,
+                currentData.servings &&
+                  `${scaleServings(currentData.servings, scale)} Servings`,
               ]
                 .filter(Boolean)
                 .map((part, i) => (
@@ -553,6 +568,14 @@ export default function RecipeDetail() {
         </div>
       )}
 
+      {!isEditing && (currentData.ingredients || []).length > 0 && (
+        <ServingScaler
+          scale={scale}
+          onChange={setScale}
+          servings={recipe.servings}
+        />
+      )}
+
       {/* The structured ingredients editor needs full width, so edit mode
           stacks the sections instead of using the 1/3 + 2/3 columns. Print
           also stacks them (ingredients first) for a clean recipe-card layout. */}
@@ -584,7 +607,7 @@ export default function RecipeDetail() {
           ) : (
             <ul className="space-y-4">
               {currentData.ingredients.map((ing, i) => {
-                const text = formatIngredient(ing);
+                const text = formatIngredient(scaleIngredient(ing, scale));
                 return (
                   <li
                     key={i}
@@ -676,6 +699,12 @@ export default function RecipeDetail() {
 
       {/* Source line, printed copies only. */}
       <p className="hidden print:block print:pt-6 print:text-[12px] print:text-black">
+        {scale !== 1 && (
+          <strong>
+            Amounts shown are {scale === 0.5 ? "half" : `${scale}×`} the
+            original recipe.{" "}
+          </strong>
+        )}
         From Jewel's Recipes — recipe-app-f8fd3.web.app
       </p>
     </article>
